@@ -64,8 +64,11 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
 </head>
 <body>
 <div id="hdr">
-  <div><div class="ht">BLAST 2026 — Executive Report</div>
-  <div class="hs"><span>Current: <b id="hcur"></b></span><span>Previous: <b id="hprev"></b></span><span>Budget: <b>€145m revenue · €13.3m EBITDA</b></span></div></div>
+  <div>
+    <a href="index.html" style="display:inline-flex;align-items:center;gap:5px;font-size:10px;color:rgba(255,255,255,.4);text-decoration:none;margin-bottom:7px;transition:.15s" onmouseover="this.style.color='rgba(255,255,255,.85)'" onmouseout="this.style.color='rgba(255,255,255,.4)'">← All reports</a>
+    <div class="ht">BLAST 2026 — Executive Report</div>
+    <div class="hs"><span>Current: <b id="hcur"></b></span><span>Previous: <b id="hprev"></b></span><span>Budget: <b>€145m revenue · €13.3m EBITDA</b></span></div>
+  </div>
 </div>
 <div id="kpis">
   <div class="kpi"><div class="kl">Revenue</div><div class="kv" id="kv0"></div><div class="kt" id="kt0"></div><div class="kb"><div class="kbf" id="kf0"></div></div></div>

@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BLAST 2026 — Executive Report</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#F1F5F9;--card:#fff;--bd:#E2E8F0;--bd2:#F1F5F9;
+  --t1:#0F172A;--t2:#64748B;--t3:#94A3B8;
+  --pos:#16A34A;--neg:#DC2626;
+  --B:#1D9E75;--G:#4CAF7D;--Y:#B45309;--R:#C2410C;
+  --Bbg:rgba(29,158,117,.07);--Gbg:rgba(76,175,125,.07);
+  --Ybg:rgba(180,83,9,.07);--Rbg:rgba(194,65,12,.07);--Xbg:rgba(100,116,139,.05);
+}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--t1);font-size:13px;min-height:100vh}
+/* HEADER */
+#hdr{background:linear-gradient(135deg,#0F172A 0%,#1a3a5c 100%);color:#fff;padding:16px 24px;display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:10px}
+.hdr-t{font-size:16px;font-weight:700;letter-spacing:-.4px}
+.hdr-s{font-size:11px;color:rgba(255,255,255,.5);margin-top:4px;display:flex;gap:14px;flex-wrap:wrap}
+.hdr-s b{color:rgba(255,255,255,.8)}
+/* KPIS */
+#kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:14px 24px}
+@media(max-width:640px){#kpis{grid-template-columns:repeat(2,1fr)}}
+.kpi{background:var(--card);border:1px solid var(--bd);border-radius:10px;padding:13px 15px;box-shadow:0 1px 3px rgba(0,0,0,.04)}
+.kpi-l{font-size:9px;text-transform:uppercase;letter-spacing:.7px;color:var(--t2);font-weight:600;margin-bottom:8px}
+.kpi-v{font-size:22px;font-weight:700;letter-spacing:-.5px;line-height:1}
+.kpi-t{font-size:10px;margin-top:5px;color:var(--t2)}
+.kpi-bar{height:3px;background:var(--bd);border-radius:2px;margin-top:8px;overflow:hidden}
+.kpi-fill{height:100%;border-radius:2px;transition:width .5s ease}
+/* TOOLBAR */
+#toolbar{background:var(--card);border-bottom:1px solid var(--bd);display:flex;align-items:center;position:sticky;top:0;z-index:99;box-shadow:0 1px 4px rgba(0,0,0,.05);padding:0 24px}
+.tabs{display:flex;overflow-x:auto;flex:1}
+.tab{padding:11px 14px;font-size:12px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--t2);border-bottom:2.5px solid transparent;white-space:nowrap;transition:.12s;outline:none}
+.tab:hover{color:var(--t1)}.tab.on{color:var(--t1);border-bottom-color:var(--t1)}
+.scbar{display:flex;gap:5px;padding-left:12px;border-left:1px solid var(--bd);margin-left:8px;flex-shrink:0;align-items:center}
+.scb{padding:4px 11px;border-radius:14px;border:1.5px solid var(--bd);background:#fff;cursor:pointer;font-size:11px;font-weight:500;color:var(--t2);transition:.12s;white-space:nowrap;outline:none}
+.scb.B{border-color:var(--B);background:var(--B);color:#fff}
+.scb.BG{border-color:var(--G);background:var(--G);color:#fff}
+.scb.BGY{border-color:var(--Y);background:var(--Y);color:#fff}
+.scb.BGYR{border-color:var(--R);background:var(--R);color:#fff}
+/* CONTENT */
+#content{padding:18px 24px}
+.pane{display:none}.pane.on{display:block}
+/* CARDS */
+.card{background:var(--card);border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 2px rgba(0,0,0,.03)}
+.ch{padding:11px 16px;font-size:11px;font-weight:600;background:#F8FAFC;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
+.ch-sub{font-weight:400;color:var(--t2);font-size:10px}
+.cx{overflow-x:auto}
+/* TABLES */
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{padding:5px 9px;text-align:right;font-size:10px;font-weight:600;color:var(--t2);border-bottom:1px solid var(--bd);white-space:nowrap;background:#FAFAFA}
+th:first-child{text-align:left}
+td{padding:5px 9px;text-align:right;border-bottom:1px solid var(--bd2);white-space:nowrap}
+td:first-child{text-align:left}
+tr:last-child td{border-bottom:none}
+.rh td{font-weight:700;background:#F8FAFC}
+.rs td{color:var(--t2);font-size:11px}
+.rp td{font-size:10px;color:var(--t3);background:#FBFCFD}
+.rsec td{font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t3);background:#F8FAFC;padding-top:9px;padding-bottom:3px}
+/* col tints */
+.cb{background:var(--Bbg)}.cg{background:var(--Gbg)}.cy{background:var(--Ybg)}.cr{background:var(--Rbg)}.cc{background:var(--Xbg)}
+/* value colors */
+.vp{color:var(--pos);font-weight:500}.vn{color:var(--neg);font-weight:500}
+/* expander */
+.xp{cursor:pointer;user-select:none}.xp::before{content:"▸ ";color:var(--t3);font-size:9px}
+.xp.open::before{content:"▾ "}
+.xr{display:none}.xr.open{display:table-row}
+/* ECO GRID */
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(95px,1fr));gap:8px;margin-bottom:14px}
+.ecard{background:var(--card);border:1.5px solid var(--bd);border-radius:8px;padding:8px 10px;cursor:pointer;transition:.12s}
+.ecard:hover{border-color:#94A3B8}.ecard.sel{border-width:2px}
+.ecard-n{font-size:11px;font-weight:600;margin-top:3px}.ecard-v{font-size:9px;margin-top:2px}
+/* CHARTS */
+.cwrap{padding:14px 16px;position:relative}
+/* LAYOUT */
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media(max-width:820px){.g2{grid-template-columns:1fr}}
+/* LEGEND */
+.leg{display:flex;gap:14px;flex-wrap:wrap;font-size:10px;color:var(--t2);margin-top:8px;justify-content:center;padding-bottom:8px}
+.leg span{display:flex;align-items:center;gap:4px}
+.ldot{width:10px;height:10px;border-radius:2px;display:inline-block}
+/* FOOTER */
+#footer{padding:10px 24px 20px;font-size:10px;color:var(--t3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;border-top:1px solid var(--bd);margin-top:8px}
+</style>
+</head>
+<body>
+
+<div id="hdr">
+  <div>
+    <div class="hdr-t">BLAST 2026 — Bi-Weekly Executive Report</div>
+    <div class="hdr-s">
+      <span>Current: <b id="hd-cur"></b></span>
+      <span>Previous: <b id="hd-prev"></b></span>
+      <span>Budget: <b>€145m revenue · €13.3m EBITDA</b></span>
+    </div>
+  </div>
+</div>
+
+<div id="kpis">
+  <div class="kpi">
+    <div class="kpi-l">Revenue</div>
+    <div class="kpi-v" id="kv-r"></div>
+    <div class="kpi-t" id="kt-r"></div>
+    <div class="kpi-bar"><div class="kpi-fill" id="kf-r" style="background:var(--B)"></div></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">Gross Margin</div>
+    <div class="kpi-v" id="kv-g"></div>
+    <div class="kpi-t" id="kt-g"></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">EBITDA</div>
+    <div class="kpi-v" id="kv-e"></div>
+    <div class="kpi-t" id="kt-e"></div>
+  </div>
+  <div class="kpi">
+    <div class="kpi-l">+Yellow vs Budget</div>
+    <div class="kpi-v" id="kv-y"></div>
+    <div class="kpi-t" id="kt-y"></div>
+    <div class="kpi-bar"><div class="kpi-fill" id="kf-y" style="background:var(--Y)"></div></div>
+  </div>
+</div>
+
+<div id="toolbar">
+  <div class="tabs">
+    <button class="tab on" data-tab="pl">P&amp;L Summary</button>
+    <button class="tab" data-tab="ebitda">EBITDA</button>
+    <button class="tab" data-tab="eco">Ecosystem P&amp;L</button>
+    <button class="tab" data-tab="yoy">Revenue YoY</button>
+  </div>
+  <div class="scbar">
+    <button class="scb" data-sc="B">Booked</button>
+    <button class="scb BGY" data-sc="BGY">+Yellow</button>
+    <button class="scb" data-sc="BG">+Green</button>
+    <button class="scb" data-sc="BGYR">+Red</button>
+  </div>
+</div>
+
+<div id="content">
+
+  <!-- P&L -->
+  <div class="pane on" id="pane-pl">
+    <div class="card">
+      <div class="ch">P&amp;L Summary <span class="ch-sub">€m · all scenarios · click scenario buttons above to highlight</span></div>
+      <div class="cx"><table id="tpl"></table></div>
+    </div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch">Revenue breakdown <span class="ch-sub">€000s · expand groups ▸</span></div>
+        <div class="cx"><table id="trev"></table></div>
+      </div>
+      <div class="card">
+        <div class="ch">Cost of sales <span class="ch-sub">€000s · expand ▸</span></div>
+        <div class="cx"><table id="tcos"></table></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EBITDA -->
+  <div class="pane" id="pane-ebitda">
+    <div class="g2">
+      <div class="card">
+        <div class="ch">EBITDA by scenario <span class="ch-sub">current vs previous vs budget</span></div>
+        <div class="cwrap" style="height:230px"><canvas id="ch-eb"></canvas></div>
+        <div class="leg">
+          <span><span class="ldot" style="background:#B4B2A9"></span>Previous</span>
+          <span><span class="ldot" style="background:var(--B)"></span>Positive</span>
+          <span><span class="ldot" style="background:var(--neg)"></span>Negative</span>
+          <span><span style="display:inline-block;width:18px;border-top:2px dashed #B45309;vertical-align:middle"></span>Budget</span>
+        </div>
+      </div>
+      <div class="card">
+        <div class="ch">EBITDA summary <span class="ch-sub">all scenarios</span></div>
+        <div class="cx"><table id="tes"></table></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="ch">EBITDA contribution by ecosystem <span class="ch-sub" id="wf-sc"></span></div>
+      <div class="cwrap" style="height:280px"><canvas id="ch-wf"></canvas></div>
+      <div class="leg">
+        <span><span class="ldot" style="background:var(--B)"></span>Positive contribution</span>
+        <span><span class="ldot" style="background:var(--neg)"></span>Negative contribution</span>
+        <span><span class="ldot" style="background:#2C2C2A"></span>Total</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ECO -->
+  <div class="pane" id="pane-eco">
+    <div class="egrid" id="egrid"></div>
+    <div class="card" id="ecard">
+      <div class="ch" id="ech">Ecosystem P&amp;L</div>
+      <div class="cx"><table id="teco"></table></div>
+    </div>
+    <div class="card">
+      <div class="ch">EBITDA by ecosystem <span class="ch-sub" id="eco-sc-l"></span></div>
+      <div class="cwrap" style="height:320px"><canvas id="ch-eco"></canvas></div>
+    </div>
+  </div>
+
+  <!-- YOY -->
+  <div class="pane" id="pane-yoy">
+    <div class="card">
+      <div class="ch">Revenue tracking — 2026 vs 2025 <span class="ch-sub">cumulative bi-weekly, €m · dashed = 2025 · solid = 2026</span></div>
+      <div class="cwrap" style="height:300px"><canvas id="ch-yoy"></canvas></div>
+      <div class="leg" id="yleg"></div>
+    </div>
+    <div class="card">
+      <div class="ch">2026 checkpoints vs 2025</div>
+      <div class="cx"><table id="tyoy"></table></div>
+    </div>
+  </div>
+
+</div>
+
+<div id="footer">
+  <span id="ft-l"></span>
+  <span>All figures in €m unless noted · B=Booked · G=Green · Y=Yellow · R=Red · WV=Weighted</span>
+</div>
+
+<script>
+'use strict';
+
+/* ════════════════════════════════════════════════════════════
+   DATA BLOCK — update this section each fortnight
+════════════════════════════════════════════════════════════ */
+const CURRENT_DATE = "23.03.2026";
+const PREV_DATE    = "09.03.2026";
+const BUD_REV      = 145.0;
+const BUD_EBITDA   = 13.3;
+
+// Summary P&L (€m)
+const PL = {
+  bud: {rev:145.0,cos:-99.2,gm:45.8,gmPct:"32%",ts:-2.8,contrib:43.0,contribPct:"30%",opex:-29.7,ebitda:13.3,ebitdaPct:"9%"},
+  cur: {
+    rev:        {B:50.6, BG:97.2, BGY:113.5,BGYR:172.7,WV:112.2},
+    cos:        {B:-70.7,BG:-88.6,BGY:-91.8, BGYR:-111.1,WV:-92.8},
+    gm:         {B:-20.1,BG:8.6,  BGY:21.6,  BGYR:61.5,  WV:19.4},
+    gmPct:      {B:"-40%",BG:"9%",BGY:"19%", BGYR:"36%", WV:"17%"},
+    ts:         {B:-2.8, BG:-2.8, BGY:-2.8,  BGYR:-2.8,  WV:-2.8},
+    contrib:    {B:-22.9,BG:5.8,  BGY:18.9,  BGYR:58.8,  WV:16.6},
+    contribPct: {B:"-45%",BG:"6%",BGY:"17%", BGYR:"34%", WV:"15%"},
+    opex:       {B:-29.7,BG:-29.7,BGY:-29.7, BGYR:-29.7, WV:-29.7},
+    ebitda:     {B:-52.6,BG:-23.9,BGY:-10.9, BGYR:29.0,  WV:-13.1},
+    ebitdaPct:  {B:"-104%",BG:"-25%",BGY:"-10%",BGYR:"17%",WV:"-12%"},
+  },
+  prev: {
+    rev:        {B:47.5, BG:96.2, BGY:114.3, BGYR:174.1, WV:111.9},
+    cos:        {B:-68.5,BG:-88.2,BGY:-90.7, BGYR:-110.6,WV:-92.2},
+    gm:         {B:-21.1,BG:8.0,  BGY:23.6,  BGYR:63.6,  WV:19.7},
+    gmPct:      {B:"-44%",BG:"8%",BGY:"21%", BGYR:"37%", WV:"18%"},
+    ts:         {B:-2.8, BG:-2.8, BGY:-2.8,  BGYR:-2.8,  WV:-2.8},
+    contrib:    {B:-23.8,BG:5.2,  BGY:20.8,  BGYR:60.8,  WV:16.9},
+    contribPct: {B:"-50%",BG:"5%",BGY:"18%", BGYR:"35%", WV:"15%"},
+    opex:       {B:-29.7,BG:-29.7,BGY:-29.7, BGYR:-29.7, WV:-29.7},
+    ebitda:     {B:-53.6,BG:-24.5,BGY:-8.9,  BGYR:31.1,  WV:-12.8},
+    ebitdaPct:  {B:"-113%",BG:"-25%",BGY:"-8%",BGYR:"18%",WV:"-11%"},
+  },
+};
+
+// Revenue detail (€000s)
+const RCATS = [
+  {n:"Brand Commercialisation", c:"#3266AD",
+   t:{bud:45422,B:23658,BG:26099,BGY:36402,BGYR:70415,WV:34807},
+   r:[
+    {n:"Sponsorship",             bud:26792,B:10324,BG:11136,BGY:19811,BGYR:51055,WV:18777},
+    {n:"Media Rights",            bud:15679,B:13184,BG:13369,BGY:13653,BGYR:13883,WV:13527},
+    {n:"Event City Partner Fees", bud:2951, B:150,  BG:1594, BGY:2939, BGYR:5477, WV:2503},
+    {n:"Team Slot Sale",          bud:0,    B:0,    BG:0,    BGY:0,    BGYR:0,    WV:0},
+    {n:"Other Revenue",           bud:0,    B:0,    BG:0,    BGY:0,    BGYR:0,    WV:0},
+   ]},
+  {n:"Production Fee", c:"#7F77DD",
+   t:{bud:86003,B:22977,BG:62882,BGY:65626,BGYR:88328,WV:67659},
+   r:[{n:"Production Fee",        bud:86003,B:22977,BG:62882,BGY:65626,BGYR:88328,WV:67659}]},
+  {n:"Consumer Monetisation", c:"#D85A30",
+   t:{bud:13563,B:3943,BG:8170,BGY:11426,BGYR:13935,WV:9759},
+   r:[
+    {n:"Blast Channels",          bud:1240, B:127,  BG:143,  BGY:740,  BGYR:1940, WV:769},
+    {n:"Ticketing",               bud:9019, B:3817, BG:6299, BGY:8015, BGYR:8436, WV:6972},
+    {n:"Merchandise",             bud:54,   B:0,    BG:0,    BGY:54,   BGYR:54,   WV:19},
+    {n:"In-Game Transactions",    bud:3250, B:0,    BG:1728, BGY:2617, BGYR:3506, WV:2000},
+   ]},
+];
+const RTOT = {bud:144988,B:50578,BG:97151,BGY:113454,BGYR:172678,WV:112226};
+
+// CoS detail (€000s)
+const CROWS = [
+  {n:"Event Costs",        bud:-79679,B:-54561,BG:-70196,BGY:-72544,BGYR:-86395,WV:-73448},
+  {n:"Prize Money",        bud:-16730,B:-14646,BG:-16356,BGY:-16356,BGYR:-20186,WV:-16930},
+  {n:"Revenue Share",      bud:-405,  B:-223,  BG:-254,  BGY:-258,  BGYR:-258,  WV:-252},
+  {n:"Other Cost of Sales",bud:-2398, B:-1251, BG:-1764, BGY:-2652, BGYR:-4310, WV:-2195,
+   s:[
+    {n:"Partner Activation",bud:-651, B:-305,  BG:-358,  BGY:-575,  BGYR:-839,  WV:-455},
+    {n:"Agency Commission",  bud:-693, B:-499,  BG:-705,  BGY:-1171, BGYR:-1893, WV:-920},
+    {n:"Ticketing Cost",     bud:-322, B:-228,  BG:-464,  BGY:-499,  BGYR:-516,  WV:-460},
+    {n:"Merchandise Cost",   bud:0,    B:0,     BG:0,     BGY:0,     BGYR:0,     WV:0},
+    {n:"Other Costs of Sale",bud:-734, B:-219,  BG:-237,  BGY:-408,  BGYR:-1062, WV:-360},
+   ]},
+];
+const CTOT = {bud:-99213,B:-70682,BG:-88569,BGY:-91810,BGYR:-111149,WV:-92825};
+
+// Ecosystem P&L (€000s)
+const ECOS = [
+  {k:"Premier",  c:"#185FA5",
+   rev:{bud:24385,B:13503,BG:16015,BGY:23594,BGYR:30064,WV:19815},
+   cos:{bud:-18136,B:-19068,BG:-19170,BGY:-19773,BGYR:-20029,WV:-19400},
+   gp: {bud:6249,B:-5565,BG:-3155,BGY:3821,BGYR:10034,WV:414},
+   ts: {bud:-1709,B:-1709,BG:-1709,BGY:-1709,BGYR:-1709,WV:-1709},
+   opex:{bud:-328,B:-288,BG:-288,BGY:-288,BGYR:-288,WV:-288

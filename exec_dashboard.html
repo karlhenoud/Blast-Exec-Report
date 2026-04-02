@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>BLAST 2026 — Executive Report</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
@@ -10,24 +9,22 @@
 :root{--bg:#F1F5F9;--card:#fff;--bd:#E2E8F0;--bd2:#F8FAFC;--t1:#0F172A;--t2:#64748B;--t3:#94A3B8;--pos:#16A34A;--neg:#DC2626}
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);font-size:13px}
 #hdr{background:linear-gradient(135deg,#0F172A,#1e3a5f);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
-.ht{font-size:15px;font-weight:700}.hs{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;display:flex;gap:14px;flex-wrap:wrap}.hs b{color:rgba(255,255,255,.8)}
+.ht{font-size:15px;font-weight:700}.hs{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;display:flex;gap:14px;flex-wrap:wrap}.hs b{color:rgba(255,255,255,.85)}
 #kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 20px}
 @media(max-width:600px){#kpis{grid-template-columns:repeat(2,1fr)}}
 .kpi{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
 .kl{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--t2);font-weight:600;margin-bottom:6px}
-.kv{font-size:22px;font-weight:700;letter-spacing:-.5px}.kt{font-size:10px;color:var(--t2);margin-top:4px}
+.kv{font-size:22px;font-weight:700;letter-spacing:-.5px}.kt{font-size:10px;color:var(--t2);margin-top:4px;line-height:1.7}
 .kb{height:3px;background:var(--bd);border-radius:2px;margin-top:7px;overflow:hidden}.kbf{height:100%;border-radius:2px}
 #tb{background:#fff;border-bottom:1px solid var(--bd);display:flex;align-items:center;position:sticky;top:0;z-index:99;box-shadow:0 1px 3px rgba(0,0,0,.06);padding:0 20px}
 .tabs{display:flex;overflow-x:auto;flex:1}
-.tab{padding:10px 13px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--t2);border-bottom:2px solid transparent;white-space:nowrap;transition:.1s;outline:none}
+.tab{padding:10px 13px;font-size:11px;font-weight:500;cursor:pointer;border:none;background:none;color:var(--t2);border-bottom:2px solid transparent;white-space:nowrap;outline:none;transition:.1s}
 .tab.on,.tab:hover{color:var(--t1)}.tab.on{border-bottom-color:var(--t1)}
 .scbar{display:flex;gap:4px;padding-left:10px;border-left:1px solid var(--bd);margin-left:6px;flex-shrink:0}
 .scb{padding:3px 11px;border-radius:12px;border:1.5px solid var(--bd);background:#fff;cursor:pointer;font-size:10px;font-weight:500;color:var(--t2);transition:.1s;white-space:nowrap;outline:none}
-.scb.on.B{border-color:#1D9E75;background:#1D9E75;color:#fff}
-.scb.on.BG{border-color:#4CAF7D;background:#4CAF7D;color:#fff}
-.scb.on.BGY{border-color:#B45309;background:#B45309;color:#fff}
-.scb.on.BGYR{border-color:#C2410C;background:#C2410C;color:#fff}
-.scb.on.GRN{border-color:#4CAF7D;background:rgba(76,175,125,.15);color:#4CAF7D}
+.scb.on.B{border-color:#1D9E75;background:#1D9E75;color:#fff}.scb.on.BG{border-color:#4CAF7D;background:#4CAF7D;color:#fff}
+.scb.on.BGY{border-color:#B45309;background:#B45309;color:#fff}.scb.on.BGYR{border-color:#C2410C;background:#C2410C;color:#fff}
+.scb.on.GRN{border-color:#00C853;background:rgba(0,200,83,.15);color:#00A846}
 #ct{padding:16px 20px}.pane{display:none}.pane.on{display:block}
 .card{background:#fff;border:1px solid var(--bd);border-radius:10px;overflow:hidden;margin-bottom:12px}
 .ch{padding:9px 14px;font-size:11px;font-weight:600;background:#F8FAFC;border-bottom:1px solid var(--bd);display:flex;justify-content:space-between;align-items:center}
@@ -36,22 +33,32 @@ table{width:100%;border-collapse:collapse;font-size:11.5px}
 th{padding:4px 8px;text-align:right;font-size:10px;font-weight:600;color:var(--t2);border-bottom:1px solid var(--bd);white-space:nowrap;background:#FAFAFA}
 th:first-child{text-align:left;min-width:150px}
 td{padding:4px 8px;text-align:right;border-bottom:1px solid #F1F5F9;white-space:nowrap}
-td:first-child{text-align:left}
-tr:last-child td{border-bottom:none}
+td:first-child{text-align:left}tr:last-child td{border-bottom:none}
 .bold td{font-weight:700;background:#F8FAFC}.pct td{color:var(--t2);font-size:10px}.ind td:first-child{padding-left:22px;color:var(--t2)}
 .xrow{display:none}.xrow.open{display:table-row}
 .pos{color:var(--pos);font-weight:500}.neg{color:var(--neg);font-weight:500}
-.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-@media(max-width:750px){.g2{grid-template-columns:1fr}}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:12px}@media(max-width:750px){.g2{grid-template-columns:1fr}}
 .cw{padding:14px;position:relative}
 .leg{display:flex;gap:12px;flex-wrap:wrap;font-size:10px;color:var(--t2);justify-content:center;padding:0 14px 10px}
 .ldot{width:9px;height:9px;border-radius:2px;display:inline-block;margin-right:3px;vertical-align:middle}
-.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(90px,1fr));gap:7px;margin-bottom:12px}
+.egrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(92px,1fr));gap:7px;margin-bottom:12px}
 .ecard{background:#fff;border:1.5px solid var(--bd);border-radius:8px;padding:7px 9px;cursor:pointer;transition:.12s}
 .ecard:hover{border-color:#94A3B8}.ecard.sel{border-width:2px}
-.en{font-size:10px;font-weight:600;margin-top:2px;display:flex;align-items:center;gap:4px}
-.ev{font-size:9px;margin-top:1px}
-.comm{padding:10px 14px;font-size:11px;color:var(--t2);line-height:1.6;border-top:1px solid var(--bd);background:#FDFEFE}
+.en{font-size:10px;font-weight:600;margin-top:2px;display:flex;align-items:center;gap:4px}.ev{font-size:9px;margin-top:1px}
+.comm{padding:10px 14px;font-size:11px;color:var(--t2);line-height:1.6;border-top:1px solid var(--bd)}
+/* Bridge */
+.brt{width:100%;border-collapse:collapse}
+.brt th{padding:5px 8px;text-align:right;font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:var(--t2);border-bottom:1px solid var(--bd);background:#FAFAFA;white-space:nowrap}
+.brt th:first-child{text-align:left;min-width:210px}
+.brt td{padding:4px 8px;text-align:right;font-size:11px;border-bottom:0.5px solid var(--bd2);white-space:nowrap}
+.brt td:first-child{text-align:left}
+.brt .bse td{font-weight:700;background:#F8FAFC;border-top:1px solid var(--bd);border-bottom:1px solid var(--bd)}
+.brt .bgh td{font-weight:600;background:#EFF4FA;cursor:pointer}.brt .bgh:hover td{background:#E4EDF7}
+.brt .bln td:first-child{padding-left:26px;color:var(--t2);font-size:10px}
+.brt .bln td{background:rgba(100,116,139,.03);font-size:11px}
+.brt .btot td{font-weight:700;background:#F8FAFC;border-top:2px solid var(--bd)}
+.bxrow{display:none}.bxrow.open{display:table-row}
+.bnote{display:block;font-size:9px;color:var(--t3);margin-top:2px;line-height:1.4;white-space:normal;max-width:300px;font-weight:400}
 footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify-content:space-between;flex-wrap:wrap;gap:4px;border-top:1px solid var(--bd);margin-top:4px}
 </style>
 </head>
@@ -68,9 +75,10 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
 </div>
 <div id="tb">
   <div class="tabs">
-    <button class="tab on" data-t="pl">P&amp;L Summary</button>
+    <button class="tab on" data-t="pl">P&L Summary</button>
+    <button class="tab" data-t="bridge">Bridge</button>
     <button class="tab" data-t="ebitda">EBITDA</button>
-    <button class="tab" data-t="eco">Ecosystem P&amp;L</button>
+    <button class="tab" data-t="eco">Ecosystem P&L</button>
     <button class="tab" data-t="yoy">Revenue YoY</button>
   </div>
   <div class="scbar">
@@ -82,78 +90,79 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
 </div>
 <div id="ct">
   <div class="pane on" id="pane-pl">
-    <div class="card"><div class="ch">P&amp;L Summary <small>€m · selected scenario column highlighted · click scenario to change</small></div><div class="cx"><table id="t-pl"></table></div></div>
+    <div class="card"><div class="ch">P&L Summary <small>€m · selected scenario highlighted</small></div><div class="cx"><table id="t-pl"></table></div></div>
     <div class="g2">
-      <div class="card"><div class="ch">Revenue by stream <small>€000s · ▸ expand groups</small></div><div class="cx"><table id="t-rev"></table></div></div>
+      <div class="card"><div class="ch">Revenue by stream <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-rev"></table></div></div>
       <div class="card"><div class="ch">Cost of sales <small>€000s · ▸ expand Other CoS</small></div><div class="cx"><table id="t-cos"></table></div></div>
     </div>
     <div class="card"><div class="ch">Commentary</div><div class="comm" id="comm"></div></div>
   </div>
+  <div class="pane" id="pane-bridge">
+    <div class="card">
+      <div class="ch">EBITDA Bridge <small id="br-sub"></small></div>
+      <div class="cx"><table class="brt" id="t-br"></table></div>
+    </div>
+  </div>
   <div class="pane" id="pane-ebitda">
     <div class="g2">
       <div class="card">
-        <div class="ch">EBITDA by scenario <small>current vs previous</small></div>
+        <div class="ch">EBITDA by scenario</div>
         <div class="cw" style="height:220px"><canvas id="c-eb"></canvas></div>
-        <div class="leg"><span><span class="ldot" style="background:#B4B2A9"></span>Previous</span><span><span class="ldot" style="background:#1D9E75"></span>Current positive</span><span><span class="ldot" style="background:#DC2626"></span>Current negative</span><span><span style="display:inline-block;width:18px;border-top:2px dashed #B45309;vertical-align:middle;margin-right:3px"></span>Budget</span></div>
+        <div class="leg"><span><span class="ldot" style="background:#B4B2A9"></span>Previous</span><span><span class="ldot" style="background:#1D9E75"></span>Positive</span><span><span class="ldot" style="background:#DC2626"></span>Negative</span><span><span style="display:inline-block;width:18px;border-top:2px dashed #B45309;vertical-align:middle;margin-right:3px"></span>Budget</span></div>
       </div>
       <div class="card"><div class="ch">EBITDA summary</div><div class="cx"><table id="t-es"></table></div></div>
     </div>
-    <div class="card">
-      <div class="ch">EBITDA contribution by ecosystem <small id="eco-sc-lbl"></small></div>
-      <div class="cw" style="height:300px"><canvas id="c-eco"></canvas></div>
-    </div>
+    <div class="card"><div class="ch">EBITDA by ecosystem <small id="eco-sc-lbl"></small></div><div class="cw" style="height:310px"><canvas id="c-eco"></canvas></div></div>
   </div>
   <div class="pane" id="pane-eco">
     <div class="egrid" id="egrid"></div>
-    <div class="card">
-      <div class="ch" id="eco-ch">Select an ecosystem above</div>
-      <div class="cx"><table id="t-eco"></table></div>
-    </div>
+    <div class="card"><div class="ch" id="eco-ch">Select an ecosystem above</div><div class="cx"><table id="t-eco"></table></div></div>
   </div>
   <div class="pane" id="pane-yoy">
     <div class="card">
-      <div class="ch">Revenue 2026 vs 2025 <small>cumulative bi-weekly · dashed = 2025 · solid = 2026</small></div>
+      <div class="ch">Revenue 2026 vs 2025 <small>cumulative bi-weekly · dashed=2025 · solid=2026</small></div>
       <div style="display:flex;gap:6px;padding:8px 14px;flex-wrap:wrap;align-items:center">
         <span style="font-size:10px;color:var(--t2);font-weight:600">View:</span>
         <button id="y-abs" class="scb on BGY" onclick="setYoyMode('abs')">€m absolute</button>
         <button id="y-pct" class="scb" onclick="setYoyMode('pct')">% of budget</button>
         <button id="y-bg" class="scb on GRN" onclick="toggleBG()" style="margin-left:8px">+Green</button>
       </div>
-      <div class="cw" style="height:280px"><canvas id="c-yoy"></canvas></div>
+      <div class="cw" style="height:290px"><canvas id="c-yoy"></canvas></div>
       <div class="leg" id="yoy-leg"></div>
     </div>
     <div class="card"><div class="ch">Checkpoint summary</div><div class="cx"><table id="t-yoy"></table></div></div>
   </div>
 </div>
-<footer><span id="ftl"></span><span>All figures €m unless stated · B=Booked · G=Green · Y=Yellow · R=Red · WV=Weighted</span></footer>
+<footer><span id="ftl"></span><span>€m unless stated · B=Booked · G=Green · Y=Yellow · R=Red · WV=Weighted</span></footer>
 
 <script>
 /* ══════════════════════════════════════════
    DATA BLOCK — update each fortnight
 ══════════════════════════════════════════ */
 const CUR_D="23.03.2026", PRV_D="09.03.2026";
-const BUD_R=145, BUD_E=13.3;
+const BUD_R=145, BUD_E=13.3, BUD_GM=45.8;
+const COLS=["bud","B","BG","BGY","BGYR","WV"];
 
 const CUR={
-  rev:  {B:50.6, BG:97.2,  BGY:113.5, BGYR:172.7, WV:112.2},
-  cos:  {B:-70.7,BG:-88.6, BGY:-91.8,  BGYR:-111.1,WV:-92.8},
-  gm:   {B:-20.1,BG:8.6,   BGY:21.6,   BGYR:61.5,  WV:19.4},
-  gmP:  {B:"-40%",BG:"9%", BGY:"19%",  BGYR:"36%", WV:"17%"},
-  ts:   {B:-2.8, BG:-2.8,  BGY:-2.8,   BGYR:-2.8,  WV:-2.8},
-  con:  {B:-22.9,BG:5.8,   BGY:18.9,   BGYR:58.8,  WV:16.6},
-  conP: {B:"-45%",BG:"6%", BGY:"17%",  BGYR:"34%", WV:"15%"},
-  opex: {B:-29.7,BG:-29.7, BGY:-29.7,  BGYR:-29.7, WV:-29.7},
-  eb:   {B:-52.6,BG:-23.9, BGY:-10.9,  BGYR:29.0,  WV:-13.1},
-  ebP:  {B:"-104%",BG:"-25%",BGY:"-10%",BGYR:"17%",WV:"-12%"},
+  rev: {B:50.6, BG:97.2, BGY:113.5,BGYR:172.7,WV:112.2},
+  cos: {B:-70.7,BG:-88.6,BGY:-91.8, BGYR:-111.1,WV:-92.8},
+  gm:  {B:-20.1,BG:8.6,  BGY:21.6,  BGYR:61.5,  WV:19.4},
+  gmP: {B:"-40%",BG:"9%",BGY:"19%", BGYR:"36%", WV:"17%"},
+  ts:  {B:-2.8, BG:-2.8, BGY:-2.8,  BGYR:-2.8,  WV:-2.8},
+  con: {B:-22.9,BG:5.8,  BGY:18.9,  BGYR:58.8,  WV:16.6},
+  conP:{B:"-45%",BG:"6%",BGY:"17%", BGYR:"34%", WV:"15%"},
+  opex:{B:-29.7,BG:-29.7,BGY:-29.7, BGYR:-29.7, WV:-29.7},
+  eb:  {B:-52.6,BG:-23.9,BGY:-10.9, BGYR:29.0,  WV:-13.1},
+  ebP: {B:"-104%",BG:"-25%",BGY:"-10%",BGYR:"17%",WV:"-12%"},
 };
 const PRV={
-  rev:  {B:47.5, BG:96.2,  BGY:114.3, BGYR:174.1, WV:111.9},
-  cos:  {B:-68.5,BG:-88.2, BGY:-90.7,  BGYR:-110.6,WV:-92.2},
-  gm:   {B:-21.1,BG:8.0,   BGY:23.6,   BGYR:63.6,  WV:19.7},
-  ts:   {B:-2.8, BG:-2.8,  BGY:-2.8,   BGYR:-2.8,  WV:-2.8},
-  con:  {B:-23.8,BG:5.2,   BGY:20.8,   BGYR:60.8,  WV:16.9},
-  opex: {B:-29.7,BG:-29.7, BGY:-29.7,  BGYR:-29.7, WV:-29.7},
-  eb:   {B:-53.6,BG:-24.5, BGY:-8.9,   BGYR:31.1,  WV:-12.8},
+  rev: {B:47.5, BG:96.2, BGY:114.3,BGYR:174.1,WV:111.9},
+  cos: {B:-68.5,BG:-88.2,BGY:-90.7, BGYR:-110.6,WV:-92.2},
+  gm:  {B:-21.1,BG:8.0,  BGY:23.6,  BGYR:63.6,  WV:19.7},
+  ts:  {B:-2.8, BG:-2.8, BGY:-2.8,  BGYR:-2.8,  WV:-2.8},
+  con: {B:-23.8,BG:5.2,  BGY:20.8,  BGYR:60.8,  WV:16.9},
+  opex:{B:-29.7,BG:-29.7,BGY:-29.7, BGYR:-29.7, WV:-29.7},
+  eb:  {B:-53.6,BG:-24.5,BGY:-8.9,  BGYR:31.1,  WV:-12.8},
 };
 
 const RCAT=[
@@ -165,8 +174,7 @@ const RCAT=[
     {n:"Other Revenue",          bud:0,    B:0,    BG:0,    BGY:0,    BGYR:0,    WV:0},
   ]},
   {n:"Production Fee",c:"#7F77DD",t:{bud:86003,B:22977,BG:62882,BGY:65626,BGYR:88328,WV:67659},r:[
-    {n:"Production Fee",bud:86003,B:22977,BG:62882,BGY:65626,BGYR:88328,WV:67659},
-  ]},
+    {n:"Production Fee",bud:86003,B:22977,BG:62882,BGY:65626,BGYR:88328,WV:67659}]},
   {n:"Consumer Monetisation",c:"#D85A30",t:{bud:13563,B:3943,BG:8170,BGY:11426,BGYR:13935,WV:9759},r:[
     {n:"Blast Channels",      bud:1240,B:127, BG:143, BGY:740, BGYR:1940,WV:769},
     {n:"Ticketing",           bud:9019,B:3817,BG:6299,BGY:8015,BGYR:8436,WV:6972},
@@ -177,10 +185,10 @@ const RCAT=[
 const RTOT={bud:144988,B:50578,BG:97151,BGY:113454,BGYR:172678,WV:112226};
 
 const CROW=[
-  {n:"Event Costs",        bud:-79679,B:-54561,BG:-70196,BGY:-72544,BGYR:-86395, WV:-73448},
-  {n:"Prize Money",        bud:-16730,B:-14646,BG:-16356,BGY:-16356,BGYR:-20186, WV:-16930},
-  {n:"Revenue Share",      bud:-405,  B:-223,  BG:-254,  BGY:-258,  BGYR:-258,   WV:-252},
-  {n:"Other Cost of Sales",bud:-2398, B:-1251, BG:-1764, BGY:-2652, BGYR:-4310,  WV:-2195, s:[
+  {n:"Event Costs",        bud:-79679,B:-54561,BG:-70196,BGY:-72544,BGYR:-86395,WV:-73448},
+  {n:"Prize Money",        bud:-16730,B:-14646,BG:-16356,BGY:-16356,BGYR:-20186,WV:-16930},
+  {n:"Revenue Share",      bud:-405,  B:-223,  BG:-254,  BGY:-258,  BGYR:-258,  WV:-252},
+  {n:"Other Cost of Sales",bud:-2398, B:-1251, BG:-1764, BGY:-2652, BGYR:-4310, WV:-2195, s:[
     {n:"Partner Activation", bud:-651,B:-305, BG:-358,BGY:-575, BGYR:-839, WV:-455},
     {n:"Agency Commission",  bud:-693,B:-499, BG:-705,BGY:-1171,BGYR:-1893,WV:-920},
     {n:"Ticketing Cost",     bud:-322,B:-228, BG:-464,BGY:-499, BGYR:-516, WV:-460},
@@ -190,7 +198,37 @@ const CROW=[
 ];
 const CTOT={bud:-99213,B:-70682,BG:-88569,BGY:-91810,BGYR:-111149,WV:-92825};
 
-const ECOS=[
+// Bridge items (€m, EBITDA impact: rev=revenue change, cos=cost EBITDA impact)
+// lnk=true: CoS line tied to the revenue line above it
+const BI=[
+  {l:"Signed",                        t:"Ticketing",   e:"Premier",     B:0.6, BG:0.6, BGY:0.2, BGYR:0.2,  n:"Ticketing Premier Fort Worth €577k + Supercell Berlin €65k"},
+  {l:"↳ Signed — event costs",        t:"Ticketing",   e:"Premier",     B:0,   BG:0,   BGY:0,   BGYR:0,    lnk:1},
+  {l:"R6 SI Prize Money → Booked",    t:"Publisher Fee",e:"R6",         B:2.1, BG:0,   BGY:0,   BGYR:0,    n:"Ubisoft SI 26 Prize Money moved to Booked — FX impact"},
+  {l:"↳ R6 SI Prize Money — CoS",     t:"Publisher Fee",e:"R6",         B:-2.1,BG:0,   BGY:0,   BGYR:0,    lnk:1, n:"Prize money CoS offset"},
+  {l:"New Deal",                      t:"Sponsorship", e:"Various",     B:0,   BG:0.1, BGY:1.0, BGYR:2.5,  n:"G: McDonalds €64k + Supercell extra scope €20k | Y: Lego €300k, Ticketing Supercell Japan €200k / Berlin €100k, Premier Fort Worth €171k"},
+  {l:"Deal Value Updated",            t:"Various",     e:"Various",     B:0.1, BG:0.1, BGY:0,   BGYR:1.4,  n:"B: Ticketing RLCS Paris €50k | G: FNCS Düsseldorf €50k | Y: FNCS Düsseldorf €(100k) | R: AWS/Oracle/Wider Tech +€1.3m"},
+  {l:"New Formats — WSOW",            t:"Publisher Fee",e:"New Formats",B:0,   BG:0,   BGY:0,   BGYR:-1.9, n:"Reflecting decrease in WSOW prospects"},
+  {l:"↳ New Formats event costs",     t:"Publisher Fee",e:"New Formats",B:0,   BG:0,   BGY:0,   BGYR:1.6,  lnk:1, n:"WSOW event cost offset"},
+  {l:"Wimbledon scope decrease",      t:"Publisher Fee",e:"Wimbledon",  B:0,   BG:0,   BGY:-0.5,BGYR:-0.5, n:"Decrease in scope reflecting latest prospects"},
+  {l:"↳ Wimbledon event costs",       t:"Publisher Fee",e:"Wimbledon",  B:0,   BG:0,   BGY:0.3, BGYR:0.3,  lnk:1, n:"Event cost reflecting scope decrease"},
+  {l:"Lost Deal",                     t:"Sponsorship", e:"Premier/FNCS",B:0,   BG:0,   BGY:-0.9,BGYR:-3.7, n:"Premier Event deals HK/Portugal/Rotterdam/Texas €(595k), Premier Peripherals €(150k), FNCS German/English Event deals €(153k)"},
+  {l:"Status Update — Yellow → Green",t:"Host City",   e:"Premier",     B:0,   BG:0.1, BGY:0,   BGYR:0,    n:"Host City Porto"},
+  {l:"Status Update — Yellow → Red",  t:"Sponsorship", e:"FNCS/RLCS",  B:0,   BG:0,   BGY:-1.6,BGYR:0,    n:"JBL/Peripherals €(250k), Alienware Epic €(683k), Goodyear FNCS €(700k)"},
+  {l:"Status Update — Booked → Green",t:"Host City",   e:"Premier",     B:-0.2,BG:0,   BGY:0,   BGYR:0,    n:"Host City Fort Worth Rivals — mistakenly labelled Booked"},
+  {l:"R6 Tencent Scope — Red → Yellow",t:"Publisher Fee",e:"R6",       B:0,   BG:0,   BGY:1.2, BGYR:0,    n:"Ubisoft R6 Production – Additional Tencent R6 SOW"},
+  {l:"↳ R6 Tencent — CoS",           t:"Publisher Fee",e:"R6",         B:0,   BG:0,   BGY:-1.0,BGYR:0,    lnk:1, n:"Additional Tencent R6 SOW event cost"},
+  {l:"Riot Corporate Added",          t:"Publisher Fee",e:"Riot",       B:0.2, BG:2.2, BGY:2.2, BGYR:2.2,  n:"Riot Corporate monthly fees added across all scenarios"},
+  {l:"Riot Studio Update",            t:"Publisher Fee",e:"Riot",       B:1.3, BG:-0.4,BGY:-0.4,BGYR:-0.9, n:"Riot Studio base fees Jan–Apr updated"},
+  {l:"Premier event costs",           t:"Event Costs", e:"Premier",     B:-0.36,BG:-0.36,BGY:-0.36,BGYR:-0.36},
+  {l:"Dota event costs",              t:"Event Costs", e:"Dota",        B:0.46,BG:0.46,BGY:0.46,BGYR:0.46},
+  {l:"RLCS event costs",              t:"Event Costs", e:"RLCS",        B:-0.09,BG:-0.09,BGY:-0.09,BGYR:-0.09},
+  {l:"FNCS event costs",              t:"Event Costs", e:"FNCS",        B:0.05,BG:0.05,BGY:0.05,BGYR:0.05},
+  {l:"Supercell event costs",         t:"Event Costs", e:"Supercell",   B:0,   BG:-0.2,BGY:-0.2,BGYR:-0.2, n:"Tracking €0.2m over; confident will flush out"},
+  {l:"Other CoS",                     t:"Event Costs", e:"Various",     B:0.3, BG:0.3, BGY:0.3, BGYR:0.1,  n:"Movement driven by changes to revenue"},
+];
+
+// Ecosystem P&L €000s
+const ECOS_RAW=[
  {k:"Premier",       c:"#185FA5",rev:{bud:24385,B:13503,BG:16015,BGY:23594,BGYR:30064,WV:19815},cos:{bud:-18136,B:-19068,BG:-19170,BGY:-19773,BGYR:-20029,WV:-19400},gp:{bud:6249,B:-5565,BG:-3155,BGY:3821,BGYR:10034,WV:414},gpP:{bud:"26%",B:"-41%",BG:"-20%",BGY:"16%",BGYR:"33%",WV:"2%"},ts:{bud:-1709,B:-1709,BG:-1709,BGY:-1709,BGYR:-1709,WV:-1709},con:{bud:4539,B:-7275,BG:-4864,BGY:2112,BGYR:8325,WV:-1295},opex:{bud:-328,B:-288,BG:-288,BGY:-288,BGYR:-288,WV:-288},eb:{bud:4212,B:-7563,BG:-5152,BGY:1824,BGYR:8037,WV:-1583},ebP:{bud:"17%",B:"-56%",BG:"-32%",BGY:"8%",BGYR:"27%",WV:"-8%"}},
  {k:"Dota",          c:"#BA7517",rev:{bud:12448,B:6576,BG:7290,BGY:9249,BGYR:13809,WV:8642},cos:{bud:-8525,B:-7910,BG:-8010,BGY:-8135,BGYR:-8135,WV:-8043},gp:{bud:3923,B:-1334,BG:-719,BGY:1115,BGYR:5675,WV:598},gpP:{bud:"32%",B:"-20%",BG:"-10%",BGY:"12%",BGYR:"41%",WV:"7%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:3923,B:-1334,BG:-719,BGY:1115,BGYR:5675,WV:598},opex:{bud:-516,B:-280,BG:-280,BGY:-280,BGYR:-280,WV:-280},eb:{bud:3407,B:-1613,BG:-999,BGY:835,BGYR:5395,WV:319},ebP:{bud:"27%",B:"-25%",BG:"-14%",BGY:"9%",BGYR:"39%",WV:"4%"}},
  {k:"RLCS",          c:"#0F6E56",rev:{bud:18757,B:12249,BG:13380,BGY:14483,BGYR:20257,WV:14636},cos:{bud:-10049,B:-12522,BG:-12558,BGY:-12620,BGYR:-13682,WV:-12733},gp:{bud:8709,B:-273,BG:822,BGY:1863,BGYR:6575,WV:1903},gpP:{bud:"46%",B:"-2%",BG:"6%",BGY:"13%",BGYR:"32%",WV:"13%"},ts:{bud:-1068,B:-1068,BG:-1068,BGY:-1068,BGYR:-1068,WV:-1068},con:{bud:7640,B:-1341,BG:-246,BGY:794,BGYR:5506,WV:835},opex:{bud:-739,B:-567,BG:-567,BGY:-567,BGYR:-567,WV:-567},eb:{bud:7287,B:-835,BG:-246,BGY:1165,BGYR:3093,WV:319},ebP:{bud:"39%",B:"-7%",BG:"-2%",BGY:"8%",BGYR:"15%",WV:"2%"}},
@@ -206,97 +244,117 @@ const ECOS=[
  {k:"Corporate",     c:"#444441",rev:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},cos:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},gp:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},gpP:{bud:"-",B:"-",BG:"-",BGY:"-",BGYR:"-",WV:"-"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},opex:{bud:-21605,B:-21530,BG:-21530,BGY:-21530,BGYR:-21530,WV:-21530},eb:{bud:-21605,B:-21530,BG:-21530,BGY:-21530,BGYR:-21530,WV:-21530},ebP:{bud:"-",B:"-",BG:"-",BGY:"-",BGYR:"-",WV:"-"}},
 ];
 
+// YoY
 const WEEKS=["W3","W5","W7","W9","W11","W13","W15","W17","W19","W21","W23","W25","W27","W29","W31","W33","W35","W37","W39","W41","W43","W45","W47","W52"];
 const D25=["27.01","10.02","24.02","10.03","24.03","14.04","28.04","12.05","27.05","9.06","23.06","7.07","21.07","4.08","15.08","1.09","15.09","29.09","13.10","27.10","10.11","24.11","8.12","31.12"];
 const D26=["23.01","10.02","23.02","9.03","23.03"];
 const B25=[66.1,65.8,76.5,76.6,77.6,78.7,79.3,80.1,84,86.8,88.6,87.3,87.9,88.8,91.6,94,94.4,95.2,98.1,98.4,99,100.3,100.3,114.7];
 const BG25=[79.8,83.1,85.3,88.6,89,89.8,91,91.8,94.7,91.8,102.7,104.9,106.2,108,110.3,111.1,111.8,112.7,113.6,112.3,113.5,113.9,114.2,114.7];
-const B26=[44.2,45.3,45.7,47.5,50.6];
-const BG26=[81.6,91.3,91.4,95.5,97.2];
-const BUD25=121;
-const COMMENTARY="Booked revenue +€3.1m vs 09.03, driven by Riot Corporate monthly fees added across all scenarios and Riot Studio Jan–Apr base fee update. +Green broadly flat (+€0.9m). +Yellow down €0.9m from Y→R status updates (JBL/Peripherals, Alienware Epic, Goodyear FNCS). Main gap to budget: ~€18m Ubisoft Publisher fee and ~€10m Riot Publisher fee currently sitting in Green — conversion of these two lines is the primary path to budget.";
+const B26=[44.2,45.3,45.7,47.5,50.6], BG26=[81.6,91.3,91.4,95.5,97.2], BUD25=121;
+
+const COMMENTARY="Booked revenue +€3.1m vs 09.03, driven by Riot Corporate monthly fees added across all scenarios and Riot Studio Jan–Apr base fee update. +Green broadly flat (+€0.9m). +Yellow down €0.9m from Y→R status updates (JBL/Peripherals, Alienware Epic, Goodyear FNCS). Main gap to budget: ~€18m Ubisoft Publisher fee and ~€10m Riot Publisher fee currently in Green — conversion of these two lines is the primary path to budget.";
 
 /* ══════════════════════════════════════════
    END DATA BLOCK
 ══════════════════════════════════════════ */
+
+// Compute Riot Combined & Total
+const EKEYS=["rev","cos","gp","ts","con","opex","eb"];
+const rS=ECOS_RAW.find(e=>e.k==="Riot (Studio)"), rN=ECOS_RAW.find(e=>e.k==="Riot (New Biz)");
+function mkComb(a,b,k,c){
+  const o={k,c,gpP:{},ebP:{}};
+  EKEYS.forEach(f=>{o[f]={};COLS.forEach(col=>{o[f][col]=(a[f][col]||0)+(b[f][col]||0);});});
+  COLS.forEach(col=>{
+    const r=o.rev[col],g=o.gp[col],e=o.eb[col];
+    o.gpP[col]=r?Math.round(g/r*100)+"%":"-";
+    o.ebP[col]=r?Math.round(e/r*100)+"%":"-";
+  });
+  return o;
+}
+const RIOT_COMB=mkComb(rS,rN,"Riot (Combined)","#6B6B68");
+const TOTAL_ECO={k:"Total",c:"#2C2C2A",
+  rev:{bud:144988,B:50578,BG:97151,BGY:113454,BGYR:172678,WV:112226},
+  cos:{bud:-99213,B:-70682,BG:-88569,BGY:-91810,BGYR:-111149,WV:-92825},
+  gp: {bud:45775, B:-20365,BG:8969,  BGY:22323, BGYR:63466,  WV:20006},
+  gpP:{bud:"32%",B:"-40%",BG:"9%",BGY:"20%",BGYR:"37%",WV:"18%"},
+  ts: {bud:-2778, B:-2778, BG:-2778, BGY:-2778, BGYR:-2778,  WV:-2778},
+  con:{bud:42998, B:-23143,BG:6191,  BGY:19545, BGYR:60688,  WV:17228},
+  opex:{bud:-29667,B:-29729,BG:-29729,BGY:-29729,BGYR:-29729,WV:-29729},
+  eb: {bud:13331, B:-52872,BG:-23538,BGY:-10185,BGYR:30959,  WV:-12501},
+  ebP:{bud:"9%",B:"-104%",BG:"-24%",BGY:"-9%",BGYR:"18%",WV:"-11%"},
+};
+const ECOS_ALL=[TOTAL_ECO,RIOT_COMB,...ECOS_RAW];
 
 let SC="BGY", SEL_ECO=null, YOY_MODE="abs", SHOW_BG=true;
 const CH={};
 const SC_C={B:"#1D9E75",BG:"#4CAF7D",BGY:"#B45309",BGYR:"#C2410C",WV:"#5F5E5A"};
 const SC_L={B:"Booked",BG:"+Green",BGY:"+Yellow",BGYR:"+Red",WV:"Weighted"};
 const SCS=["B","BG","BGY","BGYR"];
-const COLS=["bud","B","BG","BGY","BGYR","WV"];
 
 const fm=(v,d=1)=>v==null?"—":(v<0?"(":"")+"€"+Math.abs(v).toFixed(d)+"m"+(v<0?")":"");
 const fk=v=>!v&&v!==0?"—":v===0?"—":(v<0?"(":"")+"€"+Math.abs(v/1000).toFixed(1)+"m"+(v<0?")":"");
 const vc=v=>typeof v!=="number"||v===0?"":v>0?"pos":"neg";
-const colH=c=>`style="background:${SC_C[c]||"#5F5E5A"}18;font-weight:600"`;
+const colH=c=>`style="background:${SC_C[c]||"#888"}18;font-weight:600"`;
+const sgn=v=>(v>=0?"+":"")+v.toFixed(1)+"m", clsV=v=>v>=0?"pos":"neg";
 
-function colHead(cols,firstLabel=""){
-  return `<thead><tr><th>${firstLabel}</th>${cols.map(c=>`<th style="color:${SC_C[c]||"#5F5E5A"}">${c==="bud"?"Budget":SC_L[c]||c}</th>`).join("")}</tr></thead>`;
+function colHead(cs,fl=""){
+  return`<thead><tr><th>${fl}</th>${cs.map(c=>`<th style="color:${SC_C[c]||"#5F5E5A"}">${c==="bud"?"Budget":SC_L[c]||c}</th>`).join("")}</tr></thead>`;
 }
 
 function kpis(){
   document.getElementById("hcur").textContent=CUR_D;
   document.getElementById("hprev").textContent=PRV_D;
   document.getElementById("ftl").textContent=`BLAST 2026 · ${CUR_D}`;
+  document.getElementById("br-sub").textContent=`${PRV_D} → ${CUR_D} · €m EBITDA impact · ▸ expand groups`;
   const rv=CUR.rev[SC],prv=PRV.rev[SC],dR=+(rv-prv).toFixed(1);
-  const gm=CUR.gm[SC],pgm=PRV.gm[SC],dG=+(gm-pgm).toFixed(1);
+  const gm=CUR.gm[SC],pgm=PRV.gm[SC],dG=+(gm-pgm).toFixed(1),dGb=+(gm-BUD_GM).toFixed(1);
   const eb=CUR.eb[SC],peb=PRV.eb[SC],dE=+(eb-peb).toFixed(1);
   const yR=CUR.rev["BGY"],yGap=+(yR-BUD_R).toFixed(1);
-  const sign=v=>(v>=0?"+":"")+v.toFixed(1)+"m";
-  const cls=v=>v>=0?"pos":"neg";
 
   document.getElementById("kv0").textContent=fm(rv);
   document.getElementById("kv0").style.color="var(--t1)";
-  document.getElementById("kt0").innerHTML=`<span class="${cls(dR)}">${sign(dR)} vs ${PRV_D}</span> · ${Math.round(rv/BUD_R*100)}% of €${BUD_R}m budget`;
+  document.getElementById("kt0").innerHTML=`<span class="${clsV(dR)}">${sgn(dR)} vs ${PRV_D}</span> · ${Math.round(rv/BUD_R*100)}% of budget`;
   document.getElementById("kf0").style.cssText=`width:${Math.min(100,rv/BUD_R*100)}%;background:${SC_C[SC]}`;
 
   document.getElementById("kv1").textContent=fm(gm);
   document.getElementById("kv1").style.color=gm>=0?"var(--pos)":"var(--neg)";
-  document.getElementById("kt1").innerHTML=`<span class="${cls(dG)}">${sign(dG)} vs ${PRV_D}</span>`;
+  document.getElementById("kt1").innerHTML=`<span class="${clsV(dG)}">${sgn(dG)} vs ${PRV_D}</span><br><span class="${clsV(dGb)}">${sgn(dGb)} vs budget €${BUD_GM}m</span>`;
 
   document.getElementById("kv2").textContent=fm(eb);
   document.getElementById("kv2").style.color=eb>=0?"var(--pos)":"var(--neg)";
-  document.getElementById("kt2").innerHTML=`<span class="${cls(dE)}">${sign(dE)} vs ${PRV_D}</span> · vs budget: <span class="${cls(eb-BUD_E)}">${sign(eb-BUD_E)}</span>`;
+  document.getElementById("kt2").innerHTML=`<span class="${clsV(dE)}">${sgn(dE)} vs ${PRV_D}</span> · vs budget: <span class="${clsV(eb-BUD_E)}">${sgn(eb-BUD_E)}</span>`;
 
   document.getElementById("kv3").textContent=fm(yR);
   document.getElementById("kv3").style.color=yGap>=0?"var(--pos)":"var(--neg)";
-  document.getElementById("kt3").innerHTML=`<span class="${cls(yGap)}">${sign(yGap)} vs €${BUD_R}m budget</span> · ${Math.round(yR/BUD_R*100)}% covered`;
+  document.getElementById("kt3").innerHTML=`<span class="${clsV(yGap)}">${sgn(yGap)} vs €${BUD_R}m</span> · ${Math.round(yR/BUD_R*100)}% covered`;
   document.getElementById("kf3").style.width=`${Math.min(100,yR/BUD_R*100)}%`;
 }
 
 function buildPL(){
   const rows=[
-    {l:"Revenue",       k:"rev", bold:true, bv:145.0},
-    {l:"Cost of Sales", k:"cos", ind:true,  bv:-99.2},
-    {l:"Gross Margin",  k:"gm",  bold:true, bv:45.8},
-    {l:"GM%",           k:"gmP", pct:true,  bv:"32%"},
-    {l:"Team Share",    k:"ts",  ind:true,  bv:-2.8},
-    {l:"Contribution",  k:"con", bold:true, bv:43.0},
-    {l:"Contrib%",      k:"conP",pct:true,  bv:"30%"},
-    {l:"OPEX",          k:"opex",ind:true,  bv:-29.7},
-    {l:"EBITDA",        k:"eb",  bold:true, bv:13.3},
-    {l:"EBITDA%",       k:"ebP", pct:true,  bv:"9%"},
+    {l:"Revenue",      k:"rev", bold:1,bv:145.0},
+    {l:"Cost of Sales",k:"cos", ind:1, bv:-99.2},
+    {l:"Gross Margin", k:"gm",  bold:1,bv:45.8},
+    {l:"GM%",          k:"gmP", pct:1, bv:"32%"},
+    {l:"Team Share",   k:"ts",  ind:1, bv:-2.8},
+    {l:"Contribution", k:"con", bold:1,bv:43.0},
+    {l:"Contrib%",     k:"conP",pct:1, bv:"30%"},
+    {l:"OPEX",         k:"opex",ind:1, bv:-29.7},
+    {l:"EBITDA",       k:"eb",  bold:1,bv:13.3},
+    {l:"EBITDA%",      k:"ebP", pct:1, bv:"9%"},
   ];
-  const SCS_WV=[...SCS,"WV"];
+  const SWV=[...SCS,"WV"];
   let h=`<thead><tr><th>Line item</th><th>Budget</th>`;
-  SCS_WV.forEach(s=>h+=`<th style="color:${SC_C[s]}">${SC_L[s]}</th>`);
-  h+=`<th style="color:#B45309">Δ vs prev</th></tr></thead><tbody>`;
+  SWV.forEach(s=>h+=`<th style="color:${SC_C[s]}">${SC_L[s]}</th>`);
+  h+=`<th style="color:#B45309">Δ prev</th></tr></thead><tbody>`;
   let b="";
   rows.forEach(r=>{
-    const cls=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
-    b+=`<tr class="${cls}"><td>${r.l}</td><td>${r.pct?r.bv:fm(r.bv)}</td>`;
-    SCS_WV.forEach(s=>{
-      const v=CUR[r.k]?.[s];
-      const hi=s===SC?colH(s):"";
-      b+=`<td ${hi} class="${r.pct?"":vc(v)}">${r.pct?(v||"—"):fm(v)}</td>`;
-    });
+    const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
+    b+=`<tr class="${cl}"><td>${r.l}</td><td>${r.pct?r.bv:fm(r.bv)}</td>`;
+    SWV.forEach(s=>{const v=CUR[r.k]?.[s];b+=`<td ${s===SC?colH(s):""} class="${r.pct?"":vc(v)}">${r.pct?(v||"—"):fm(v)}</td>`;});
     const cv=CUR[r.k]?.[SC],pv=PRV[r.k]?.[SC];
-    if(!r.pct&&typeof cv==="number"&&typeof pv==="number"){
-      const d=+(cv-pv).toFixed(1);
-      b+=`<td class="${vc(d)}">${(d>=0?"+":"")+d}m</td>`;
-    } else b+=`<td>—</td>`;
+    if(!r.pct&&typeof cv==="number"&&typeof pv==="number"){const d=+(cv-pv).toFixed(1);b+=`<td class="${vc(d)}">${(d>=0?"+":"")+d}m</td>`;}
+    else b+=`<td>—</td>`;
     b+=`</tr>`;
   });
   document.getElementById("t-pl").innerHTML=h+b+"</tbody>";
@@ -304,96 +362,116 @@ function buildPL(){
 }
 
 function buildRev(){
-  let h=colHead(COLS,"Revenue stream");
-  let b="<tbody>";
+  let h=colHead(COLS,"Revenue stream"),b="<tbody>";
   RCAT.forEach((cat,ci)=>{
     const xid=`rx${ci}`;
-    b+=`<tr class="bold" style="cursor:pointer" onclick="xRows('${xid}')">`;
-    b+=`<td><span style="color:${cat.c};margin-right:5px;font-size:9px">▸</span>${cat.n}</td>`;
+    b+=`<tr class="bold" style="cursor:pointer" onclick="xR('${xid}')"><td><span style="color:${cat.c};margin-right:5px;font-size:9px">▸</span>${cat.n}</td>`;
     COLS.forEach(c=>b+=`<td class="${vc(cat.t[c])}" ${c===SC?colH(c):""}>${fk(cat.t[c])}</td>`);
     b+=`</tr>`;
-    cat.r.forEach(r=>{
-      b+=`<tr class="ind xrow ${xid}"><td>${r.n}</td>`;
-      COLS.forEach(c=>b+=`<td ${c===SC?colH(c):""}>${fk(r[c])}</td>`);
-      b+=`</tr>`;
-    });
+    cat.r.forEach(r=>{b+=`<tr class="ind xrow ${xid}"><td>${r.n}</td>`;COLS.forEach(c=>b+=`<td ${c===SC?colH(c):""}>${fk(r[c])}</td>`);b+=`</tr>`;});
   });
-  b+=`<tr class="bold"><td>TOTAL</td>`;
-  COLS.forEach(c=>b+=`<td ${c===SC?colH(c):""}>${fk(RTOT[c])}</td>`);
-  b+=`</tr></tbody>`;
+  b+=`<tr class="bold"><td>TOTAL</td>`;COLS.forEach(c=>b+=`<td ${c===SC?colH(c):""}>${fk(RTOT[c])}</td>`);b+=`</tr></tbody>`;
   document.getElementById("t-rev").innerHTML=h+b;
 }
 
 function buildCos(){
-  let h=colHead(COLS,"Cost line");
-  let b="<tbody>";
+  let h=colHead(COLS,"Cost line"),b="<tbody>";
   CROW.forEach((row,ri)=>{
-    const hasSub=row.s&&row.s.length;
-    const xid=`cx${ri}`;
-    const cls=hasSub?"bold":"ind";
-    b+=`<tr class="${cls}" ${hasSub?`style="cursor:pointer" onclick="xRows('${xid}')"`:""}><td>${hasSub?`<span style="color:#aaa;margin-right:5px;font-size:9px">▸</span>`:""}${row.n}</td>`;
+    const hs=row.s&&row.s.length,xid=`cx${ri}`;
+    b+=`<tr class="${hs?"bold":"ind"}" ${hs?`style="cursor:pointer" onclick="xR('${xid}')"`:""}><td>${hs?`<span style="color:#aaa;margin-right:5px;font-size:9px">▸</span>`:""} ${row.n}</td>`;
     COLS.forEach(c=>b+=`<td class="${vc(row[c])}" ${c===SC?colH(c):""}>${fk(row[c])}</td>`);
     b+=`</tr>`;
-    if(hasSub) row.s.forEach(s=>{
-      b+=`<tr class="ind xrow ${xid}"><td>${s.n}</td>`;
-      COLS.forEach(c=>b+=`<td ${c===SC?colH(c):""}>${fk(s[c])}</td>`);
-      b+=`</tr>`;
-    });
+    if(hs) row.s.forEach(s=>{b+=`<tr class="ind xrow ${xid}"><td>${s.n}</td>`;COLS.forEach(c=>b+=`<td ${c===SC?colH(c):""}>${fk(s[c])}</td>`);b+=`</tr>`;});
   });
-  b+=`<tr class="bold"><td>TOTAL</td>`;
-  COLS.forEach(c=>b+=`<td class="${vc(CTOT[c])}" ${c===SC?colH(c):""}>${fk(CTOT[c])}</td>`);
-  b+=`</tr></tbody>`;
+  b+=`<tr class="bold"><td>TOTAL</td>`;COLS.forEach(c=>b+=`<td class="${vc(CTOT[c])}" ${c===SC?colH(c):""}>${fk(CTOT[c])}</td>`);b+=`</tr></tbody>`;
   document.getElementById("t-cos").innerHTML=h+b;
 }
 
-function xRows(id){document.querySelectorAll(`.${id}`).forEach(r=>r.classList.toggle("open"));}
+function xR(id){document.querySelectorAll(`.${id}`).forEach(r=>r.classList.toggle("open"));}
+
+function buildBridge(){
+  const S4=["B","BG","BGY","BGYR"];
+  const fv=v=>v===0?"—":`<span class="${vc(v)}">${fm(v)}</span>`;
+  const TORD=["Sponsorship","Publisher Fee","Host City","Ticketing","Various","Event Costs"];
+  const types=[...new Set(BI.map(b=>b.t))].sort((a,b)=>{const ai=TORD.indexOf(a),bi=TORD.indexOf(b);return(ai<0?99:ai)-(bi<0?99:bi);});
+  
+  let h=`<thead><tr><th>Movement</th>${S4.map(s=>`<th style="color:${SC_C[s]}">${SC_L[s]}</th>`).join("")}</tr></thead><tbody>`;
+  let body="";
+  
+  // Start
+  body+=`<tr class="bse"><td>EBITDA ${PRV_D} — start</td>`;
+  S4.forEach(s=>body+=`<td class="${vc(PRV.eb[s])}">${fm(PRV.eb[s])}</td>`);
+  body+=`</tr>`;
+  
+  types.forEach(typ=>{
+    const items=BI.filter(b=>b.t===typ&&S4.some(s=>b[s]&&b[s]!==0));
+    if(!items.length) return;
+    const xid=`bx_${typ.replace(/\W/g,"_")}`;
+    body+=`<tr class="bgh" onclick="bxT('${xid}')"><td>▸ ${typ} <span style="font-size:9px;color:var(--t3);font-weight:400">(${items.length} item${items.length===1?"":"s"})</span></td>`;
+    S4.forEach(s=>{const v=items.reduce((a,b)=>a+(b[s]||0),0);body+=`<td>${fv(v)}</td>`;});
+    body+=`</tr>`;
+    items.forEach(it=>{
+      body+=`<tr class="bxrow ${xid}${it.lnk?" bln":""}"><td style="padding-left:${it.lnk?26:14}px">${it.l}${it.n?`<span class="bnote">${it.n}</span>`:""}</td>`;
+      S4.forEach(s=>{body+=`<td>${fv(it[s]||0)}</td>`;});
+      body+=`</tr>`;
+    });
+  });
+  
+  // Total
+  body+=`<tr class="btot"><td>Total movement</td>`;
+  S4.forEach(s=>{const v=+BI.reduce((a,b)=>a+(b[s]||0),0).toFixed(1);body+=`<td>${fv(v)}</td>`;});
+  body+=`</tr>`;
+  
+  // End
+  body+=`<tr class="bse"><td>EBITDA ${CUR_D} — close</td>`;
+  S4.forEach(s=>body+=`<td class="${vc(CUR.eb[s])}">${fm(CUR.eb[s])}</td>`);
+  body+=`</tr>`;
+  
+  document.getElementById("t-br").innerHTML=h+body+"</tbody>";
+}
+
+function bxT(id){document.querySelectorAll(`.${id}`).forEach(r=>r.classList.toggle("open"));}
 
 function buildEBChart(){
-  if(CH.eb) CH.eb.destroy();
-  const ctx=document.getElementById("c-eb").getContext("2d");
+  if(CH.eb)CH.eb.destroy();
   const labels=SCS.map(s=>SC_L[s]);
   const cur=SCS.map(s=>CUR.eb[s]),prv=SCS.map(s=>PRV.eb[s]);
-  const budLine=SCS.map(()=>BUD_E);
-  CH.eb=new Chart(ctx,{
-    type:"bar",
-    data:{labels,datasets:[
+  CH.eb=new Chart(document.getElementById("c-eb").getContext("2d"),{
+    type:"bar",data:{labels,datasets:[
       {label:"Previous",data:prv,backgroundColor:"#B4B2A9",borderRadius:4,barPercentage:.4,order:2},
       {label:"Current", data:cur,backgroundColor:cur.map(v=>v>=0?"#1D9E75":"#DC2626"),borderRadius:4,barPercentage:.4,order:2},
-      {type:"line",label:"Budget",data:budLine,borderColor:"#B45309",borderDash:[5,3],borderWidth:1.5,pointRadius:0,order:1},
+      {type:"line",label:"Budget",data:SCS.map(()=>BUD_E),borderColor:"#B45309",borderDash:[5,3],borderWidth:1.5,pointRadius:0,order:1},
     ]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.dataset.label==="Budget"?`Budget: €${BUD_E}m`:`€${c.parsed.y.toFixed(1)}m`}}},scales:{x:{grid:{display:false},ticks:{font:{size:10}}},y:{grid:{color:"rgba(0,0,0,.05)"},ticks:{font:{size:9},callback:v=>`€${v}m`}}}}
   });
 }
 
 function buildEBTable(){
-  let h=`<thead><tr><th>Scenario</th><th>${CUR_D}</th><th style="color:#888">${PRV_D}</th><th style="color:#B45309">Δ</th><th>vs Budget</th></tr></thead><tbody>`;
-  let b="";
+  let h=`<thead><tr><th>Scenario</th><th>${CUR_D}</th><th style="color:#888">${PRV_D}</th><th style="color:#B45309">Δ</th><th>vs Budget</th></tr></thead><tbody>`,b="";
   SCS.forEach(s=>{
     const cv=CUR.eb[s],pv=PRV.eb[s],d=+(cv-pv).toFixed(1),gap=+(cv-BUD_E).toFixed(1);
     b+=`<tr><td><span style="display:inline-block;width:8px;height:8px;border-radius:2px;background:${SC_C[s]};margin-right:5px"></span>${SC_L[s]}</td>`;
-    b+=`<td class="${vc(cv)}">${fm(cv)}</td><td style="color:#888">${fm(pv)}</td>`;
-    b+=`<td class="${vc(d)}">${(d>=0?"+":"")+d}m</td><td class="${vc(gap)}">${(gap>=0?"+":"")+gap}m</td></tr>`;
+    b+=`<td class="${vc(cv)}">${fm(cv)}</td><td style="color:#888">${fm(pv)}</td><td class="${vc(d)}">${(d>=0?"+":"")+d}m</td><td class="${vc(gap)}">${(gap>=0?"+":"")+gap}m</td></tr>`;
   });
   document.getElementById("t-es").innerHTML=h+b+"</tbody>";
 }
 
 function buildEcoBar(){
-  if(CH.eco) CH.eco.destroy();
-  const ecos=ECOS.filter(e=>e.k!=="Corporate");
+  if(CH.eco)CH.eco.destroy();
+  const ecos=ECOS_RAW.filter(e=>e.k!=="Corporate");
   const vals=ecos.map(e=>(e.eb[SC]||0)/1000);
   document.getElementById("eco-sc-lbl").textContent=`${SC_L[SC]} scenario · excl. Corporate OPEX`;
   CH.eco=new Chart(document.getElementById("c-eco").getContext("2d"),{
-    type:"bar",
-    data:{labels:ecos.map(e=>e.k),datasets:[{data:vals,backgroundColor:vals.map((v,i)=>v>=0?ecos[i].c:"#DC2626"),borderRadius:4,barPercentage:.65}]},
+    type:"bar",data:{labels:ecos.map(e=>e.k),datasets:[{data:vals,backgroundColor:vals.map((v,i)=>v>=0?ecos[i].c:"#DC2626"),borderRadius:4,barPercentage:.65}]},
     options:{indexAxis:"y",responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>`€${c.parsed.x.toFixed(1)}m EBITDA`}}},scales:{x:{grid:{color:"rgba(0,0,0,.05)"},ticks:{font:{size:9},callback:v=>`€${v}m`}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
   });
 }
 
 function buildEcoGrid(){
-  document.getElementById("egrid").innerHTML=ECOS.map(e=>{
-    const v=(e.eb["BGY"]||0)/1000;
-    const sel=SEL_ECO===e.k;
-    return `<div class="ecard${sel?" sel":""}" style="${sel?"border-color:"+e.c:""}" onclick="selEco('${e.k}')">
+  document.getElementById("egrid").innerHTML=ECOS_ALL.map(e=>{
+    const v=(e.eb?.["BGY"]||0)/1000, sel=SEL_ECO===e.k;
+    const special=["Total","Riot (Combined)"].includes(e.k);
+    return `<div class="ecard${sel?" sel":""}" style="${sel?"border-color:"+e.c:""}${special?"border-style:dashed":""}" onclick="selEco('${e.k}')">
       <div class="en"><span style="width:8px;height:8px;border-radius:50%;background:${e.c};display:inline-block;flex-shrink:0"></span>${e.k}</div>
       <div class="ev" style="color:${v>=0?"var(--pos)":"var(--neg)"}">${v>=0?"+":""}${v.toFixed(1)}m (+Y)</div>
     </div>`;
@@ -404,85 +482,70 @@ function selEco(k){SEL_ECO=k;buildEcoGrid();buildEcoTable();}
 
 function buildEcoTable(){
   if(!SEL_ECO) return;
-  const e=ECOS.find(x=>x.k===SEL_ECO); if(!e) return;
-  document.getElementById("eco-ch").innerHTML=`<span style="color:${e.c};font-weight:700">${e.k}</span> &nbsp;P&L <small>€000s · highlighted column = selected scenario</small>`;
+  const e=ECOS_ALL.find(x=>x.k===SEL_ECO); if(!e) return;
+  document.getElementById("eco-ch").innerHTML=`<span style="color:${e.c};font-weight:700">${e.k}</span> &nbsp;P&L <small>€000s · highlighted = selected scenario above</small>`;
   const rows=[
-    {l:"Revenue",     k:"rev",bold:true},{l:"Cost of Sales",k:"cos",ind:true},
-    {l:"Gross Profit",k:"gp", bold:true},{l:"GP%",         k:"gpP",pct:true},
-    {l:"Team Share",  k:"ts", ind:true}, {l:"Contribution",k:"con",bold:true},
-    {l:"OPEX",        k:"opex",ind:true},{l:"EBITDA",      k:"eb", bold:true},{l:"EBITDA%",k:"ebP",pct:true},
+    {l:"Revenue",     k:"rev",bold:1},{l:"Cost of Sales",k:"cos",ind:1},
+    {l:"Gross Profit",k:"gp", bold:1},{l:"GP%",         k:"gpP",pct:1},
+    {l:"Team Share",  k:"ts", ind:1}, {l:"Contribution",k:"con",bold:1},
+    {l:"OPEX",        k:"opex",ind:1},{l:"EBITDA",      k:"eb", bold:1},{l:"EBITDA%",k:"ebP",pct:1},
   ];
-  let h=colHead(COLS,"Line item"); h=h.replace("<thead>","<thead>"); // add vs bud col
-  // rebuild with vs-budget column
-  h=`<thead><tr><th>Line item</th>${COLS.map(c=>`<th style="color:${SC_C[c]||"#5F5E5A"}">${c==="bud"?"Budget":SC_L[c]}</th>`).join("")}<th style="color:#B45309;font-size:9px">vs bud (+Y)</th></tr></thead>`;
+  let h=`<thead><tr><th>Line item</th>${COLS.map(c=>`<th style="color:${SC_C[c]||"#5F5E5A"}">${c==="bud"?"Budget":SC_L[c]}</th>`).join("")}<th style="color:#B45309;font-size:9px">vs bud (+Y)</th></tr></thead>`;
   let b="<tbody>";
   rows.forEach(r=>{
-    const cls=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
-    b+=`<tr class="${cls}"><td>${r.l}</td>`;
-    COLS.forEach(c=>{
-      const v=e[r.k]?.[c];
-      const hi=c===SC?colH(c):"";
-      b+=`<td ${hi} class="${r.pct?"":vc(v)}">${r.pct?(v||"—"):fk(v)}</td>`;
-    });
+    const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
+    b+=`<tr class="${cl}"><td>${r.l}</td>`;
+    COLS.forEach(c=>{const v=e[r.k]?.[c];b+=`<td ${c===SC?colH(c):""} class="${r.pct?"":vc(v)}">${r.pct?(v||"—"):fk(v)}</td>`;});
     const cy=e[r.k]?.["BGY"],bv=e[r.k]?.["bud"];
-    if(!r.pct&&typeof cy==="number"&&typeof bv==="number"){
-      const d=+((cy-bv)/1000).toFixed(1);
-      b+=`<td class="${vc(d)}">${(d>=0?"+":"")+d}m</td>`;
-    } else b+=`<td>—</td>`;
+    if(!r.pct&&typeof cy==="number"&&typeof bv==="number"){const d=+((cy-bv)/1000).toFixed(1);b+=`<td class="${vc(d)}">${(d>=0?"+":"")+d}m</td>`;}
+    else b+=`<td>—</td>`;
     b+=`</tr>`;
   });
   document.getElementById("t-eco").innerHTML=h+b+"</tbody>";
 }
 
 function buildYoy(){
-  if(CH.yoy) CH.yoy.destroy();
+  if(CH.yoy)CH.yoy.destroy();
   const isPct=YOY_MODE==="pct";
   const s26=v=>isPct?+(v/BUD_R*100).toFixed(1):v;
   const s25=v=>isPct?+(v/BUD25*100).toFixed(1):v;
   const pad=(arr,len)=>{const a=[...arr.map(s26)];while(a.length<len)a.push(null);return a;};
-  const budRef26=WEEKS.map(()=>isPct?100:BUD_R);
-  const budRef25=WEEKS.map(()=>isPct?100:BUD25);
+  const bRef26=WEEKS.map(()=>isPct?100:BUD_R), bRef25=WEEKS.map(()=>isPct?100:BUD25);
   const ds=[
-    {label:"Booked 2025",  data:B25.map(s25), borderColor:"#1D9E75",borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3,spanGaps:true},
-    {label:"Booked 2026",  data:pad(B26,WEEKS.length),borderColor:"#1D9E75",borderWidth:2.5,pointRadius:4,pointBackgroundColor:"#1D9E75",tension:.3,spanGaps:false},
+    {label:"Booked 2025",  data:B25.map(s25), borderColor:"rgba(29,158,117,.45)",borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3,spanGaps:true},
+    {label:"Booked 2026",  data:pad(B26,WEEKS.length),borderColor:"#1D9E75",borderWidth:3,pointRadius:5,pointBackgroundColor:"#1D9E75",pointBorderColor:"#fff",pointBorderWidth:1.5,tension:.3,spanGaps:false},
+    {label:"Budget 2026",  data:bRef26,borderColor:"#2563EB",borderDash:[6,3],borderWidth:1.5,pointRadius:3,pointBackgroundColor:"#2563EB",spanGaps:true,tension:0},
+    {label:"Budget 2025",  data:bRef25,borderColor:"#93C5FD",borderDash:[3,3],borderWidth:1.2,pointRadius:2,pointBackgroundColor:"#93C5FD",spanGaps:true,tension:0},
   ];
   if(SHOW_BG){
-    ds.push({label:"+Green 2025",data:BG25.map(s25),borderColor:"#4CAF7D",borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3,spanGaps:true});
-    ds.push({label:"+Green 2026",data:pad(BG26,WEEKS.length),borderColor:"#4CAF7D",borderWidth:2.5,pointRadius:4,pointBackgroundColor:"#4CAF7D",tension:.3,spanGaps:false});
+    ds.splice(1,0,{label:"+Green 2025",data:BG25.map(s25),borderColor:"rgba(0,200,83,.4)",borderWidth:1.5,borderDash:[4,3],pointRadius:0,tension:.3,spanGaps:true});
+    ds.splice(3,0,{label:"+Green 2026",data:pad(BG26,WEEKS.length),borderColor:"#00C853",borderWidth:3,pointRadius:5,pointBackgroundColor:"#00C853",pointBorderColor:"#fff",pointBorderWidth:1.5,tension:.3,spanGaps:false});
   }
-  ds.push({label:"Budget 2026",data:budRef26,borderColor:"#B45309",borderWidth:1,borderDash:[5,3],pointRadius:0,spanGaps:true});
-  ds.push({label:"Budget 2025",data:budRef25,borderColor:"#94A3B8",borderWidth:1,borderDash:[3,3],pointRadius:0,spanGaps:true});
-
   CH.yoy=new Chart(document.getElementById("c-yoy").getContext("2d"),{
     type:"line",data:{labels:WEEKS,datasets:ds},
     options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>isPct?`${c.dataset.label}: ${c.parsed.y}%`:`${c.dataset.label}: €${c.parsed.y}m`}}},
-      scales:{x:{grid:{display:false},ticks:{font:{size:8},maxTicksLimit:12}},
-              y:{grid:{color:"rgba(0,0,0,.05)"},ticks:{font:{size:9},callback:v=>isPct?`${v}%`:`€${v}m`},min:0,suggestedMax:isPct?110:160}}}
+      plugins:{legend:{display:false},tooltip:{mode:"index",intersect:false,callbacks:{label:c=>`${c.dataset.label}: ${isPct?c.parsed.y+"%":"€"+c.parsed.y+"m"}`}}},
+      scales:{x:{grid:{display:false},ticks:{font:{size:8},maxTicksLimit:12}},y:{grid:{color:"rgba(0,0,0,.05)"},ticks:{font:{size:9},callback:v=>isPct?`${v}%`:`€${v}m`},min:0,suggestedMax:isPct?110:160}}}
   });
-
   document.getElementById("yoy-leg").innerHTML=`
-    <span><span style="display:inline-block;width:18px;border-top:2px dashed #1D9E75;vertical-align:middle;margin-right:4px"></span>Booked 2025</span>
+    <span><span style="display:inline-block;width:18px;border-top:2px dashed rgba(29,158,117,.5);vertical-align:middle;margin-right:4px"></span>Booked 2025</span>
     <span><span class="ldot" style="background:#1D9E75"></span>Booked 2026 ●</span>
-    ${SHOW_BG?`<span><span style="display:inline-block;width:18px;border-top:2px dashed #4CAF7D;vertical-align:middle;margin-right:4px"></span>+Green 2025</span><span><span class="ldot" style="background:#4CAF7D"></span>+Green 2026 ●</span>`:""}
-    <span><span style="display:inline-block;width:18px;border-top:2px dashed #B45309;vertical-align:middle;margin-right:4px"></span>Budget 2026 ${isPct?"(100%)":"€"+BUD_R+"m"}</span>
-    <span><span style="display:inline-block;width:18px;border-top:2px dashed #94A3B8;vertical-align:middle;margin-right:4px"></span>Budget 2025 ${isPct?"(100%)":"€"+BUD25+"m"}</span>`;
+    ${SHOW_BG?`<span><span style="display:inline-block;width:18px;border-top:2px dashed rgba(0,200,83,.5);vertical-align:middle;margin-right:4px"></span>+Green 2025</span><span><span class="ldot" style="background:#00C853"></span>+Green 2026 ●</span>`:""}
+    <span><span style="display:inline-block;width:18px;border-top:2px dashed #2563EB;vertical-align:middle;margin-right:4px"></span>Budget 2026 ${isPct?"(100%)":"€"+BUD_R+"m"}</span>
+    <span><span style="display:inline-block;width:18px;border-top:2px dashed #93C5FD;vertical-align:middle;margin-right:4px"></span>Budget 2025 ${isPct?"(100%)":"€"+BUD25+"m"}</span>`;
 }
 
 function buildYoyTable(){
-  let h=`<thead><tr><th>Week</th><th>Date 26</th><th>Date 25</th><th>Booked 26</th><th>Booked 25</th><th style="color:#B45309">Δ YoY</th><th>+Green 26</th><th>+Green 25</th><th style="color:#B45309">Δ YoY</th><th>% Bud 26</th><th>% Bud 25</th></tr></thead><tbody>`;
-  let b="";
+  let h=`<thead><tr><th>Week</th><th>Date 26</th><th>Date 25</th><th style="color:#1D9E75">Booked 26</th><th>Booked 25</th><th style="color:#B45309">Δ YoY</th><th style="color:#00C853">+Green 26</th><th>+Green 25</th><th style="color:#B45309">Δ YoY</th><th>% Bud 26</th><th>% Bud 25</th></tr></thead><tbody>`,b="";
   B26.forEach((_,i)=>{
     const dB=+(B26[i]-B25[i]).toFixed(1),dG=+(BG26[i]-BG25[i]).toFixed(1);
     b+=`<tr style="background:${i%2===0?"transparent":"#F8FAFC"}">
-      <td style="font-weight:600">${WEEKS[i]}</td>
-      <td style="color:#888">${D26[i]||"—"}</td><td style="color:#888">${D25[i]||"—"}</td>
-      <td>€${B26[i]}m</td><td style="color:#888">€${B25[i]}m</td>
+      <td style="font-weight:600">${WEEKS[i]}</td><td style="color:#888">${D26[i]||"—"}</td><td style="color:#888">${D25[i]||"—"}</td>
+      <td style="color:#1D9E75;font-weight:500">€${B26[i]}m</td><td style="color:#888">€${B25[i]}m</td>
       <td class="${dB>=0?"pos":"neg"}">${dB>=0?"+":""}${dB}m</td>
-      <td>€${BG26[i]}m</td><td style="color:#888">€${BG25[i]}m</td>
+      <td style="color:#00C853;font-weight:500">€${BG26[i]}m</td><td style="color:#888">€${BG25[i]}m</td>
       <td class="${dG>=0?"pos":"neg"}">${dG>=0?"+":""}${dG}m</td>
-      <td style="color:#888">${(B26[i]/BUD_R*100).toFixed(1)}%</td>
-      <td style="color:#888">${(B25[i]/BUD25*100).toFixed(1)}%</td>
+      <td style="color:#888">${(B26[i]/BUD_R*100).toFixed(1)}%</td><td style="color:#888">${(B25[i]/BUD25*100).toFixed(1)}%</td>
     </tr>`;
   });
   document.getElementById("t-yoy").innerHTML=h+b+"</tbody>";
@@ -501,9 +564,9 @@ function toggleBG(){
 }
 
 function refresh(){
-  kpis();buildPL();buildRev();buildCos();
+  kpis();buildPL();buildRev();buildCos();buildBridge();
   buildEBChart();buildEBTable();buildEcoBar();
-  if(SEL_ECO) buildEcoTable();
+  if(SEL_ECO)buildEcoTable();
   document.getElementById("eco-sc-lbl").textContent=`${SC_L[SC]} scenario · excl. Corporate OPEX`;
 }
 
@@ -519,7 +582,7 @@ document.querySelectorAll(".scb[data-s]").forEach(btn=>btn.addEventListener("cli
   refresh();
 }));
 
-kpis();buildPL();buildRev();buildCos();
+kpis();buildPL();buildRev();buildCos();buildBridge();
 buildEBChart();buildEBTable();buildEcoGrid();buildEcoBar();buildYoy();buildYoyTable();
 </script>
 </body>

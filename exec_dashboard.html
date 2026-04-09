@@ -98,23 +98,37 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
       <div class="card"><div class="ch">Revenue by stream <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-rev"></table></div></div>
       <div class="card"><div class="ch">Cost of sales <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-cos"></table></div></div>
     </div>
-    <div class="card"><div class="ch">Commentary</div><div class="comm" id="comm"></div></div>
+    <div class="card"><div class="ch">Commentary <button id="comm-btn" onclick="generateCommentary()" style="font-size:10px;padding:3px 10px;border-radius:5px;border:1px solid #E2E8F0;background:#fff;cursor:pointer;font-weight:500;color:#475569;float:right">Generate commentary</button></div><div class="comm" id="comm"></div></div>
   </div>
   <div class="pane" id="pane-bridge">
     <div class="card"><div class="ch">EBITDA Bridge <small id="br-sub"></small></div><div class="cx"><table class="brt" id="t-br"></table></div></div>
   </div>
   <div class="pane" id="pane-ebitda">
     <div class="card"><div class="ch">EBITDA summary <small>all scenarios vs previous and budget</small></div><div class="cx"><table id="t-es"></table></div></div>
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#94A3B8;margin-bottom:6px;padding:0 2px">Current vs Previous</div>
     <div class="g2">
       <div class="card">
-        <div class="ch">Waterfall — by ecosystem <small id="eco-sc-lbl"></small></div>
-        <div class="cw" style="height:300px"><canvas id="c-wf-eco"></canvas></div>
+        <div class="ch">By ecosystem <small id="eco-sc-lbl"></small></div>
+        <div class="cw" style="height:280px"><canvas id="c-wf-eco"></canvas></div>
         <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Start/End</span><span><span class="ldot" style="background:#185FA5"></span>Positive</span><span><span class="ldot" style="background:#DC2626"></span>Negative</span><span><span class="ldot" style="background:#B4B2A9"></span>Residual</span></div>
       </div>
       <div class="card">
-        <div class="ch">Waterfall — by P&L category</div>
-        <div class="cw" style="height:300px"><canvas id="c-wf-cat"></canvas></div>
+        <div class="ch">By P&L category</div>
+        <div class="cw" style="height:280px"><canvas id="c-wf-cat"></canvas></div>
         <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Start/End</span><span><span class="ldot" style="background:#185FA5"></span>Positive</span><span><span class="ldot" style="background:#DC2626"></span>Negative</span><span><span class="ldot" style="background:#B4B2A9"></span>Residual</span></div>
+      </div>
+    </div>
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#94A3B8;margin:14px 0 6px;padding:0 2px">Current vs Budget</div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch">By ecosystem <small id="bud-sc-lbl"></small></div>
+        <div class="cw" style="height:280px"><canvas id="c-wf-bud-eco"></canvas></div>
+        <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Budget/Current</span><span><span class="ldot" style="background:#185FA5"></span>Ahead of budget</span><span><span class="ldot" style="background:#DC2626"></span>Behind budget</span><span><span class="ldot" style="background:#B4B2A9"></span>Residual</span></div>
+      </div>
+      <div class="card">
+        <div class="ch">By P&L category</div>
+        <div class="cw" style="height:280px"><canvas id="c-wf-bud-cat"></canvas></div>
+        <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Budget/Current</span><span><span class="ldot" style="background:#185FA5"></span>Ahead</span><span><span class="ldot" style="background:#DC2626"></span>Behind</span><span><span class="ldot" style="background:#B4B2A9"></span>Residual</span></div>
       </div>
     </div>
   </div>
@@ -476,15 +490,15 @@ const ECO_DRILL = {
 const ECOS_RAW=[
  {k:"Premier",c:"#185FA5",rev:{bud:24385,B:14067,BG:16556,BGY:23824,BGYR:31565,WV:20511},cos:{bud:-18136,B:-19169,BG:-19305,BGY:-19997,BGYR:-20560,WV:-19594},gp:{bud:6249,B:-5102,BG:-2749,BGY:3827,BGYR:11005,WV:917},gpP:{"bud":"26%","B":"-36%","BG":"-17%","BGY":"16%","BGYR":"35%","WV":"4%"},ts:{bud:-1709,B:-1709,BG:-1709,BGY:-1709,BGYR:-1709,WV:-1709},con:{bud:4539,B:-6811,BG:-4458,BGY:2118,BGYR:9296,WV:-792},opex:{bud:-328,B:-288,BG:-288,BGY:-288,BGYR:-288,WV:-288},eb:{bud:4212,B:-7099,BG:-4746,BGY:1830,BGYR:9008,WV:-1080},ebP:{"bud":"17%","B":"-50%","BG":"-29%","BGY":"8%","BGYR":"29%","WV":"-5%"}},
  {k:"Dota",c:"#BA7517",rev:{bud:12448,B:6576,BG:6626,BGY:8734,BGYR:11984,WV:7997},cos:{bud:-8525,B:-7873,BG:-7873,BGY:-8069,BGYR:-8129,WV:-7947},gp:{bud:3923,B:-1297,BG:-1247,BGY:665,BGYR:3855,WV:50},gpP:{"bud":"32%","B":"-20%","BG":"-19%","BGY":"8%","BGYR":"32%","WV":"1%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:3923,B:-1297,BG:-1247,BGY:665,BGYR:3855,WV:50},opex:{bud:-516,B:-280,BG:-280,BGY:-280,BGYR:-280,WV:-280},eb:{bud:3407,B:-1577,BG:-1527,BGY:385,BGYR:3575,WV:-230},ebP:{"bud":"27%","B":"-24%","BG":"-23%","BGY":"4%","BGYR":"30%","WV":"-3%"}},
- {k:"RLCS",c:"#0F6E56",rev:{bud:18757,B:12652,BG:13528,BGY:14071,BGYR:21430,WV:14851},cos:{bud:-10049,B:-12570,BG:-12574,BGY:-12579,BGYR:-15033,WV:-12935},gp:{bud:8709,B:82,BG:954,BGY:1492,BGYR:6397,WV:1916},gpP:{"bud":"46%","B":"1%","BG":"7%","BGY":"11%","BGYR":"30%","WV":"13%"},ts:{bud:-1068,B:-1068,BG:-1068,BGY:-1068,BGYR:-1068,WV:-1068},con:{bud:7640,B:-986,BG:-114,BGY:424,BGYR:5329,WV:848},opex:{bud:-739,B:-284,BG:-284,BGY:-284,BGYR:-284,WV:-284},eb:{bud:7287,B:-1270,BG:-398,BGY:140,BGYR:5045,WV:564},ebP:{"bud":"39%","B":"-10%","BG":"-3%","BGY":"1%","BGYR":"24%","WV":"4%"}},
- {k:"FNCS",c:"#534AB7",rev:{bud:17776,B:9518,BG:10248,BGY:11288,BGYR:27705,WV:13120},cos:{bud:-12071,B:-8248,BG:-8274,BGY:-8476,BGYR:-12404,WV:-8933},gp:{bud:5705,B:1270,BG:1974,BGY:2812,BGYR:15301,WV:4187},gpP:{"bud":"32%","B":"13%","BG":"19%","BGY":"25%","BGYR":"55%","WV":"32%"},ts:{bud:-1068,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:4637,B:1270,BG:1974,BGY:2812,BGYR:15301,WV:4187},opex:{bud:-532,B:-284,BG:-284,BGY:-284,BGYR:-284,WV:-284},eb:{bud:4105,B:986,BG:1690,BGY:2528,BGYR:15017,WV:3904},ebP:{"bud":"23%","B":"10%","BG":"16%","BGY":"22%","BGYR":"54%","WV":"30%"}},
- {k:"R6",c:"#993C1D",rev:{bud:6132,B:6132,BG:23956,BGY:26029,BGYR:26854,WV:24819},cos:{bud:-22496,B:-21595,BG:-21753,BGY:-22777,BGYR:-22777,WV:-22249},gp:{bud:-15240,B:-15463,BG:2203,BGY:3252,BGYR:4077,WV:2570},gpP:{"bud":"-249%","B":"-252%","BG":"9%","BGY":"12%","BGYR":"15%","WV":"10%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:-15240,B:-15463,BG:2203,BGY:3252,BGYR:4077,WV:2570},opex:{bud:-353,B:-2317,BG:-2317,BGY:-2317,BGYR:-2317,WV:-2317},eb:{bud:-15593,B:-17780,BG:-114,BGY:935,BGYR:1760,WV:253},ebP:{"bud":"-254%","B":"-290%","BG":"0%","BGY":"4%","BGYR":"7%","WV":"1%"}},
+ {k:"RLCS",c:"#0F6E56",rev:{bud:18757,B:12652,BG:13528,BGY:14071,BGYR:21430,WV:14851},cos:{bud:-10049,B:-12570,BG:-12574,BGY:-12579,BGYR:-15033,WV:-12935},gp:{bud:8709,B:82,BG:954,BGY:1492,BGYR:6397,WV:1916},gpP:{"bud":"46%","B":"1%","BG":"7%","BGY":"11%","BGYR":"30%","WV":"13%"},ts:{bud:-1068,B:-1068,BG:-1068,BGY:-1068,BGYR:-1068,WV:-1068},con:{bud:7640,B:-986,BG:-114,BGY:424,BGYR:5329,WV:848},opex:{bud:-353,B:-284,BG:-284,BGY:-284,BGYR:-284,WV:-284},eb:{bud:7287,B:-1270,BG:-398,BGY:140,BGYR:5045,WV:564},ebP:{"bud":"39%","B":"-10%","BG":"-3%","BGY":"1%","BGYR":"24%","WV":"4%"}},
+ {k:"FNCS",c:"#534AB7",rev:{bud:17776,B:9518,BG:10248,BGY:11288,BGYR:27705,WV:13120},cos:{bud:-12071,B:-8248,BG:-8274,BGY:-8476,BGYR:-12404,WV:-8933},gp:{bud:5705,B:1270,BG:1974,BGY:2812,BGYR:15301,WV:4187},gpP:{"bud":"32%","B":"13%","BG":"19%","BGY":"25%","BGYR":"55%","WV":"32%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:5705,B:1270,BG:1974,BGY:2812,BGYR:15301,WV:4187},opex:{bud:-387,B:-284,BG:-284,BGY:-284,BGYR:-284,WV:-284},eb:{bud:5318,B:986,BG:1690,BGY:2528,BGYR:15017,WV:3904},ebP:{"bud":"30%","B":"10%","BG":"16%","BGY":"22%","BGYR":"54%","WV":"30%"}},
+ {k:"R6",c:"#993C1D",rev:{bud:26320,B:6132,BG:23956,BGY:26029,BGYR:26854,WV:24819},cos:{bud:-22496,B:-21595,BG:-21753,BGY:-22777,BGYR:-22777,WV:-22249},gp:{bud:3825,B:-15463,BG:2203,BGY:3252,BGYR:4077,WV:2570},gpP:{"bud":"15%","B":"-252%","BG":"9%","BGY":"12%","BGYR":"15%","WV":"10%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:3825,B:-15463,BG:2203,BGY:3252,BGYR:4077,WV:2570},opex:{bud:-1607,B:-2317,BG:-2317,BGY:-2317,BGYR:-2317,WV:-2317},eb:{bud:2218,B:-17780,BG:-114,BGY:935,BGYR:1760,WV:253},ebP:{"bud":"8%","B":"-290%","BG":"0%","BGY":"4%","BGYR":"7%","WV":"1%"}},
  {k:"Riot (Studio)",c:"#888780",rev:{bud:14924,B:2632,BG:10924,BGY:11824,BGYR:13324,WV:11599},cos:{bud:-10860,B:-1994,BG:-7736,BGY:-8518,BGYR:-9823,WV:-8323},gp:{bud:4064,B:638,BG:3188,BGY:3306,BGYR:3501,WV:3276},gpP:{"bud":"27%","B":"24%","BG":"29%","BGY":"28%","BGYR":"26%","WV":"28%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:4064,B:638,BG:3188,BGY:3306,BGYR:3501,WV:3276},opex:{bud:-1096,B:-951,BG:-951,BGY:-951,BGYR:-951,WV:-951},eb:{bud:2968,B:-313,BG:2237,BGY:2355,BGYR:2550,WV:2326},ebP:{"bud":"20%","B":"-12%","BG":"20%","BGY":"20%","BGYR":"19%","WV":"20%"}},
- {k:"Riot (New Biz)",c:"#B4B2A9",rev:{bud:2560,B:0,BG:2520,BGY:2520,BGYR:4824,WV:2866},cos:{bud:-2063,B:0,BG:-2192,BGY:-2192,BGYR:-4150,WV:-2485},gp:{bud:497,B:0,BG:328,BGY:328,BGYR:674,WV:381},gpP:{"bud":"19%","B":"-","BG":"13%","BGY":"13%","BGYR":"14%","WV":"13%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:497,B:0,BG:328,BGY:328,BGYR:674,WV:381},opex:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},eb:{bud:497,B:0,BG:328,BGY:328,BGYR:674,WV:381},ebP:{"bud":"19%","B":"-","BG":"13%","BGY":"13%","BGYR":"14%","WV":"13%"}},
+ {k:"Riot (New Biz)",c:"#B4B2A9",rev:{bud:0,B:0,BG:2520,BGY:2520,BGYR:4824,WV:2866},cos:{bud:0,B:0,BG:-2192,BGY:-2192,BGYR:-4150,WV:-2485},gp:{bud:0,B:0,BG:328,BGY:328,BGYR:674,WV:381},gpP:{"bud":"-","B":"-","BG":"13%","BGY":"13%","BGYR":"14%","WV":"13%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:0,B:0,BG:328,BGY:328,BGYR:674,WV:381},opex:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},eb:{bud:0,B:0,BG:328,BGY:328,BGYR:674,WV:381},ebP:{"bud":"-","B":"-","BG":"13%","BGY":"13%","BGYR":"14%","WV":"13%"}},
  {k:"Supercell",c:"#993556",rev:{bud:12823,B:65,BG:12040,BGY:13694,BGYR:14769,WV:12857},cos:{bud:-8414,B:0,BG:-8587,BGY:-9354,BGYR:-9421,WV:-8892},gp:{bud:4408,B:65,BG:3453,BGY:4340,BGYR:5348,WV:3966},gpP:{"bud":"34%","B":"100%","BG":"29%","BGY":"32%","BGYR":"36%","WV":"31%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:4408,B:65,BG:3453,BGY:4340,BGYR:5348,WV:3966},opex:{bud:-1263,B:-1249,BG:-1249,BGY:-1249,BGYR:-1249,WV:-1249},eb:{bud:3145,B:-1184,BG:2204,BGY:3091,BGYR:4099,WV:2717},ebP:{"bud":"25%","B":"-1822%","BG":"18%","BGY":"23%","BGYR":"28%","WV":"21%"}},
- {k:"Wimbledon",c:"#639922",rev:{bud:10,B:0,BG:0,BGY:0,BGYR:0,WV:0},cos:{bud:-300,B:0,BG:0,BGY:0,BGYR:0,WV:0},gp:{bud:-290,B:0,BG:0,BGY:0,BGYR:0,WV:0},gpP:{"bud":"-2900%","B":"-","BG":"-","BGY":"-","BGYR":"-","WV":"-"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:-290,B:0,BG:0,BGY:0,BGYR:0,WV:0},opex:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},eb:{bud:-346,B:0,BG:0,BGY:0,BGYR:0,WV:0},ebP:{"bud":"-3460%","B":"-","BG":"-","BGY":"-","BGYR":"-","WV":"-"}},
- {k:"BLAST TV",c:"#3266ad",rev:{bud:826,B:49,BG:54,BGY:59,BGYR:1259,WV:237},cos:{bud:-84,B:-201,BG:-201,BGY:-201,BGYR:-201,WV:-201},gp:{bud:742,B:-152,BG:-147,BGY:-142,BGYR:1058,WV:36},gpP:{"bud":"90%","B":"-310%","BG":"-272%","BGY":"-241%","BGYR":"84%","WV":"15%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:742,B:-152,BG:-147,BGY:-142,BGYR:1058,WV:36},opex:{bud:0,B:-92,BG:-92,BGY:-92,BGYR:-92,WV:-92},eb:{bud:742,B:-244,BG:-239,BGY:-234,BGYR:966,WV:-56},ebP:{"bud":"90%","B":"-498%","BG":"-443%","BGY":"-397%","BGYR":"77%","WV":"-24%"}},
- {k:"Other Publishers",c:"#888780",rev:{bud:14226,B:0,BG:0,BGY:175,BGYR:2820,WV:484},cos:{bud:-5888,B:0,BG:0,BGY:-136,BGYR:-2385,WV:-405},gp:{bud:8338,B:0,BG:0,BGY:39,BGYR:435,WV:79},gpP:{"bud":"59%","B":"-","BG":"-","BGY":"22%","BGYR":"15%","WV":"16%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:8338,B:0,BG:0,BGY:39,BGYR:435,WV:79},opex:{bud:-2456,B:-2456,BG:-2456,BGY:-2456,BGYR:-2456,WV:-2456},eb:{bud:5882,B:-2456,BG:-2456,BGY:-2417,BGYR:-2021,WV:-2377},ebP:{"bud":"41%","B":"-","BG":"-","BGY":"-1381%","BGYR":"-72%","WV":"-491%"}},
+ {k:"Wimbledon",c:"#639922",rev:{bud:760,B:0,BG:0,BGY:0,BGYR:0,WV:0},cos:{bud:-411,B:0,BG:0,BGY:0,BGYR:0,WV:0},gp:{bud:349,B:0,BG:0,BGY:0,BGYR:0,WV:0},gpP:{"bud":"46%","B":"-","BG":"-","BGY":"-","BGYR":"-","WV":"-"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:349,B:0,BG:0,BGY:0,BGYR:0,WV:0},opex:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},eb:{bud:349,B:0,BG:0,BGY:0,BGYR:0,WV:0},ebP:{"bud":"46%","B":"-","BG":"-","BGY":"-","BGYR":"-","WV":"-"}},
+ {k:"BLAST TV",c:"#3266ad",rev:{bud:10,B:49,BG:54,BGY:59,BGYR:1259,WV:237},cos:{bud:-300,B:-201,BG:-201,BGY:-201,BGYR:-201,WV:-201},gp:{bud:-290,B:-152,BG:-147,BGY:-142,BGYR:1058,WV:36},gpP:{"bud":"-2900%","B":"-310%","BG":"-272%","BGY":"-241%","BGYR":"84%","WV":"15%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:-290,B:-152,BG:-147,BGY:-142,BGYR:1058,WV:36},opex:{bud:-56,B:-92,BG:-92,BGY:-92,BGYR:-92,WV:-92},eb:{bud:-346,B:-244,BG:-239,BGY:-234,BGYR:966,WV:-56},ebP:{"bud":"-3460%","B":"-498%","BG":"-443%","BGY":"-397%","BGYR":"77%","WV":"-24%"}},
+ {k:"Other Publishers",c:"#888780",rev:{bud:16786,B:0,BG:0,BGY:175,BGYR:2820,WV:484},cos:{bud:-7951,B:0,BG:0,BGY:-136,BGYR:-2385,WV:-405},gp:{bud:8835,B:0,BG:0,BGY:39,BGYR:435,WV:79},gpP:{"bud":"53%","B":"-","BG":"-","BGY":"22%","BGYR":"15%","WV":"16%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:8835,B:0,BG:0,BGY:39,BGYR:435,WV:79},opex:{bud:-2456,B:-2456,BG:-2456,BGY:-2456,BGYR:-2456,WV:-2456},eb:{bud:6379,B:-2456,BG:-2456,BGY:-2417,BGYR:-2021,WV:-2377},ebP:{"bud":"38%","B":"-","BG":"-","BGY":"-1381%","BGYR":"-72%","WV":"-491%"}},
  {k:"New Formats",c:"#D85A30",rev:{bud:0,B:0,BG:0,BGY:0,BGYR:10696,WV:1604},cos:{bud:0,B:0,BG:0,BGY:0,BGYR:-8676,WV:-1301},gp:{bud:0,B:0,BG:0,BGY:0,BGYR:2020,WV:303},gpP:{"bud":"-","B":"-","BG":"-","BGY":"-","BGYR":"19%","WV":"19%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:0,B:0,BG:0,BGY:0,BGYR:2020,WV:303},opex:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},eb:{bud:0,B:0,BG:0,BGY:0,BGYR:2020,WV:303},ebP:{"bud":"-","B":"-","BG":"-","BGY":"-","BGYR":"19%","WV":"19%"}},
  {k:"Corporate",c:"#444441",rev:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},cos:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},gp:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},gpP:{"bud":"-","B":"-","BG":"-","BGY":"-","BGYR":"-","WV":"-"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},opex:{bud:-21605,B:-21530,BG:-21530,BGY:-21530,BGYR:-21530,WV:-21530},eb:{bud:-21605,B:-21530,BG:-21530,BGY:-21530,BGYR:-21530,WV:-21530},ebP:{"bud":"-","B":"-","BG":"-","BGY":"-","BGYR":"-","WV":"-"}},
  {k:"Acquisitions",c:"#7C3AED",rev:{bud:0,B:0,BG:0,BGY:1792,BGYR:1792,WV:627},cos:{bud:0,B:0,BG:0,BGY:-846,BGYR:-846,WV:-296},gp:{bud:0,B:0,BG:0,BGY:946,BGYR:946,WV:331},gpP:{"bud":"-","B":"-","BG":"-","BGY":"53%","BGYR":"53%","WV":"53%"},ts:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},con:{bud:0,B:0,BG:0,BGY:946,BGYR:946,WV:331},opex:{bud:0,B:0,BG:0,BGY:0,BGYR:0,WV:0},eb:{bud:0,B:0,BG:0,BGY:946,BGYR:946,WV:331},ebP:{"bud":"-","B":"-","BG":"-","BGY":"53%","BGYR":"53%","WV":"53%"}},
@@ -1328,8 +1342,157 @@ function buildWaterfall(canvasId,groupFn){
   });
 }
 
+function buildBudgetWaterfall(canvasId, mode){
+  var canvas=document.getElementById(canvasId);
+  if(!canvas)return;
+  var chKey=canvasId.replace(/-/g,"_");
+  if(CH[chKey])CH[chKey].destroy();
+
+  var budEB=BUD_E;
+  var curEB=CUR.eb[SC];
+
+  if(mode==="eco"){
+    // Waterfall: Budget total → each eco's variance → Current total
+    var ecos=ECOS_RAW.filter(function(e){
+      return e.k!=="Corporate"&&e.k!=="Total"&&e.k!=="Riot (Combined)";
+    });
+    // Sort by abs(variance) descending
+    ecos=ecos.slice().sort(function(a,b){
+      var da=Math.abs((a.eb[SC]||0)-(a.eb.bud||0));
+      var db=Math.abs((b.eb[SC]||0)-(b.eb.bud||0));
+      return db-da;
+    });
+
+    var labels=[],data=[],colors=[],tips=[];
+    labels.push("Budget");data.push([0,budEB]);colors.push("#64748B");
+    tips.push("Budget EBITDA: "+fm(budEB));
+
+    var cum=budEB;
+    ecos.forEach(function(e){
+      var delta=+((( e.eb[SC]||0)-(e.eb.bud||0))/1000).toFixed(1);
+      if(Math.abs(delta)<0.05)return;
+      var lbl=e.k.length>11?e.k.slice(0,10)+"…":e.k;
+      labels.push(lbl);data.push([cum,cum+delta]);
+      colors.push(delta>=0?"#185FA5":"#DC2626");
+      tips.push(e.k+": "+(delta>=0?"+":"")+fm(delta)+" vs budget (cur "+fm((e.eb[SC]||0)/1000)+" bud "+fm((e.eb.bud||0)/1000)+")");
+      cum+=delta;
+    });
+    // Residual (Corporate + rounding)
+    var res=+(curEB-cum).toFixed(1);
+    if(Math.abs(res)>=0.05){
+      labels.push("Other");data.push([cum,curEB]);
+      colors.push("#B4B2A9");tips.push("Residual (incl. Corporate): "+fm(res));
+    }
+    labels.push(CUR_D.slice(0,5));data.push([0,curEB]);
+    colors.push(curEB>=0?"#1D9E75":"#DC2626");
+    tips.push("Current EBITDA: "+fm(curEB));
+
+    CH[chKey]=new Chart(canvas.getContext("2d"),{
+      type:"bar",
+      data:{labels:labels,datasets:[{data:data,backgroundColor:colors,
+        borderRadius:3,borderSkipped:false,barPercentage:0.6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{
+          title:function(i){return labels[i[0].dataIndex];},
+          label:function(ctx){return tips[ctx.dataIndex]||"";},
+        }}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:9},maxRotation:40}},
+          y:{grid:{color:"rgba(0,0,0,.05)"},ticks:{font:{size:9},
+            callback:function(v){return"€"+v+"m";}}}
+        }
+      }
+    });
+    return;
+
+  } else {
+    // Waterfall: Budget EBITDA → revenue streams → CoS → TS → OPEX → Current EBITDA
+    var labels=[],data=[],colors=[],tips=[];
+    labels.push("Budget");data.push([0,budEB]);colors.push("#64748B");
+    tips.push("Budget EBITDA: "+fm(budEB));
+
+    var cum=budEB;
+
+    // Revenue streams from RCAT (flattened sub-rows)
+    var revStreams=[];
+    RCAT.forEach(function(cat){
+      cat.r.forEach(function(r){
+        revStreams.push({n:r.n,cur:r[SC]||0,bud:r.bud||0});
+      });
+    });
+    revStreams.forEach(function(r){
+      var delta=+((r.cur-r.bud)/1000).toFixed(1);
+      if(Math.abs(delta)<0.05)return;
+      var lbl=r.n.length>14?r.n.slice(0,13)+"…":r.n;
+      labels.push(lbl);data.push([cum,cum+delta]);
+      colors.push(delta>=0?"#185FA5":"#DC2626");
+      tips.push(r.n+": "+(delta>=0?"+":"")+fm(delta)+" vs budget");
+      cum+=delta;
+    });
+
+    // CoS as one bar
+    var cosDelta=+(CUR.cos[SC]-(-(BUD_R-BUD_GM))).toFixed(1);
+    if(Math.abs(cosDelta)>=0.05){
+      labels.push("CoS");data.push([cum,cum+cosDelta]);
+      colors.push(cosDelta>=0?"#185FA5":"#DC2626");
+      tips.push("Cost of Sales: "+(cosDelta>=0?"+":"")+fm(cosDelta)+" vs budget");
+      cum+=cosDelta;
+    }
+
+    // Team Share
+    var tsDelta=+(CUR.ts[SC]-(-2.8)).toFixed(1);
+    if(Math.abs(tsDelta)>=0.05){
+      labels.push("Team Share");data.push([cum,cum+tsDelta]);
+      colors.push(tsDelta>=0?"#185FA5":"#DC2626");
+      tips.push("Team Share: "+(tsDelta>=0?"+":"")+fm(tsDelta)+" vs budget");
+      cum+=tsDelta;
+    }
+
+    // OPEX
+    var opDelta=+(CUR.opex[SC]-(-29.7)).toFixed(1);
+    if(Math.abs(opDelta)>=0.05){
+      labels.push("OPEX");data.push([cum,cum+opDelta]);
+      colors.push(opDelta>=0?"#185FA5":"#DC2626");
+      tips.push("OPEX: "+(opDelta>=0?"+":"")+fm(opDelta)+" vs budget");
+      cum+=opDelta;
+    }
+
+    // Residual
+    var res=+(curEB-cum).toFixed(1);
+    if(Math.abs(res)>=0.05){
+      labels.push("Other");data.push([cum,curEB]);
+      colors.push("#B4B2A9");tips.push("Residual: "+fm(res));
+    }
+
+    labels.push(CUR_D.slice(0,5));data.push([0,curEB]);
+    colors.push(curEB>=0?"#1D9E75":"#DC2626");
+    tips.push("Current EBITDA: "+fm(curEB));
+
+    CH[chKey]=new Chart(canvas.getContext("2d"),{
+      type:"bar",
+      data:{labels:labels,datasets:[{data:data,backgroundColor:colors,
+        borderRadius:3,borderSkipped:false,barPercentage:0.6}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false},tooltip:{callbacks:{
+          title:function(i){return labels[i[0].dataIndex];},
+          label:function(ctx){return tips[ctx.dataIndex]||"";},
+        }}},
+        scales:{
+          x:{grid:{display:false},ticks:{font:{size:9},maxRotation:40}},
+          y:{grid:{color:"rgba(0,0,0,.05)"},ticks:{font:{size:9},
+            callback:function(v){return"€"+v+"m";}}}
+        }
+      }
+    });
+  }
+}
+
+
+
+
 function buildWaterfalls(){
   document.getElementById("eco-sc-lbl").textContent=SC_L[SC]+" scenario";
+  document.getElementById("bud-sc-lbl").textContent=SC_L[SC]+" scenario";
   requestAnimationFrame(function(){requestAnimationFrame(function(){
     buildWaterfall("c-wf-eco",function(item){
       const e=item.e||"";
@@ -1337,6 +1500,8 @@ function buildWaterfalls(){
       return e;
     });
     buildWaterfall("c-wf-cat",function(item){return item.t;});
+    buildBudgetWaterfall("c-wf-bud-eco","eco");
+    buildBudgetWaterfall("c-wf-bud-cat","cat");
   });});
 }
 
@@ -1624,9 +1789,73 @@ function setYoyMode(m){YOY_MODE=m;document.getElementById("y-abs").className="sc
 function toggleBG(){SHOW_BG=!SHOW_BG;document.getElementById("y-bg").className="scb"+(SHOW_BG?" on GRN":"");buildYoy();}
 
 function refresh(){
-  kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();
+
+kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();
   if(document.getElementById("pane-ebitda").classList.contains("on"))buildWaterfalls();
   if(SEL_ECO)buildEcoTable();
+}
+
+function generateCommentary(){
+  var btn=document.getElementById("comm-btn");
+  var div=document.getElementById("comm");
+  btn.disabled=true;
+  btn.textContent="Generating...";
+
+  var S4=["B","BG","BGY","BGYR"];
+  var SC_NAMES={"B":"Booked",BG:"+Green","BGY":"+Yellow","BGYR":"+Red"};
+
+  // Build movements summary from BI data
+  var material=BI.filter(function(b){
+    return !b.lnk && S4.some(function(s){return Math.abs(b[s]||0)>=0.05;});
+  });
+  var TORD=["Sponsorship","Publisher Fee","Host City","Ticketing","BLAST Channels","Media Rights","Other Revenue","Cost of Sales"];
+  var lines=[];
+  TORD.forEach(function(typ){
+    var items=material.filter(function(b){return b.t===typ;})
+      .sort(function(a,b){return Math.abs(b.BGY||0)-Math.abs(a.BGY||0);})
+      .slice(0,6);
+    items.forEach(function(it){
+      lines.push("["+typ+"] "+it.l+": "+it.n+" ("+it.e+") BGY="+(it.BGY>=0?"+":"")+it.BGY.toFixed(2)+"m BGYR="+(it.BGYR>=0?"+":"")+it.BGYR.toFixed(2)+"m");
+    });
+  });
+
+  var revDelta=+(CUR.rev.BGY-PRV.rev.BGY).toFixed(1);
+  var ebDelta=+(CUR.eb.BGY-PRV.eb.BGY).toFixed(1);
+  var ebVsBud=+(CUR.eb.BGY-BUD_E).toFixed(1);
+
+  var prompt="Write 3-4 sentences of executive P&L commentary comparing "+CUR_D+" vs "+PRV_D+".\n\n"+
+    "KEY METRICS (+Yellow):\n"+
+    "- Revenue: €"+CUR.rev.BGY+"m ("+( revDelta>=0?"+":"")+revDelta+"m vs prev, budget €"+BUD_R+"m)\n"+
+    "- EBITDA: €"+CUR.eb.BGY+"m ("+(ebDelta>=0?"+":"")+ebDelta+"m vs prev, "+(ebVsBud>=0?"+":"")+ebVsBud+"m vs budget €"+BUD_E+"m)\n\n"+
+    "MATERIAL MOVEMENTS:\n"+lines.join("\n")+"\n\n"+
+    "Requirements: lead with overall EBITDA movement and key drivers, name 2-3 specific deals/items, flag key risks or watch items. "+
+    "Flowing prose, no bullets, no headers. Values in €m. Do not start with 'This fortnight' or 'The period'.";
+
+  fetch("https://api.anthropic.com/v1/messages",{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({
+      model:"claude-sonnet-4-20250514",
+      max_tokens:400,
+      messages:[{role:"user",content:prompt}]
+    })
+  })
+  .then(function(r){return r.json();})
+  .then(function(data){
+    if(data.content&&data.content[0]){
+      div.textContent=data.content[0].text;
+      btn.textContent="Regenerate";
+    } else {
+      div.textContent="Could not generate commentary. Please try again.";
+      btn.textContent="Generate commentary";
+    }
+    btn.disabled=false;
+  })
+  .catch(function(){
+    div.textContent="Error generating commentary.";
+    btn.textContent="Generate commentary";
+    btn.disabled=false;
+  });
 }
 
 document.querySelectorAll(".tab").forEach(function(btn){btn.addEventListener("click",function(){

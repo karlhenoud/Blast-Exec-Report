@@ -98,7 +98,7 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
       <div class="card"><div class="ch">Revenue by stream <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-rev"></table></div></div>
       <div class="card"><div class="ch">Cost of sales <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-cos"></table></div></div>
     </div>
-    <div class="card"><div class="ch">Commentary <button id="comm-btn" onclick="generateCommentary()" style="font-size:10px;padding:3px 10px;border-radius:5px;border:1px solid #E2E8F0;background:#fff;cursor:pointer;font-weight:500;color:#475569;float:right">Generate commentary</button></div><div class="comm" id="comm"></div></div>
+    <div class="card"><div class="ch">Commentary <small style="font-weight:400;color:#94A3B8;font-size:9px">click to edit</small></div><div class="comm" id="comm" contenteditable="true" spellcheck="false" style="outline:none;cursor:text;min-height:40px;" title="Click to edit commentary"></div></div>
   </div>
   <div class="pane" id="pane-bridge">
     <div class="card"><div class="ch">EBITDA Bridge <small id="br-sub"></small></div><div class="cx"><table class="brt" id="t-br"></table></div></div>
@@ -1652,68 +1652,9 @@ kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();
   if(SEL_ECO)buildEcoTable();
 }
 
-function generateCommentary(){
-  var btn=document.getElementById("comm-btn");
-  var div=document.getElementById("comm");
-  btn.disabled=true;
-  btn.textContent="Generating...";
 
-  var S4=["B","BG","BGY","BGYR"];
-  var SC_NAMES={"B":"Booked",BG:"+Green","BGY":"+Yellow","BGYR":"+Red"};
+var COMMENTARY_TEXT='+Yellow EBITDA of (€10.2m) is €23.5m behind budget, with +Red at €31.0m representing the upside scenario. Booked revenue improved €3.1m vs 09.03 to €50.0m, driven by Riot Corporate monthly fees and an update to the Riot Studio base fee for January–April. +Yellow was held back by Y→R status downgrades in Sponsorship — Goodyear FNCS, Alienware Peripherals, and JBL Peripherals (€1.0m combined impact). The principal gap to budget remains the Ubisoft Publisher fee (~€18m) and Riot Publisher fee (~€10m), both currently Green, which are the key near-term conversion watch items.';
 
-  // Build movements summary from BI data
-  var material=BI.filter(function(b){
-    return !b.lnk && S4.some(function(s){return Math.abs(b[s]||0)>=0.05;});
-  });
-  var TORD=["Sponsorship","Publisher Fee","Host City","Ticketing","BLAST Channels","Media Rights","Other Revenue","Cost of Sales"];
-  var lines=[];
-  TORD.forEach(function(typ){
-    var items=material.filter(function(b){return b.t===typ;})
-      .sort(function(a,b){return Math.abs(b.BGY||0)-Math.abs(a.BGY||0);})
-      .slice(0,6);
-    items.forEach(function(it){
-      lines.push("["+typ+"] "+it.l+": "+it.n+" ("+it.e+") BGY="+(it.BGY>=0?"+":"")+it.BGY.toFixed(2)+"m BGYR="+(it.BGYR>=0?"+":"")+it.BGYR.toFixed(2)+"m");
-    });
-  });
-
-  var revDelta=+(CUR.rev.BGY-PRV.rev.BGY).toFixed(1);
-  var ebDelta=+(CUR.eb.BGY-PRV.eb.BGY).toFixed(1);
-  var ebVsBud=+(CUR.eb.BGY-BUD_E).toFixed(1);
-
-  var prompt="Write 3-4 sentences of executive P&L commentary comparing "+CUR_D+" vs "+PRV_D+".\n\n"+
-    "KEY METRICS (+Yellow):\n"+
-    "- Revenue: €"+CUR.rev.BGY+"m ("+( revDelta>=0?"+":"")+revDelta+"m vs prev, budget €"+BUD_R+"m)\n"+
-    "- EBITDA: €"+CUR.eb.BGY+"m ("+(ebDelta>=0?"+":"")+ebDelta+"m vs prev, "+(ebVsBud>=0?"+":"")+ebVsBud+"m vs budget €"+BUD_E+"m)\n\n"+
-    "MATERIAL MOVEMENTS:\n"+lines.join("\n")+"\n\n"+
-    "Requirements: lead with overall EBITDA movement and key drivers, name 2-3 specific deals/items, flag key risks or watch items. "+
-    "Flowing prose, no bullets, no headers. Values in €m. Do not start with 'This fortnight' or 'The period'.";
-
-  fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      model:"claude-sonnet-4-20250514",
-      max_tokens:400,
-      messages:[{role:"user",content:prompt}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    if(data.content&&data.content[0]){
-      div.textContent=data.content[0].text;
-      btn.textContent="Regenerate";
-    } else {
-      div.textContent="Could not generate commentary. Please try again.";
-      btn.textContent="Generate commentary";
-    }
-    btn.disabled=false;
-  })
-  .catch(function(){
-    div.textContent="Error generating commentary.";
-    btn.textContent="Generate commentary";
-    btn.disabled=false;
-  });
-}
 
 document.querySelectorAll(".tab").forEach(function(btn){btn.addEventListener("click",function(){
   document.querySelectorAll(".tab,.pane").forEach(function(el){el.classList.remove("on");});
@@ -1937,6 +1878,7 @@ function initDealsTab(deals,ecos,types){
 
 
 kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();buildEcoGrid();buildYoy();buildYoyTable();
+var _ce=document.getElementById("comm");if(_ce&&COMMENTARY_TEXT)_ce.textContent=COMMENTARY_TEXT;
 initDealsTab(DEALS_DATA.deals,DEALS_DATA.ecos,DEALS_DATA.types);
 </script>
 </body>

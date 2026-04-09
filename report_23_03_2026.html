@@ -139,18 +139,10 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
 
   <div class="pane" id="pane-deals">
     <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
-      <select id="dl-eco" onchange="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;cursor:pointer;min-width:160px">
-        <option value="">All ecosystems</option>
-      </select>
-      <select id="dl-type" onchange="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;cursor:pointer;min-width:160px">
-        <option value="">All revenue types</option>
-      </select>
-      <input id="dl-search" type="text" placeholder="Search deal name..." oninput="buildDeals()"
-        style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;min-width:200px;flex:1">
-      <button onclick="document.getElementById('dl-eco').value='';document.getElementById('dl-type').value='';document.getElementById('dl-search').value='';buildDeals();"
-        style="padding:5px 12px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;background:#fff;cursor:pointer;color:#64748B">
-        Clear filters
-      </button>
+      <select id="dl-eco" onchange="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;cursor:pointer;min-width:160px"><option value="">All ecosystems</option></select>
+      <select id="dl-type" onchange="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;cursor:pointer;min-width:160px"><option value="">All revenue types</option></select>
+      <input id="dl-search" type="text" placeholder="Search deal name..." oninput="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;min-width:200px;flex:1">
+      <button onclick="document.getElementById('dl-eco').value='';document.getElementById('dl-type').value='';document.getElementById('dl-search').value='';buildDeals();" style="padding:5px 12px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;background:#fff;cursor:pointer;color:#64748B">Clear filters</button>
     </div>
     <div id="deals-body"></div>
   </div>
@@ -212,7 +204,7 @@ const BI=[
   {l:"Deal Value Updated",t:"Ticketing",e:"RLCS",n:"Ticketing - Paris - RLCS May",B:0.05,BG:0.05,BGY:0.05,BGYR:0.05},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - Hong Kong - Premier 26",B:0.0,BG:0.0,BGY:-0.25,BGYR:-0.25},
   {l:"Lost Deal",t:"Ticketing",e:"FNCS",n:"Ticketing - Dusseldorf - FNCS Spring Major",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.25},
-  {l:"R6 - SI Paris extra Prize Money",t:"Publisher",e:"R6",n:"Ubisoft - SI 26 Prize Money",B:2.1,BG:-0.03,BGY:-0.03,BGYR:-0.03},
+  {l:"R6 - SI Paris extra Prize Money",t:"Publisher Fee",e:"R6",n:"Ubisoft - SI 26 Prize Money",B:2.1,BG:-0.03,BGY:-0.03,BGYR:-0.03},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - Texas - Premier 26",B:0.0,BG:0.0,BGY:-0.15,BGYR:-0.15},
   {l:"Signed",t:"Ticketing",e:"Premier",n:"Ticketing - Fort Worth - MG",B:0.51,BG:0.51,BGY:0.09,BGYR:0.09},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - Portugal - Premier 26",B:0.0,BG:0.0,BGY:-0.15,BGYR:-0.15},
@@ -226,9 +218,9 @@ const BI=[
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - Rotterdam - Premier 26",B:0.0,BG:0.0,BGY:-0.05,BGYR:-0.05},
   {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"FNCS German Event Sponsorship 2026",B:0.0,BG:0.0,BGY:-0.05,BGYR:-0.05},
   {l:"Visible Status Update - Yellow to Green",t:"Host City",e:"Premier",n:"Host City - Porto",B:0.0,BG:0.1,BGY:0.0,BGYR:0.0},
-  {l:"Deal Value Updated",t:"Publisher",e:"Supercell",n:"2026 Prize Pool Support",B:0.0,BG:0.01,BGY:0.01,BGYR:0.01},
+  {l:"Deal Value Updated",t:"Publisher Fee",e:"Supercell",n:"2026 Prize Pool Support",B:0.0,BG:0.01,BGY:0.01,BGYR:0.01},
   {l:"New Deal",t:"Sponsorship",e:"Other Publishers",n:"McDonalds (via XBox)",B:0.0,BG:0.06,BGY:0.06,BGYR:0.06},
-  {l:"New Deal",t:"Publisher",e:"Supercell",n:"2026 Prize Pool Support - Icebreaker",B:0.0,BG:0.02,BGY:0.02,BGYR:0.02},
+  {l:"New Deal",t:"Publisher Fee",e:"Supercell",n:"2026 Prize Pool Support - Icebreaker",B:0.0,BG:0.02,BGY:0.02,BGYR:0.02},
   {l:"Deal Value Updated",t:"Sponsorship",e:"Other Publishers",n:"AWS/Oracle/Wider Tech (BLAST wide - no ecosystem at present)",B:0.0,BG:0.0,BGY:0.0,BGYR:1.28},
   {l:"Visible Status Update - Yellow to Red",t:"Sponsorship",e:"FNCS",n:"Goodyear - FNCS 2026",B:0.0,BG:0.0,BGY:-0.7,BGYR:0.0},
   {l:"Visible Status Update - Yellow to Red",t:"Sponsorship",e:"FNCS",n:"Alienware - Monitors and Computers FNCS 2026",B:0.0,BG:0.0,BGY:-0.34,BGYR:0.0},
@@ -237,7 +229,7 @@ const BI=[
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - Rotterdam - Premier 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.05},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - Hong Kong - Premier 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.1},
   {l:"Deal Value Updated",t:"Host City",e:"FNCS",n:"Host City - Dusseldorf - FNCS Spring Major",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.05},
-  {l:"Deal Value Updated",t:"Publisher",e:"New Formats",n:"WSOW - New Biz - Ecosystem 2026 - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:-1.92},
+  {l:"Deal Value Updated",t:"Publisher Fee",e:"New Formats",n:"WSOW - New Biz - Ecosystem 2026 - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:-1.92},
   {l:"Visible Status Update - Yellow to Red",t:"Sponsorship",e:"RLCS",n:"JBL / Peripherals",B:0.0,BG:0.0,BGY:-0.25,BGYR:0.0},
   {l:"New Deal",t:"Host City",e:"Supercell",n:"Host City - Berlin",B:0.0,BG:0.0,BGY:0.0,BGYR:0.15},
   {l:"New Deal",t:"Host City",e:"Supercell",n:"Host City - Tokyo",B:0.0,BG:0.0,BGY:0.0,BGYR:0.15},
@@ -247,13 +239,13 @@ const BI=[
   {l:"New Deal",t:"Sponsorship",e:"FNCS",n:"Mous - FNCS Major Summit 1",B:0.0,BG:0.0,BGY:0.0,BGYR:0.1},
   {l:"New Deal",t:"Sponsorship",e:"Dota",n:"Tuborg - Dota 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.3},
   {l:"New Deal",t:"Sponsorship",e:"Premier",n:"Tuborg- Premier 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.3},
-  {l:"New Deal",t:"Publisher",e:"New Formats",n:"Tuborg Event - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:0.17},
-  {l:"New Deal",t:"Publisher",e:"New Formats",n:"GeoGuessr - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:0.21},
-  {l:"New Deal",t:"Publisher",e:"Supercell",n:"China Broadcasts",B:0.0,BG:0.0,BGY:0.0,BGYR:0.04},
+  {l:"New Deal",t:"Publisher Fee",e:"New Formats",n:"Tuborg Event - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:0.17},
+  {l:"New Deal",t:"Publisher Fee",e:"New Formats",n:"GeoGuessr - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:0.21},
+  {l:"New Deal",t:"Publisher Fee",e:"Supercell",n:"China Broadcasts",B:0.0,BG:0.0,BGY:0.0,BGYR:0.04},
   {l:"Deal Value Updated",t:"Ticketing",e:"FNCS",n:"Ticketing - Dusseldorf - FNCS Spring Major",B:0.0,BG:0.0,BGY:-0.1,BGYR:-0.1},
-  {l:"Deal Value Updated",t:"Publisher",e:"Wimbledon",n:"Wimbledon - 2026 - New Format",B:0.0,BG:0.0,BGY:-0.47,BGYR:-0.47},
+  {l:"Deal Value Updated",t:"Publisher Fee",e:"Wimbledon",n:"Wimbledon - 2026 - New Format",B:0.0,BG:0.0,BGY:-0.47,BGYR:-0.47},
   {l:"New Deal",t:"Sponsorship",e:"Other Publishers",n:"Tech partner process (AI)",B:0.0,BG:0.0,BGY:0.0,BGYR:-2.0},
-  {l:"New Deal",t:"Publisher",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:1.2,BGYR:0.0},
+  {l:"New Deal",t:"Publisher Fee",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:1.2,BGYR:0.0},
   {l:"New Deal",t:"Ticketing",e:"Premier",n:"Ticketing - Fort Worth - Additional Potential",B:0.0,BG:0.0,BGY:0.17,BGYR:0.17},
   {l:"New Deal",t:"Ticketing",e:"Supercell",n:"Ticketing - Berlin",B:0.0,BG:0.0,BGY:0.1,BGYR:0.1},
   {l:"New Deal",t:"Ticketing",e:"Supercell",n:"Ticketing - Japan",B:0.0,BG:0.0,BGY:0.2,BGYR:0.2},
@@ -279,13 +271,13 @@ const BI=[
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Dota",n:"Dota SLAM 9 Week 1 2026",B:-0.1,BG:-0.1,BGY:-0.1,BGYR:-0.1,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Dota",n:"Dota SLAM 9 Week 2 2026",B:-0.03,BG:-0.03,BGY:-0.03,BGYR:-0.03,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Dota",n:"Dota General 2026",B:-0.14,BG:-0.14,BGY:-0.14,BGYR:-0.14,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Spring Split",B:0.0,BG:-0.04,BGY:-0.04,BGYR:-0.04,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Brawl Cup",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Summer Split",B:0.0,BG:-0.01,BGY:-0.01,BGYR:-0.01,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"LCQ",B:0.0,BG:0.24,BGY:0.24,BGYR:0.24,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Worlds",B:0.0,BG:-0.16,BGY:-0.16,BGYR:-0.16,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Brawlstars General",B:0.0,BG:-0.18,BGY:-0.18,BGYR:-0.18,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"2026 Prize Pool Support",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Spring Split",B:0.0,BG:-0.04,BGY:-0.04,BGYR:-0.04,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Brawl Cup",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Summer Split",B:0.0,BG:-0.01,BGY:-0.01,BGYR:-0.01,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"LCQ",B:0.0,BG:0.24,BGY:0.24,BGYR:0.24,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Worlds",B:0.0,BG:-0.16,BGY:-0.16,BGYR:-0.16,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Brawlstars General",B:0.0,BG:-0.18,BGY:-0.18,BGYR:-0.18,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher Fee",e:"Supercell",n:"2026 Prize Pool Support",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Major 1 2026",B:0.04,BG:0.04,BGY:0.04,BGYR:0.04,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Online Qualifiers (Major 2) 2026 - EU/NA",B:-0.05,BG:-0.05,BGY:-0.05,BGYR:-0.05,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Online Qualifiers (Major 2) 2026 - Rest of World",B:-0.01,BG:-0.01,BGY:-0.01,BGYR:-0.01,lnk:1},
@@ -294,11 +286,11 @@ const BI=[
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS Online Qualifier (1v1 + 2v2) - EU/NA 2026",B:-0.03,BG:-0.03,BGY:-0.03,BGYR:-0.03,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Non-event specific 2026",B:0.03,BG:0.03,BGY:0.03,BGYR:0.03,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"FNCS",n:"FNCS: Non-event specific 2026",B:0.04,BG:0.04,BGY:0.04,BGYR:0.04,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Wimbledon",n:"Total WIMBLEDON",B:0.0,BG:0.0,BGY:0.27,BGYR:0.27,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:-1.02,BGYR:-1.02,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"New Formats",n:"WSOW - New Biz - Ecosystem 2026 - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:1.63,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:0.0,BGYR:1.02,lnk:1},
-  {l:"CoS \u2014 Prize Money",t:"Publisher",e:"R6",n:"R6: Six Invitational 2026 - extra prize money",B:0.03,BG:0.03,BGY:0.03,BGYR:0.03,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Wimbledon",n:"Total WIMBLEDON",B:0.0,BG:0.0,BGY:0.27,BGYR:0.27,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher Fee",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:-1.02,BGYR:-1.02,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher Fee",e:"New Formats",n:"WSOW - New Biz - Ecosystem 2026 - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:1.63,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher Fee",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:0.0,BGYR:1.02,lnk:1},
+  {l:"CoS \u2014 Prize Money",t:"Cost of Sales",e:"R6",n:"R6: Six Invitational 2026 - extra prize money",B:0.03,BG:0.03,BGY:0.03,BGYR:0.03,lnk:1},
 ];
 
 const ECO_DRILL = {
@@ -906,19 +898,39 @@ function xR(id){document.querySelectorAll("."+id).forEach(r=>r.classList.toggle(
 function buildBridge(){
   var S4=["B","BG","BGY","BGYR"];
   var fv=function(v){if(v===0)return"\u2014";var s=vc(v);return"<span class="+s+">"+fm(v)+"</span>";};
-  var TORD=["Sponsorship","Publisher Fee","Host City","Ticketing","Cost of Sales","Various"];
 
-  var types=[...new Set(BI.map(function(b){return b.t;}))].sort(function(a,b){
+  var TORD=[
+    "Sponsorship","Media Rights","Host City","Publisher Fee",
+    "BLAST Channels","Ticketing","Merchandise","In-Game","Other Revenue",
+    "Cost of Sales","Various"
+  ];
+
+  // Material filter — totals still use full BI
+  var BI_MAT=BI.filter(function(b){return S4.some(function(s){return Math.abs(b[s]||0)>=0.05;});});
+
+  var types=[...new Set(BI_MAT.map(function(b){return b.t;}))].sort(function(a,b){
     var ai=TORD.indexOf(a),bi=TORD.indexOf(b);
     return(ai<0?99:ai)-(bi<0?99:bi);
   });
 
   var SPRI={"B":0,"BG":1,"BGY":2,"BGYR":3};
-  function itemStatus(item){
-    if(item.B&&item.B!==0)return"B";
-    if(item.BG&&item.BG!==0)return"BG";
-    if(item.BGY&&item.BGY!==0)return"BGY";
+  function itemStatus(it){
+    if(it.B&&it.B!==0)return"B";
+    if(it.BG&&it.BG!==0)return"BG";
+    if(it.BGY&&it.BGY!==0)return"BGY";
     return"BGYR";
+  }
+
+  // Name simplifier for matching
+  function simplify(n){
+    n=(n||"").toLowerCase().replace(/^\d+\.\s*/,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
+    return n;
+  }
+  function matchScore(a,b){
+    var aw=new Set(simplify(a).split(" ")), bw=new Set(simplify(b).split(" "));
+    var overlap=0; aw.forEach(function(w){if(bw.has(w))overlap++;});
+    var total=new Set([...aw,...bw]).size;
+    return total?overlap/total:0;
   }
 
   var h="<thead><tr><th>Movement</th>"+S4.map(function(s){
@@ -931,89 +943,205 @@ function buildBridge(){
   body+="</tr>";
 
   types.forEach(function(typ){
-    var typeItems=BI.filter(function(b){return b.t===typ&&S4.some(function(s){return b[s]&&b[s]!==0;});});
+    var typeItems=BI_MAT.filter(function(b){return b.t===typ&&S4.some(function(s){return b[s]&&b[s]!==0;});});
     if(!typeItems.length)return;
 
-    var reasonMap={};
-    var reasonOrder=[];
-    typeItems.forEach(function(item){
-      if(!reasonMap[item.l]){reasonMap[item.l]=[];reasonOrder.push(item.l);}
-      reasonMap[item.l].push(item);
-    });
-
+    var isPublisher=(typ==="Publisher Fee");
     var safe=typ.replace(/[^a-zA-Z0-9]/g,"_");
     var typeXid="bxt_"+safe;
-    var nD=typeItems.length, nR=reasonOrder.length;
 
+    // Type header row
     body+="<tr class='bgh br-toggle' data-xid='"+typeXid+"'><td>";
     body+="<span id='ic_"+typeXid+"' style='font-size:9px;margin-right:4px'>\u25b8</span>";
-    body+=typ+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+nR+" reason"+(nR===1?"":"s")+" \u00b7 "+nD+" deal"+(nD===1?"":"s")+")</span></td>";
+    body+=typ;
+    body+=" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+typeItems.length+" item"+(typeItems.length===1?"":"s")+")</span></td>";
     S4.forEach(function(s){
       var v=typeItems.reduce(function(a,b){return a+(b[s]||0);},0);
       body+="<td>"+fv(v)+"</td>";
     });
     body+="</tr>";
 
-    reasonOrder.sort(function(a,b){
-      var av=Math.abs(reasonMap[a].reduce(function(s,i){return s+(i[SC]||0);},0));
-      var bv=Math.abs(reasonMap[b].reduce(function(s,i){return s+(i[SC]||0);},0));
-      return bv-av;
-    });
+    if(isPublisher){
+      // ── Publisher: Ecosystem → Reason → Rev deal + paired CoS ──
+      var PUB_ECO_ORD=["Premier","Dota","Supercell","FNCS","RLCS","R6","Riot (Studio)","Riot (New Biz)","Other Publishers","New Formats","Acquisitions","BLAST TV"];
+      var presentPubEcos=new Set(typeItems.map(function(b){return b.e;}));
+      var ecos=PUB_ECO_ORD.filter(function(e){return presentPubEcos.has(e);});
+      presentPubEcos.forEach(function(e){if(ecos.indexOf(e)<0&&e)ecos.push(e);});
 
-    reasonOrder.forEach(function(rsn){
-      var rsnItems=reasonMap[rsn];
-      var rsnSafe=rsn.replace(/[^a-zA-Z0-9]/g,"_");
-      var rsnXid="bxr_"+safe+"_"+rsnSafe;
-      var isCoS=rsnItems[0]&&rsnItems[0].lnk;
+      ecos.forEach(function(eco){
+        var ecoItems=typeItems.filter(function(b){return b.e===eco;});
+        var ecoSafe=eco.replace(/[^a-zA-Z0-9]/g,"_");
+        var ecoXid="bxe_"+safe+"_"+ecoSafe;
 
-      body+="<tr class='bxrow "+typeXid+(isCoS?" bln":"")+" br-toggle' data-xid='"+rsnXid+"'>";
-      body+="<td style='padding-left:18px'>";
-      body+="<span id='ic_"+rsnXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
-      body+=rsn+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
-      S4.forEach(function(s){
-        var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
-        body+="<td>"+fv(v)+"</td>";
-      });
-      body+="</tr>";
-
-      rsnItems.slice().sort(function(a,b){
-        var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
-        if(sp!==0)return sp;
-        return Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
-      }).forEach(function(item){
-        body+="<tr class='bxrow "+rsnXid+(item.lnk?" bln":"")+"'>";
-        var dealLabel=(item.n?item.n+" \u2014 ":"")+(item.e||"");
-        body+="<td style='padding-left:32px;font-size:10.5px;color:var(--t2)'>"+dealLabel+"</td>";
-        S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(item[s]||0)+"</td>";});
+        // Eco sub-header
+        body+="<tr class='bxrow "+typeXid+" br-toggle' data-xid='"+ecoXid+"'>";
+        body+="<td style='padding-left:18px;font-weight:600;font-size:11px'>";
+        body+="<span id='ic_"+ecoXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
+        body+=eco+"</td>";
+        S4.forEach(function(s){
+          var v=ecoItems.reduce(function(a,b){return a+(b[s]||0);},0);
+          body+="<td>"+fv(v)+"</td>";
+        });
         body+="</tr>";
+
+        // Group eco items by reason
+        var revEco=ecoItems.filter(function(b){return !b.lnk;});
+        var cosEco=ecoItems.filter(function(b){return b.lnk;});
+
+        // Group revenue by reason
+        var rsnMap={}, rsnOrder=[];
+        revEco.forEach(function(it){
+          if(!rsnMap[it.l]){rsnMap[it.l]=[];rsnOrder.push(it.l);}
+          rsnMap[it.l].push(it);
+        });
+        // Sort reasons by abs value
+        rsnOrder.sort(function(a,b){
+          var av=Math.abs(rsnMap[a].reduce(function(s,i){return s+(i[SC]||0);},0));
+          var bv=Math.abs(rsnMap[b].reduce(function(s,i){return s+(i[SC]||0);},0));
+          return bv-av;
+        });
+
+        var usedCos=new Set();
+
+        rsnOrder.forEach(function(rsn){
+          var rsnItems=rsnMap[rsn];
+          var rsnSafe=rsn.replace(/[^a-zA-Z0-9]/g,"_");
+          var rsnXid="bxr_"+safe+"_"+ecoSafe+"_"+rsnSafe;
+
+          // Reason sub-header
+          body+="<tr class='bxrow "+ecoXid+" br-toggle' data-xid='"+rsnXid+"'>";
+          body+="<td style='padding-left:28px;font-size:10.5px;color:var(--t2)'>";
+          body+="<span id='ic_"+rsnXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
+          body+=rsn+" <span style='font-size:9px;color:var(--t3)'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
+          S4.forEach(function(s){
+            var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
+            body+="<td>"+fv(v)+"</td>";
+          });
+          body+="</tr>";
+
+          // Each rev deal + its matched CoS
+          rsnItems.slice().sort(function(a,b){
+            var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
+            return sp!==0?sp:Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
+          }).forEach(function(rev){
+            body+="<tr class='bxrow "+rsnXid+"'>";
+            body+="<td style='padding-left:38px;font-size:10.5px;color:var(--t2)'>"+rev.n+"</td>";
+            S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(rev[s]||0)+"</td>";});
+            body+="</tr>";
+
+            // Find matching CoS
+            cosEco.forEach(function(cos,ci){
+              if(usedCos.has(ci))return;
+              if(matchScore(cos.n,rev.n)>=0.45){
+                usedCos.add(ci);
+                body+="<tr class='bxrow "+rsnXid+" bln'>";
+                body+="<td style='padding-left:48px;font-size:10px;color:var(--t3)'>";
+                body+="\u2514 "+cos.l.replace("CoS \u2014 ","")+" \u00b7 "+cos.n+"</td>";
+                S4.forEach(function(s){body+="<td style='font-size:10px'>"+fv(cos[s]||0)+"</td>";});
+                body+="</tr>";
+              }
+            });
+          });
+        });
+
+        // Any unmatched CoS for this eco (shouldn't happen after fix, but safety net)
+        cosEco.forEach(function(cos,ci){
+          if(!usedCos.has(ci)){
+            body+="<tr class='bxrow "+ecoXid+" bln'>";
+            body+="<td style='padding-left:38px;font-size:10px;color:var(--t3)'>\u2514 "+cos.l.replace("CoS \u2014 ","")+" \u00b7 "+cos.n+"</td>";
+            S4.forEach(function(s){body+="<td style='font-size:10px'>"+fv(cos[s]||0)+"</td>";});
+            body+="</tr>";
+          }
+        });
       });
-    });
+
+    } else {
+      // ── Normal types: Reason → Deals ──
+      var reasonMap={}, reasonOrder=[];
+      typeItems.forEach(function(it){
+        if(!reasonMap[it.l]){reasonMap[it.l]=[];reasonOrder.push(it.l);}
+        reasonMap[it.l].push(it);
+      });
+      reasonOrder.sort(function(a,b){
+        var av=Math.abs(reasonMap[a].reduce(function(s,i){return s+(i[SC]||0);},0));
+        var bv=Math.abs(reasonMap[b].reduce(function(s,i){return s+(i[SC]||0);},0));
+        return bv-av;
+      });
+
+      reasonOrder.forEach(function(rsn){
+        var rsnItems=reasonMap[rsn];
+        var rsnSafe=rsn.replace(/[^a-zA-Z0-9]/g,"_");
+        var rsnXid="bxr_"+safe+"_"+rsnSafe;
+        var isCoS=rsnItems[0]&&rsnItems[0].lnk;
+
+        body+="<tr class='bxrow "+typeXid+(isCoS?" bln":"")+" br-toggle' data-xid='"+rsnXid+"'>";
+        body+="<td style='padding-left:18px'>";
+        body+="<span id='ic_"+rsnXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
+        body+=rsn+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
+        S4.forEach(function(s){
+          var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
+          body+="<td>"+fv(v)+"</td>";
+        });
+        body+="</tr>";
+
+        rsnItems.slice().sort(function(a,b){
+          var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
+          return sp!==0?sp:Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
+        }).forEach(function(it){
+          var dealLabel=(it.n?it.n+" \u2014 ":"")+(it.e||"");
+          body+="<tr class='bxrow "+rsnXid+(it.lnk?" bln":"")+"'>";
+          body+="<td style='padding-left:32px;font-size:10.5px;color:var(--t2)'>"+dealLabel+"</td>";
+          S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(it[s]||0)+"</td>";});
+          body+="</tr>";
+        });
+      });
+    }
   });
 
+  // Totals use full BI
   body+="<tr class='btot'><td>Total movement</td>";
   S4.forEach(function(s){
     var v=+BI.reduce(function(a,b){return a+(b[s]||0);},0).toFixed(1);
     body+="<td>"+fv(v)+"</td>";
   });
   body+="</tr>";
-
   body+="<tr class='bse'><td>EBITDA "+CUR_D+" \u2014 close</td>";
   S4.forEach(function(s){body+="<td class='"+(CUR.eb[s]>=0?"pos":"neg")+"'>"+fm(CUR.eb[s])+"</td>";});
   body+="</tr>";
 
   document.getElementById("t-br").innerHTML=h+body+"</tbody>";
 
-  // Delegated click handler — no inline onclick needed
   document.getElementById("t-br").addEventListener("click",function(ev){
     var row=ev.target.closest("tr.br-toggle");
     if(!row)return;
     var xid=row.getAttribute("data-xid");
     if(!xid)return;
-    document.querySelectorAll("."+xid).forEach(function(r){r.classList.toggle("open");});
-    var ic=document.getElementById("ic_"+xid);
-    if(ic)ic.textContent=(ic.textContent==="\u25b8")?"\u25be":"\u25b8";
+    var children=document.querySelectorAll("."+xid);
+    var opening=!children[0]||!children[0].classList.contains("open");
+
+    function closeAll(id){
+      document.querySelectorAll("."+id).forEach(function(r){
+        r.classList.remove("open");
+        var cid=r.getAttribute("data-xid");
+        if(cid) closeAll(cid);
+        var cic=document.getElementById("ic_"+cid);
+        if(cic) cic.textContent="\u25b8";
+      });
+    }
+
+    if(opening){
+      children.forEach(function(r){r.classList.add("open");});
+      var ic=document.getElementById("ic_"+xid);
+      if(ic) ic.textContent="\u25be";
+    } else {
+      closeAll(xid);
+      children.forEach(function(r){r.classList.remove("open");});
+      var ic=document.getElementById("ic_"+xid);
+      if(ic) ic.textContent="\u25b8";
+    }
   });
 }
+
 
 
 

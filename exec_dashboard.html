@@ -1001,7 +1001,7 @@ function buildPL(){
   const SWV=[...SCS,"WV"];
   let h="<thead><tr><th>Line item</th><th>Budget</th>";
   SWV.forEach(s=>h+="<th style=\"color:"+SC_C[s]+"\">"+SC_L[s]+"</th>");
-  h+="<th style=\"color:#B45309\">Δ prev</th></tr></thead><tbody>";
+  h+="<th style=\"color:#B45309\">Δ prev</th><th style=\"color:#7C3AED\">Δ bud</th></tr></thead><tbody>";
   let b="";
   rows.forEach(r=>{
     const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
@@ -1009,6 +1009,7 @@ function buildPL(){
     SWV.forEach(s=>{const v=CUR[r.k]&&CUR[r.k][s];b+="<td "+(s===SC?colH(s):"")+" class=\""+(r.pct?"":vc(v))+"\">"+(r.pct?(v||"—"):fm(v))+"</td>";});
     const cv=CUR[r.k]&&CUR[r.k][SC],pv=PRV[r.k]&&PRV[r.k][SC];
     if(!r.pct&&typeof cv==="number"&&typeof pv==="number"){const d=+(cv-pv).toFixed(1);b+="<td class=\""+vc(d)+"\">"+(d>=0?"+":"")+d+"m</td>";}else b+="<td>—</td>";
+    if(!r.pct&&typeof cv==="number"&&typeof r.bv==="number"){const db=+(cv-r.bv).toFixed(1);b+="<td class=\""+vc(db)+"\">"+(db>=0?"+":"")+db+"m</td>";}else b+="<td>—</td>";
     b+="</tr>";
   });
   document.getElementById("t-pl").innerHTML=h+b+"</tbody>";
@@ -1582,7 +1583,7 @@ function buildEcoTable(){
     return" style='background:"+SC_C[c]+"18;font-weight:600'";
   }
   function vsBud(key){
-    var cy=e[key]&&e[key]["BGY"],bv=e[key]&&e[key]["bud"];
+    var cy=e[key]&&e[key][SC],bv=e[key]&&e[key]["bud"];
     if(typeof cy==="number"&&typeof bv==="number"){
       var d=+((cy-bv)/1000).toFixed(1);
       return"<td class='"+(d>=0?"pos":"neg")+"'>"+(d>=0?"+":"")+d+"m</td>";
@@ -1601,7 +1602,7 @@ function buildEcoTable(){
   COLS2.forEach(function(c){
     h+="<th style='color:"+(SC_C[c]||"#5F5E5A")+"'>"+(c==="bud"?"Budget":(SC_L[c]||c))+"</th>";
   });
-  h+="<th style='color:#B45309;font-size:9px'>vs bud (+Y)</th></tr></thead>";
+  h+="<th style='color:#7C3AED;font-size:9px'>vs bud ("+SC_L[SC]+")</th></tr></thead>";
 
   var b="<tbody>";
 

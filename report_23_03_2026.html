@@ -82,6 +82,7 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
     <button class="tab" data-t="ebitda">EBITDA</button>
     <button class="tab" data-t="eco">Ecosystem P&L</button>
     <button class="tab" data-t="yoy">Revenue YoY</button>
+    <button class="tab" data-t="deals">Revenue Deals</button>
   </div>
   <div class="scbar">
     <button class="scb B" data-s="B">Booked</button>
@@ -134,6 +135,24 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
       <div class="leg" id="yoy-leg"></div>
     </div>
     <div class="card"><div class="ch">Checkpoint summary</div><div class="cx"><table id="t-yoy"></table></div></div>
+  </div>
+
+  <div class="pane" id="pane-deals">
+    <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center">
+      <select id="dl-eco" onchange="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;cursor:pointer;min-width:160px">
+        <option value="">All ecosystems</option>
+      </select>
+      <select id="dl-type" onchange="buildDeals()" style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;cursor:pointer;min-width:160px">
+        <option value="">All revenue types</option>
+      </select>
+      <input id="dl-search" type="text" placeholder="Search deal name..." oninput="buildDeals()"
+        style="padding:5px 10px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;color:#0F172A;background:#fff;min-width:200px;flex:1">
+      <button onclick="document.getElementById('dl-eco').value='';document.getElementById('dl-type').value='';document.getElementById('dl-search').value='';buildDeals();"
+        style="padding:5px 12px;border:1px solid #E2E8F0;border-radius:6px;font-size:11px;background:#fff;cursor:pointer;color:#64748B">
+        Clear filters
+      </button>
+    </div>
+    <div id="deals-body"></div>
   </div>
 </div>
 <footer><span id="ftl"></span><span>€m unless stated · B=Booked · G=Green · Y=Yellow · R=Red · WV=Weighted</span></footer>
@@ -260,12 +279,12 @@ const BI=[
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Dota",n:"Dota SLAM 9 Week 1 2026",B:-0.1,BG:-0.1,BGY:-0.1,BGYR:-0.1,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Dota",n:"Dota SLAM 9 Week 2 2026",B:-0.03,BG:-0.03,BGY:-0.03,BGYR:-0.03,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Dota",n:"Dota General 2026",B:-0.14,BG:-0.14,BGY:-0.14,BGYR:-0.14,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Spring Split",B:0.0,BG:-0.04,BGY:-0.04,BGYR:-0.04,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Brawl Cup",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Summer Split",B:0.0,BG:-0.01,BGY:-0.01,BGYR:-0.01,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"LCQ",B:0.0,BG:0.24,BGY:0.24,BGYR:0.24,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Worlds",B:0.0,BG:-0.16,BGY:-0.16,BGYR:-0.16,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Supercell",n:"Brawlstars General",B:0.0,BG:-0.18,BGY:-0.18,BGYR:-0.18,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Spring Split",B:0.0,BG:-0.04,BGY:-0.04,BGYR:-0.04,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Brawl Cup",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Summer Split",B:0.0,BG:-0.01,BGY:-0.01,BGYR:-0.01,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"LCQ",B:0.0,BG:0.24,BGY:0.24,BGYR:0.24,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Worlds",B:0.0,BG:-0.16,BGY:-0.16,BGYR:-0.16,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"Brawlstars General",B:0.0,BG:-0.18,BGY:-0.18,BGYR:-0.18,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Supercell",n:"2026 Prize Pool Support",B:0.0,BG:-0.02,BGY:-0.02,BGYR:-0.02,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Major 1 2026",B:0.04,BG:0.04,BGY:0.04,BGYR:0.04,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Online Qualifiers (Major 2) 2026 - EU/NA",B:-0.05,BG:-0.05,BGY:-0.05,BGYR:-0.05,lnk:1},
@@ -275,11 +294,11 @@ const BI=[
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS Online Qualifier (1v1 + 2v2) - EU/NA 2026",B:-0.03,BG:-0.03,BGY:-0.03,BGYR:-0.03,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"RLCS",n:"RLCS: Non-event specific 2026",B:0.03,BG:0.03,BGY:0.03,BGYR:0.03,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"FNCS",n:"FNCS: Non-event specific 2026",B:0.04,BG:0.04,BGY:0.04,BGYR:0.04,lnk:1},
-  {l:"CoS \u2014 Event Costs",t:"Cost of Sales",e:"Wimbledon",n:"Total WIMBLEDON",B:0.0,BG:0.0,BGY:0.27,BGYR:0.27,lnk:1},
+  {l:"CoS \u2014 Event Costs",t:"Publisher",e:"Wimbledon",n:"Total WIMBLEDON",B:0.0,BG:0.0,BGY:0.27,BGYR:0.27,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Publisher",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:-1.02,BGYR:-1.02,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Publisher",e:"New Formats",n:"WSOW - New Biz - Ecosystem 2026 - New Format",B:0.0,BG:0.0,BGY:0.0,BGYR:1.63,lnk:1},
   {l:"CoS \u2014 Event Costs",t:"Publisher",e:"R6",n:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",B:0.0,BG:0.0,BGY:0.0,BGYR:1.02,lnk:1},
-  {l:"CoS \u2014 Prize Money",t:"Cost of Sales",e:"R6",n:"R6: Six Invitational 2026 - extra prize money",B:0.03,BG:0.03,BGY:0.03,BGYR:0.03,lnk:1},
+  {l:"CoS \u2014 Prize Money",t:"Publisher",e:"R6",n:"R6: Six Invitational 2026 - extra prize money",B:0.03,BG:0.03,BGY:0.03,BGYR:0.03,lnk:1},
 ];
 
 const ECO_DRILL = {
@@ -402,6 +421,395 @@ const B25=[66.1,65.8,76.5,76.6,77.6,78.7,79.3,80.1,84,86.8,88.6,87.3,87.9,88.8,9
 const BG25=[79.8,83.1,85.3,88.6,89,89.8,91,91.8,94.7,91.8,102.7,104.9,106.2,108,110.3,111.1,111.8,112.7,113.6,112.3,113.5,113.9,114.2,114.7];
 const B26=[44.2,45.3,45.7,47.5,50.6],BG26=[81.6,91.3,91.4,95.5,97.2],BUD25=121;
 const COMMENTARY="Booked revenue +€3.1m vs 09.03, driven by Riot Corporate monthly fees and Riot Studio Jan-Apr base fee update. +Green broadly flat. +Yellow down from Y to R status updates (JBL/Peripherals, Alienware Epic, Goodyear FNCS). Main gap to budget: ~€18m Ubisoft Publisher fee and ~€10m Riot Publisher fee currently in Green.";
+const DEALS_DATA={deals:[
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"Progressive Insurance RLCS 2026",loc:"1860000",ccy:"USD",eur:1587031},
+  {eco:"Premier",type:"Sponsorship",status:"B",name:"Polymarket - Predictions",loc:"1200000",ccy:"EUR",eur:1200000},
+  {eco:"Dota",type:"Sponsorship",status:"B",name:"Gaming Malta - Dota - 2026",loc:"1400000",ccy:"EUR",eur:1400000},
+  {eco:"RLCS",type:"Ticketing",status:"B",name:"Ticketing - Paris - RLCS May",loc:"1950000",ccy:"EUR",eur:1950000},
+  {eco:"RLCS",type:"Media Rights",status:"B",name:"RLCS FR Feed Cost",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"Sponsorship",status:"B",name:"Gaming Malta - Premier - 2026",loc:"1400000",ccy:"EUR",eur:1400000},
+  {eco:"Premier",type:"Ticketing",status:"B",name:"Ticketing - Rotterdam - Premier Open (Skorpio MG)",loc:"550000",ccy:"EUR",eur:550000},
+  {eco:"Premier",type:"Sponsorship",status:"B",name:"ASUS - Monitors and Computers - Premier 2026",loc:"750000",ccy:"USD",eur:639932},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"Michelin - RLCS 2026",loc:"400000",ccy:"EUR",eur:400000},
+  {eco:"FNCS",type:"Sponsorship",status:"B",name:"The Milk Cup FNCS 2026",loc:"512600",ccy:"EUR",eur:512600},
+  {eco:"Premier",type:"Sponsorship",status:"B",name:"Nova Wallet - Premier 2026",loc:"255000",ccy:"EUR",eur:255000},
+  {eco:"Premier",type:"BLAST Channels",status:"B",name:"Epic Clips - Other CoS against YouTube rev for Valve",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"La Banque Postal - RLCS 2026",loc:"225000",ccy:"EUR",eur:225000},
+  {eco:"Other Publishers",type:"Sponsorship",status:"B",name:"Corpay",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Dota",type:"Sponsorship",status:"B",name:"Blacklyte 2026 Multi Ecosystem - Slam",loc:"226063",ccy:"USD",eur:192886},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"Midas",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"Epic Games Store - RLCS 2026",loc:"234375",ccy:"USD",eur:199979},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"Blacklyte 2026 Multi Ecosystem - RLCS",loc:"226063",ccy:"USD",eur:192886},
+  {eco:"Premier",type:"Sponsorship",status:"B",name:"Blacklyte Multi Ecosystem - Premier - 2026",loc:"226063",ccy:"USD",eur:192886},
+  {eco:"FNCS",type:"Sponsorship",status:"B",name:"Blacklyte 2026 Multi Ecosystem - FNCS",loc:"226063",ccy:"USD",eur:192886},
+  {eco:"R6",type:"Ticketing",status:"B",name:"Ticketing - SI Paris - Live Nation MG",loc:"352000",ccy:"EUR",eur:352000},
+  {eco:"FNCS",type:"Sponsorship",status:"B",name:"Epic Games Store - FNCS 2026",loc:"195350",ccy:"USD",eur:166681},
+  {eco:"Premier",type:"Host City",status:"B",name:"Host City - Porto",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"Dota",type:"Sponsorship",status:"B",name:"Polymarket - Predictions",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"RLCS",type:"Ticketing",status:"B",name:"Ticketing - Boston - RLCS Major Feb",loc:"350000",ccy:"USD",eur:298635},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"License - FifaE RLCS - 2026",loc:"140000",ccy:"USD",eur:119454},
+  {eco:"R6",type:"Ticketing",status:"B",name:"Ticketing - SI Paris - Additional Box Office",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Premier",type:"Sponsorship",status:"B",name:"Refrag - Premier Rotterdam",loc:"29000",ccy:"EUR",eur:29000},
+  {eco:"R6",type:"Ticketing",status:"B",name:"Ticketing - SI Paris - Additional Box Office",loc:"25000",ccy:"EUR",eur:25000},
+  {eco:"Premier",type:"Ticketing",status:"B",name:"Ticketing - Malta - Bounty Jan",loc:"6932",ccy:"EUR",eur:6932},
+  {eco:"R6",type:"Ticketing",status:"B",name:"Ticketing - SI Paris - Additional Box Office",loc:"7097",ccy:"EUR",eur:7097},
+  {eco:"Dota",type:"Media Rights",status:"B",name:"GRID - MG Data Rights Agreement - Slam 26",loc:"250000",ccy:"EUR",eur:250000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"Grid - MG - Data Rights Agreement - Premier 26",loc:"400000",ccy:"EUR",eur:400000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"Inflight (global) - Encore - Premier 26",loc:"2500",ccy:"EUR",eur:2500},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"FI - Pelaajat - Premier 26",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"RLCS",type:"Publisher Fee",status:"B",name:"2026 RLCS Additional Marketing Program Revenue",loc:"1250000",ccy:"USD",eur:1066553},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"PL - Fantasy Expo - Premier 26",loc:"52500",ccy:"EUR",eur:52500},
+  {eco:"Dota",type:"Media Rights",status:"B",name:"CIS - Bet Boom - Slam 26",loc:"3800000",ccy:"EUR",eur:3800000},
+  {eco:"R6",type:"Publisher Fee",status:"B",name:"Ubisoft Production Fees 2026 - 25/26 deal",loc:"3386000",ccy:"EUR",eur:3600000},
+  {eco:"Dota",type:"Media Rights",status:"B",name:"UA - Maincast - Slam 2026",loc:"60000",ccy:"EUR",eur:60000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"CN - GGTV - Premier 26",loc:"650000",ccy:"USD",eur:554608},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"ES - Encom - Premier 26",loc:"35000",ccy:"EUR",eur:35000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"VT, MO, PH, TR, TH, MY - 1x - Premier 26",loc:"410000",ccy:"EUR",eur:410000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"HU - Benceee - Premier 26",loc:"16000",ccy:"EUR",eur:16000},
+  {eco:"R6",type:"Publisher Fee",status:"B",name:"Ubisoft - SI 26 Prize Money",loc:"2097484",ccy:"EUR",eur:2097484},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"UA - Maincast - Premier 26",loc:"210000",ccy:"EUR",eur:210000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"BR - Bet Boom - Premier 26",loc:"1900000",ccy:"EUR",eur:1900000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"CIS - Bet Boom - Premier 26",loc:"4800000",ccy:"EUR",eur:4800000},
+  {eco:"Dota",type:"Media Rights",status:"B",name:"VT, MO, IN, PH, TH, MY - 1x - Slam 26",loc:"410000",ccy:"EUR",eur:410000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"FR - KRL - Premier 26",loc:"70000",ccy:"EUR",eur:70000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"RO - Werty and Jaxi - Premier 26",loc:"11000",ccy:"EUR",eur:11000},
+  {eco:"Premier",type:"Media Rights",status:"B",name:"SE - BME - Premier 26",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"B",name:"1. Riot 2026 Studio Base January",loc:"1346008",ccy:"EUR",eur:1346008},
+  {eco:"Dota",type:"Media Rights",status:"B",name:"BR & LatAm - Bet Boom - Slam 26",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"Sponsorship",status:"B",name:"Hellcase BLASTtv Ads (6 months)",loc:"97500",ccy:"EUR",eur:97500},
+  {eco:"Dota",type:"Media Rights",status:"B",name:"CN - GGTV - Slam 2026",loc:"50000",ccy:"USD",eur:42662},
+  {eco:"FNCS",type:"Publisher Fee",status:"B",name:"FNCS Production Fee 2026 base",loc:"10132941",ccy:"USD",eur:8645854},
+  {eco:"RLCS",type:"Publisher Fee",status:"B",name:"RLCS Production Fee 2026 base",loc:"7093058",ccy:"USD",eur:6052097},
+  {eco:"Premier",type:"Ticketing",status:"B",name:"Ticketing - Fort Worth - MG",loc:"600000",ccy:"USD",eur:511945},
+  {eco:"RLCS",type:"Sponsorship",status:"B",name:"Test",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"BLAST Channels",status:"B",name:"Advertising - Twitch (Premier) - 2026",loc:"10127",ccy:"EUR",eur:10127},
+  {eco:"Premier",type:"BLAST Channels",status:"B",name:"Advertising - KICK (Premier) - 2026",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"BLAST Channels",status:"B",name:"Advertising - KICK (Premier) - 2026",loc:"5209",ccy:"EUR",eur:5209},
+  {eco:"RLCS",type:"BLAST Channels",status:"B",name:"Advertising - Twitch (RLCS) 2026",loc:"46788",ccy:"EUR",eur:46788},
+  {eco:"RLCS",type:"BLAST Channels",status:"B",name:"Advertising - Youtube (RLCS) 2026",loc:"10712",ccy:"EUR",eur:10712},
+  {eco:"Dota",type:"BLAST Channels",status:"B",name:"Advertising - Twitch Slam 26",loc:"",ccy:"EUR",eur:0},
+  {eco:"Dota",type:"BLAST Channels",status:"B",name:"Advertising - Youtube Slam 26",loc:"6214",ccy:"EUR",eur:6214},
+  {eco:"Dota",type:"BLAST Channels",status:"B",name:"Advertising - Twitch Slam 26",loc:"4364",ccy:"EUR",eur:4364},
+  {eco:"Dota",type:"BLAST Channels",status:"B",name:"Advertising - Kick Slam 26",loc:"10077",ccy:"EUR",eur:10077},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"B",name:"1. Riot 2026 Corporate",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Premier",type:"BLAST Channels",status:"B",name:"Advertising - Youtube (Premier) - 2026",loc:"30326",ccy:"EUR",eur:30326},
+  {eco:"Supercell",type:"Ticketing",status:"B",name:"Ticketing - Berlin",loc:"65000",ccy:"EUR",eur:65000},
+  {eco:"Premier",type:"Ticketing",status:"G",name:"Ticketing - Hong Kong - Rivals (AEG MG)",loc:"10500000",ccy:"HKD",eur:1171875},
+  {eco:"Dota",type:"Host City",status:"G",name:"Host City - Chengdu - Slam VI",loc:"5500000",ccy:"RMB",eur:664251},
+  {eco:"R6",type:"Sponsorship",status:"G",name:"Blacklyte 2026 Multi Ecosystem - R6 allocation 26/27 season",loc:"130500",ccy:"USD",eur:111348},
+  {eco:"RLCS",type:"Sponsorship",status:"G",name:"NHTSA",loc:"375000",ccy:"USD",eur:319966},
+  {eco:"FNCS",type:"Ticketing",status:"G",name:"Ticketing - Dusseldorf - Major Spring",loc:"350000",ccy:"EUR",eur:350000},
+  {eco:"Premier",type:"Host City",status:"G",name:"Host City - Forth Worth - Rivals",loc:"290000",ccy:"USD",eur:247440},
+  {eco:"RLCS",type:"Ticketing",status:"G",name:"Ticketing - Forth Worth - RLCS Worlds",loc:"500000",ccy:"USD",eur:426621},
+  {eco:"Premier",type:"Ticketing",status:"G",name:"Ticketing - Porto - Open",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Premier",type:"Sponsorship",status:"G",name:"Red Bull - Premier 26",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"R6",type:"Media Rights",status:"G",name:"GLB - E-Clutch",loc:"15000",ccy:"EUR",eur:15000},
+  {eco:"RLCS",type:"Host City",status:"G",name:"Host City - Boston - RLCS Major Feb",loc:"100000",ccy:"USD",eur:85324},
+  {eco:"Premier",type:"Sponsorship",status:"G",name:"Razer - Premier",loc:"300000",ccy:"USD",eur:255973},
+  {eco:"RLCS",type:"Host City",status:"G",name:"Host City - Forth Worth - RLCS Worlds",loc:"290000",ccy:"USD",eur:247440},
+  {eco:"FNCS",type:"Ticketing",status:"G",name:"Ticketing - London - FNCS GC",loc:"200000",ccy:"GBP",eur:233781},
+  {eco:"Other Publishers",type:"Sponsorship",status:"G",name:"EFM - Logistics 2026 Q1",loc:"73750",ccy:"EUR",eur:73750},
+  {eco:"Other Publishers",type:"Sponsorship",status:"G",name:"EFM - Logistics 2026 Q2",loc:"73750",ccy:"EUR",eur:73750},
+  {eco:"Other Publishers",type:"Sponsorship",status:"G",name:"EFM - Logistics 2026 Q3",loc:"73750",ccy:"EUR",eur:73750},
+  {eco:"Other Publishers",type:"Sponsorship",status:"G",name:"EFM - Logistics 2026 Q4",loc:"73750",ccy:"EUR",eur:73750},
+  {eco:"R6",type:"Sponsorship",status:"G",name:"Blacklyte 2026 Multi Ecosystem - R6 allocation SI Feb 26",loc:"65250",ccy:"USD",eur:55674},
+  {eco:"Premier",type:"Host City",status:"G",name:"Host City - Porto",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Dota",type:"Host City",status:"G",name:"Host City - Malta Rebate - Slam Portion",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Premier",type:"Sponsorship",status:"G",name:"TIXR - Porto Premier",loc:"30000",ccy:"EUR",eur:30000},
+  {eco:"Premier",type:"Host City",status:"G",name:"Host City - Malta Rebate - Premier portion",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"RLCS",type:"Media Rights",status:"G",name:"EU - Eclutch - RLCS 26",loc:"25000",ccy:"EUR",eur:25000},
+  {eco:"RLCS",type:"Media Rights",status:"G",name:"BE - RTBF - RLCS 26",loc:"12000",ccy:"EUR",eur:12000},
+  {eco:"FNCS",type:"Media Rights",status:"G",name:"GLB - Eclutch - FNCS 26",loc:"18100",ccy:"EUR",eur:18100},
+  {eco:"RLCS",type:"Media Rights",status:"G",name:"MENA - Eclutch - RLCS 26",loc:"15000",ccy:"EUR",eur:15000},
+  {eco:"Premier",type:"Media Rights",status:"G",name:"DE - Zonixx - Premier 26",loc:"12000",ccy:"EUR",eur:12000},
+  {eco:"Premier",type:"Media Rights",status:"G",name:"PT - RTP - Premier 26",loc:"30000",ccy:"EUR",eur:30000},
+  {eco:"R6",type:"Publisher Fee",status:"G",name:"Ubisoft Production Fees 2026 - 26/27 deal (80% of 20m)",loc:"16000000",ccy:"EUR",eur:16000000},
+  {eco:"R6",type:"Media Rights",status:"G",name:"Grid R6 Deal - Ubisoft Rights Share 2026",loc:"44000",ccy:"USD",eur:37543},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 01 January",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 11 November",loc:"400",ccy:"EUR",eur:400},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 08 August",loc:"400",ccy:"EUR",eur:400},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 02 February",loc:"300",ccy:"EUR",eur:300},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 10 October",loc:"350",ccy:"EUR",eur:350},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 03 March",loc:"500",ccy:"EUR",eur:500},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"Brawl Stars - 2026 - Production Fee",loc:"11100000",ccy:"USD",eur:9470990},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"Project Heaven",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 04 April",loc:"450",ccy:"EUR",eur:450},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 06 June",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 07 July",loc:"400",ccy:"EUR",eur:400},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 05 May",loc:"300",ccy:"EUR",eur:300},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 12 December",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"G",name:"BLAST TV ads - 09 September",loc:"300",ccy:"EUR",eur:300},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"Brawl Stars - Prize Money 2026",loc:"2000000",ccy:"USD",eur:1706485},
+  {eco:"R6",type:"Sponsorship",status:"G",name:"Alienware - PC/Monitor",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"G",name:"Midas",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"G",name:"Midas",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"G",name:"Midas",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"G",name:"Midas",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"G",name:"Midas",loc:"",ccy:"EUR",eur:0},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"Brawl Challengers",loc:"675000",ccy:"USD",eur:575939},
+  {eco:"Premier",type:"Media Rights",status:"G",name:"EClutch",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"Media Rights",status:"G",name:"GLB - E-Clutch - Premier 26",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"R6",type:"Media Rights",status:"G",name:"GLB - E-Clutch - SI Feb 2026",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"Premier",type:"Sponsorship",status:"G",name:"Zowie",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"Media Rights",status:"G",name:"BG - eSportsBulgaria - Premier 26",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"Riot (New Biz)",type:"Publisher Fee",status:"G",name:"Riot - New Biz - LEC Roadshow Nice 2026",loc:"1345300",ccy:"EUR",eur:1345300},
+  {eco:"Riot (New Biz)",type:"Publisher Fee",status:"G",name:"Riot - New Biz - LEC Road Trips",loc:"1175000",ccy:"EUR",eur:1175000},
+  {eco:"FNCS",type:"In-Game",status:"G",name:"Legends Landing 2026 - In-Game Green",loc:"150000",ccy:"USD",eur:127986},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"2. Riot 2026 Studio Base February",loc:"789114",ccy:"EUR",eur:789114},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"3. Riot 2026 Studio Base March",loc:"250230",ccy:"EUR",eur:250230},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"4. Riot 2026 Studio Base April",loc:"1085046",ccy:"EUR",eur:1085046},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"5. Riot 2026 Studio Base May",loc:"821663",ccy:"EUR",eur:821663},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"6. Riot 2026 Studio Base June",loc:"436337",ccy:"EUR",eur:436337},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"7. Riot 2026 Studio Base July",loc:"717154",ccy:"EUR",eur:717154},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"8. Riot 2026 Studio Base August",loc:"1105173",ccy:"EUR",eur:1105173},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"9. Riot 2026 Studio Base September",loc:"665908",ccy:"EUR",eur:665908},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"10. Riot 2026 Studio Base October",loc:"599939",ccy:"EUR",eur:599939},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"11. Riot 2026 Studio Base November",loc:"445476",ccy:"EUR",eur:445476},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"12. Riot 2026 Studio Base December",loc:"333842",ccy:"EUR",eur:333842},
+  {eco:"R6",type:"In-Game",status:"G",name:"1. In-Game Transactions & MTX (R6) - Q1 - G",loc:"507362",ccy:"EUR",eur:507362},
+  {eco:"R6",type:"In-Game",status:"G",name:"3. In-Game Transactions & MTX (R6) - Q3 - G",loc:"411286",ccy:"EUR",eur:411286},
+  {eco:"R6",type:"In-Game",status:"G",name:"4. In-Game Transactions & MTX (R6) - Q4 - G",loc:"400018",ccy:"EUR",eur:400018},
+  {eco:"R6",type:"In-Game",status:"G",name:"2. In-Game Transactions & MTX (R6) - Q2 - G",loc:"281334",ccy:"EUR",eur:281334},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"Brawl Stars Cup Event Additions",loc:"90000",ccy:"EUR",eur:90000},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"2026 Prize Pool support",loc:"",ccy:"EUR",eur:0},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"2026 Prize Pool Support",loc:"30475",ccy:"USD",eur:26003},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"2. Riot 2026 Corporate February",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"3. Riot 2026 Corporate March",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"4. Riot 2026 Corporate April",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"5. Riot 2026 Corporate May",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"6. Riot 2026 Corporate June",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"7. Riot 2026 Corporate July",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"8. Riot 2026 Corporate August",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"9. Riot 2026 Corporate September",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"10. Riot 2026 Corporate October",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"11. Riot 2026 Corporate November",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"G",name:"12. Riot 2026 Corporate December",loc:"169000",ccy:"EUR",eur:169000},
+  {eco:"Other Publishers",type:"Sponsorship",status:"G",name:"McDonalds (via XBox)",loc:"75000",ccy:"USD",eur:63993},
+  {eco:"Supercell",type:"Publisher Fee",status:"G",name:"2026 Prize Pool Support - Icebreaker",loc:"23000",ccy:"USD",eur:19625},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Spectrum - FNCS 2026",loc:"4850000",ccy:"USD",eur:4138225},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"Sage - Creator deal",loc:"1500000",ccy:"GBP",eur:1753361},
+  {eco:"Other Publishers",type:"Publisher Fee",status:"R",name:"Malta Studio Leasing (visible)",loc:"500000",ccy:"EUR",eur:500000},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"AWS/Oracle/Wider Tech (BLAST wide - no ecosystem at present)",loc:"3000000",ccy:"USD",eur:2559727},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"State Farm 2026",loc:"1000000",ccy:"USD",eur:853242},
+  {eco:"Premier",type:"Host City",status:"R",name:"Host City - Hong Kong - Rivals",loc:"5000000",ccy:"HKD",eur:558036},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Global Betting - Premier 26",loc:"2000000",ccy:"EUR",eur:2000000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Visa - FNCS 2026",loc:"2000000",ccy:"USD",eur:1706485},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Hong Kong Broadband Network and China Mobile",loc:"3500000",ccy:"HKD",eur:390625},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"License - Games of the Future - FNCS 2026",loc:"869000",ccy:"USD",eur:741468},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Goodyear - FNCS 2026",loc:"700000",ccy:"EUR",eur:700000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Visit Morocco",loc:"1000000",ccy:"EUR",eur:1000000},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"AMD deal",loc:"1000000",ccy:"USD",eur:853242},
+  {eco:"Supercell",type:"Sponsorship",status:"R",name:"Radisson",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Alienware - Monitors and Computers FNCS 2026",loc:"400000",ccy:"USD",eur:341297},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Alienware - Monitors and Computers - RLCS 2026",loc:"400000",ccy:"USD",eur:341297},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"Dollar Shave Club deal",loc:"750000",ccy:"USD",eur:639932},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"Zenni",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"EDF",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"Premier",type:"Ticketing",status:"R",name:"Ticketing - Rotterdam - Premier Open (Skorpio rev share)",loc:"250000",ccy:"EUR",eur:250000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Six Flags 2026",loc:"200000",ccy:"USD",eur:170648},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Honda 2026",loc:"500000",ccy:"USD",eur:426621},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"Dude Wipes",loc:"350000",ccy:"EUR",eur:350000},
+  {eco:"Supercell",type:"Sponsorship",status:"R",name:"Prime Hydration - Brawl Stars",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Bunq",loc:"250000",ccy:"EUR",eur:250000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Bunq",loc:"250000",ccy:"EUR",eur:250000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Tradeify - Premier",loc:"250000",ccy:"USD",eur:213311},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Opera GX - FNCS 2026",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Premier",type:"Host City",status:"R",name:"Host City - Malta film commission",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Supercell",type:"Sponsorship",status:"R",name:"Momax - Brawl Stars",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Red Bull RLCS 2026",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Supercell",type:"Sponsorship",status:"R",name:"Paulberger Beverage - Brawl Berlin",loc:"40000",ccy:"EUR",eur:40000},
+  {eco:"RLCS",type:"Publisher Fee",status:"R",name:"RLCS Production Fees 2026 - Studio Show",loc:"1000000",ccy:"EUR",eur:1000000},
+  {eco:"Other Publishers",type:"Publisher Fee",status:"R",name:"Games of the Future Production - 2026",loc:"500000",ccy:"USD",eur:426621},
+  {eco:"FNCS",type:"Publisher Fee",status:"R",name:"FNCS Production Fee 2026 - Mobile",loc:"1000000",ccy:"EUR",eur:1000000},
+  {eco:"Other Publishers",type:"Publisher Fee",status:"R",name:"Madden - New Biz - Europe 2026",loc:"500000",ccy:"USD",eur:426621},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 04 April",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 06 June",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"KP Snacks - RLCS 26",loc:"390000",ccy:"EUR",eur:390000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 07 July",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 05 May",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 12 December",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 09 September",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Dota",type:"Media Rights",status:"R",name:"GRID - Rev Share Data Rights - Slam 26",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"RLCS",type:"Host City",status:"R",name:"Host City - Boston - RLCS Major Feb",loc:"200000",ccy:"USD",eur:170648},
+  {eco:"RLCS",type:"Host City",status:"R",name:"Host City - Paris - RLCS Major Paris",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"RLCS",type:"Host City",status:"R",name:"Host City - Forth Worth - RLCS Worlds",loc:"50000",ccy:"USD",eur:42662},
+  {eco:"FNCS",type:"Host City",status:"R",name:"Host City - Dusseldorf - FNCS Spring Major",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"FNCS",type:"Host City",status:"R",name:"Host City - London - FNCS Global Champs",loc:"100000",ccy:"GBP",eur:116891},
+  {eco:"RLCS",type:"Ticketing",status:"R",name:"Ticketing - Fort Worth - RLCS Worlds",loc:"200000",ccy:"USD",eur:170648},
+  {eco:"Premier",type:"Media Rights",status:"R",name:"Grid - Rev Share - Data Rights - Premier 26",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"RLCS",type:"Media Rights",status:"R",name:"Global - FAST - RLCS 26",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Riot (New Biz)",type:"Publisher Fee",status:"R",name:"Riot - New Biz - TFT Open 2026",loc:"2000000",ccy:"USD",eur:1706485},
+  {eco:"Riot (New Biz)",type:"Publisher Fee",status:"R",name:"Riot - New Biz - LOL USA Challengers 2026",loc:"700000",ccy:"USD",eur:597270},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"WSOW - New Biz - Ecosystem 2026 - New Format",loc:"250000",ccy:"USD",eur:213311},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"Pokemon - New Biz - Champions Production 2026 - New Format",loc:"1000000",ccy:"USD",eur:853242},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"Tennis Clash - New Biz - Roland Garros & US Open 2026 - New Format",loc:"650000",ccy:"USD",eur:554608},
+  {eco:"Dota",type:"Sponsorship",status:"R",name:"Global Betting - Slam 26",loc:"1000000",ccy:"EUR",eur:1000000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Event deals - Texas - Premier 26",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Event deals - France - Premier 26",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Twitch up sells - Premier 26",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Dota",type:"Sponsorship",status:"R",name:"Twitch Upsells - Slam 26",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Automotive - RLCS 26",loc:"335000",ccy:"EUR",eur:335000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"KP Snacks - Chips - FNCS 2026",loc:"390000",ccy:"EUR",eur:390000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Nascar - RLCS 2026",loc:"231000",ccy:"USD",eur:197099},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Nascar - RLCS 2026",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"FNCS Event Deals London",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Peripherals FNCS 26",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Red Magic - FNCS 2026",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"R",name:"Riot 2026 Studio work stretch",loc:"500000",ccy:"EUR",eur:500000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 11 November",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 01 January",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 08 August",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 02 February",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 10 October",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"R",name:"BLAST TV ads - 03 March",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Dota",type:"Sponsorship",status:"R",name:"Visa",loc:"1000000",ccy:"EUR",eur:1000000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"R",name:"Global Game Changers",loc:"500000",ccy:"EUR",eur:500000},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"R",name:"T2 Americas",loc:"500000",ccy:"EUR",eur:500000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Waymo",loc:"",ccy:"EUR",eur:0},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Paramount Pictures - Scream 7",loc:"150000",ccy:"USD",eur:127986},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Current",loc:"",ccy:"EUR",eur:0},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Current - FNCS 2026",loc:"1200000",ccy:"USD",eur:1023891},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Earnin",loc:"",ccy:"EUR",eur:0},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Earnin",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Earnin",loc:"1000000",ccy:"EUR",eur:1000000},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"GG Poker - New Format",loc:"10000000",ccy:"USD",eur:8532423},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Nova Wallet Premier (2)",loc:"262295",ccy:"EUR",eur:262295},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Oracle",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"Oracle",loc:"",ccy:"EUR",eur:0},
+  {eco:"Riot (New Biz)",type:"Publisher Fee",status:"R",name:"Riot - New Biz - LEC Roadshow 2026 Nice",loc:"",ccy:"EUR",eur:0},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"NASCAR Creator 2026 - New Format",loc:"2000000",ccy:"USD",eur:1706485},
+  {eco:"FNCS",type:"In-Game",status:"R",name:"Legends Landing 2026 - In-Game Red",loc:"75000",ccy:"USD",eur:63993},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"JBL / Peripherals",loc:"250000",ccy:"EUR",eur:250000},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"JBL",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"Premier",type:"Media Rights",status:"R",name:"GLB - FAST Channel - Premier - Samsung TV",loc:"20000",ccy:"EUR",eur:20000},
+  {eco:"Dota",type:"Media Rights",status:"R",name:"GLB - FAST Channel - Dota - Samsung TV",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"Other Publishers",type:"Publisher Fee",status:"R",name:"PUBGM EU",loc:"",ccy:"EUR",eur:0},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"EE",loc:"200000",ccy:"GBP",eur:233781},
+  {eco:"Premier",type:"Host City",status:"R",name:"Host City - Malta Studio Leasing",loc:"",ccy:"EUR",eur:0},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Lepar",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"CSL/HKT",loc:"",ccy:"EUR",eur:0},
+  {eco:"Other Publishers",type:"Publisher Fee",status:"R",name:"EAFC Pro Open",loc:"2100000",ccy:"USD",eur:1791809},
+  {eco:"Premier",type:"Host City",status:"R",name:"Host City - HK Jockey Club",loc:"500000",ccy:"EUR",eur:500000},
+  {eco:"R6",type:"In-Game",status:"R",name:"1. In-Game Transactions & MTX (R6) - Q1 - R",loc:"261609",ccy:"EUR",eur:261609},
+  {eco:"R6",type:"In-Game",status:"R",name:"4. In-Game Transactions & MTX (R6) - Q4 - R",loc:"206259",ccy:"EUR",eur:206259},
+  {eco:"R6",type:"In-Game",status:"R",name:"2. In-Game Transactions & MTX (R6) - Q2 - R",loc:"145063",ccy:"EUR",eur:145063},
+  {eco:"R6",type:"In-Game",status:"R",name:"3. In-Game Transactions & MTX (R6) - Q3 - R",loc:"212069",ccy:"EUR",eur:212069},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Zowie",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Supercell",type:"Sponsorship",status:"R",name:"Uber",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"Dota",type:"Sponsorship",status:"R",name:"SAP",loc:"2000000",ccy:"EUR",eur:2000000},
+  {eco:"RLCS",type:"Publisher Fee",status:"R",name:"RLCS Fort Worth 2026 - Audience Days",loc:"250000",ccy:"EUR",eur:250000},
+  {eco:"Supercell",type:"Host City",status:"R",name:"Host City - Berlin",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"Supercell",type:"Host City",status:"R",name:"Host City - Tokyo",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"Other Publishers",type:"Publisher Fee",status:"R",name:"",loc:"",ccy:"EUR",eur:0},
+  {eco:"Other Publishers",type:"Sponsorship",status:"R",name:"",loc:"",ccy:"EUR",eur:0},
+  {eco:"Supercell",type:"Sponsorship",status:"R",name:"MilkPEP",loc:"50000",ccy:"USD",eur:42662},
+  {eco:"RLCS",type:"Sponsorship",status:"R",name:"PC Componentes",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Magnum Premier Porto 2026",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"FNCS",type:"Sponsorship",status:"R",name:"Mous - FNCS Major Summit 1",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Dota",type:"Sponsorship",status:"R",name:"Tuborg - Dota 2026",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Premier",type:"Sponsorship",status:"R",name:"Tuborg- Premier 2026",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"Tuborg Event - New Format",loc:"200000",ccy:"USD",eur:170648},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"",loc:"",ccy:"EUR",eur:0},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"",loc:"",ccy:"EUR",eur:0},
+  {eco:"New Formats",type:"Publisher Fee",status:"R",name:"GeoGuessr - New Format",loc:"250000",ccy:"USD",eur:213311},
+  {eco:"Supercell",type:"Publisher Fee",status:"R",name:"China Broadcasts",loc:"50000",ccy:"USD",eur:42662},
+  {eco:"Supercell",type:"Sponsorship",status:"Y",name:"Burger King",loc:"1120000",ccy:"EUR",eur:1120000},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"Global Betting - Premier 2026",loc:"4000000",ccy:"EUR",eur:4000000},
+  {eco:"Premier",type:"Host City",status:"Y",name:"Host City - Hong Kong - Rivals",loc:"10000000",ccy:"HKD",eur:1116071},
+  {eco:"Dota",type:"Sponsorship",status:"Y",name:"Global Betting - Slam 26",loc:"1500000",ccy:"EUR",eur:1500000},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"Lynx - X Partnership Net - Premier 2026",loc:"300000",ccy:"USD",eur:255973},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"IC Markets",loc:"600000",ccy:"EUR",eur:600000},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"Event Deal - US deals - RLCS 2026",loc:"289000",ccy:"USD",eur:246587},
+  {eco:"Dota",type:"Sponsorship",status:"Y",name:"IC Markets",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"Premier",type:"Ticketing",status:"Y",name:"Ticketing - Hong Kong - Rivals (AEG rev share)",loc:"3000000",ccy:"HKD",eur:334821},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"VW (Volkswagen) - RLCS France (S5)",loc:"120000",ccy:"EUR",eur:120000},
+  {eco:"FNCS",type:"Ticketing",status:"Y",name:"Ticketing - Dusseldorf - FNCS Spring Major",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"Volvic",loc:"150000",ccy:"EUR",eur:150000},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"USAA - US Premier 26",loc:"100000",ccy:"USD",eur:85324},
+  {eco:"FNCS",type:"Sponsorship",status:"Y",name:"Zowie (Peripherals FNCS 2026)",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"RLCS",type:"Host City",status:"Y",name:"Host City - Boston - RLCS Major Feb",loc:"100000",ccy:"USD",eur:85324},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"Razer deal - RLCS",loc:"50000",ccy:"USD",eur:42662},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"License - Slash France TV - RLCS 26",loc:"30000",ccy:"EUR",eur:30000},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"Refrag - Premier 2026 (after Rotterdam)",loc:"60000",ccy:"EUR",eur:60000},
+  {eco:"RLCS",type:"Host City",status:"Y",name:"Host City - Forth Worth - RLCS Worlds",loc:"50000",ccy:"USD",eur:42662},
+  {eco:"Premier",type:"Ticketing",status:"Y",name:"Ticketing - Malta - Bounty Jul",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"Wimbledon",type:"Publisher Fee",status:"Y",name:"Wimbledon - 2026 - New Format",loc:"150000",ccy:"GBP",eur:175336},
+  {eco:"FNCS",type:"BLAST Channels",status:"Y",name:"Advertising - Youtube (FNCS) 2026",loc:"25000",ccy:"EUR",eur:25000},
+  {eco:"Premier",type:"BLAST Channels",status:"Y",name:"Advertising - Twitch (Premier) - 2026",loc:"89873",ccy:"EUR",eur:89873},
+  {eco:"FNCS",type:"Media Rights",status:"Y",name:"MENA - Eclutch - FNCS 26",loc:"15000",ccy:"EUR",eur:15000},
+  {eco:"Dota",type:"BLAST Channels",status:"Y",name:"Advertising - Twitch Slam 26",loc:"10636",ccy:"EUR",eur:10636},
+  {eco:"Premier",type:"BLAST Channels",status:"Y",name:"Advertising - KICK (Premier) - 2026",loc:"19791",ccy:"EUR",eur:19791},
+  {eco:"Premier",type:"BLAST Channels",status:"Y",name:"Advertising - Youtube (Premier) - 2026",loc:"139674",ccy:"EUR",eur:139674},
+  {eco:"RLCS",type:"BLAST Channels",status:"Y",name:"Advertising - Twitch (RLCS) 2026",loc:"128212",ccy:"EUR",eur:128212},
+  {eco:"RLCS",type:"Media Rights",status:"Y",name:"PL - Frenzy / Bombee - RLCS 2026",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"Premier",type:"Media Rights",status:"Y",name:"Grid - Rev Share - Premier 26",loc:"125000",ccy:"EUR",eur:125000},
+  {eco:"FNCS",type:"BLAST Channels",status:"Y",name:"Advertising - Twitch (FNCS) - 2026",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Dota",type:"Merchandise",status:"Y",name:"Merchandise - Slam 26 net",loc:"4500",ccy:"EUR",eur:4500},
+  {eco:"R6",type:"BLAST Channels",status:"Y",name:"Advertising - Twitch (R6) - 2026 Q1",loc:"30000",ccy:"EUR",eur:30000},
+  {eco:"RLCS",type:"BLAST Channels",status:"Y",name:"Advertising - Youtube (RLCS) 2026",loc:"39388",ccy:"EUR",eur:39388},
+  {eco:"FNCS",type:"Media Rights",status:"Y",name:"PL - Polsat Bombee - FNCS 2026",loc:"15000",ccy:"EUR",eur:15000},
+  {eco:"Dota",type:"BLAST Channels",status:"Y",name:"Advertising - Kick Slam 26",loc:"30000",ccy:"EUR",eur:30000},
+  {eco:"RLCS",type:"Merchandise",status:"Y",name:"Merchandise RLCS 2026 net",loc:"12000",ccy:"EUR",eur:12000},
+  {eco:"Premier",type:"Media Rights",status:"Y",name:"SE - HeatON - Premier 26",loc:"24000",ccy:"EUR",eur:24000},
+  {eco:"Dota",type:"BLAST Channels",status:"Y",name:"Advertising - Youtube Slam 26",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"Merchandise",status:"Y",name:"Merchandise - Premier 2026 net",loc:"22500",ccy:"EUR",eur:22500},
+  {eco:"R6",type:"Merchandise",status:"Y",name:"Merchandise - R6 SI Paris 2026 net",loc:"7500",ccy:"EUR",eur:7500},
+  {eco:"FNCS",type:"Merchandise",status:"Y",name:"Merchandise - FNCS 2026 net",loc:"7500",ccy:"EUR",eur:7500},
+  {eco:"FNCS",type:"Media Rights",status:"Y",name:"GR - PVP MEDIA - FNCS 2026",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"Dota",type:"Host City",status:"Y",name:"Host City - Chengdu - Slam VI",loc:"",ccy:"RMB",eur:0},
+  {eco:"Dota",type:"Host City",status:"Y",name:"Host City - Malta Rebate - Slam portion",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Premier",type:"Host City",status:"Y",name:"Host City - Malta Rebate - Premier portion",loc:"50000",ccy:"EUR",eur:50000},
+  {eco:"Dota",type:"Ticketing",status:"Y",name:"Ticketing - Malta - SLAM VII",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"Dota",type:"Ticketing",status:"Y",name:"Ticketing - Malta - SLAM V",loc:"5000",ccy:"EUR",eur:5000},
+  {eco:"RLCS",type:"Ticketing",status:"Y",name:"Ticketing - Forth Worth - RLCS Worlds",loc:"200000",ccy:"USD",eur:170648},
+  {eco:"FNCS",type:"Ticketing",status:"Y",name:"Ticketing - London - FNCS GC",loc:"150000",ccy:"GBP",eur:175336},
+  {eco:"Dota",type:"Media Rights",status:"Y",name:"GRID - Rev Share Data Rights Agreement - Slam 26",loc:"35000",ccy:"EUR",eur:35000},
+  {eco:"RLCS",type:"Media Rights",status:"Y",name:"FR - TBC - RLCS 26",loc:"25000",ccy:"EUR",eur:25000},
+  {eco:"FNCS",type:"Media Rights",status:"Y",name:"BEL - RTBF - FNCS 26",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"FNCS",type:"Media Rights",status:"Y",name:"DE - Esports 1 - FNCS 2026",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"RLCS",type:"Media Rights",status:"Y",name:"USA - TBC - RLCS 26",loc:"0",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Media Rights",status:"Y",name:"USA - Linear - RLCS 26",loc:"",ccy:"EUR",eur:0},
+  {eco:"RLCS",type:"Media Rights",status:"Y",name:"USA - Linear - RLCS 26",loc:"0",ccy:"EUR",eur:0},
+  {eco:"R6",type:"BLAST Channels",status:"Y",name:"Advertising - YouTube (R6) - 2026 Q1",loc:"10000",ccy:"EUR",eur:10000},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 01 January",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 08 August",loc:"400",ccy:"EUR",eur:400},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 04 April",loc:"450",ccy:"EUR",eur:450},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 06 June",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 02 February",loc:"300",ccy:"EUR",eur:300},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 07 July",loc:"400",ccy:"EUR",eur:400},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 05 May",loc:"300",ccy:"EUR",eur:300},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 12 December",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 09 September",loc:"300",ccy:"EUR",eur:300},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 10 October",loc:"350",ccy:"EUR",eur:350},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 03March",loc:"500",ccy:"EUR",eur:500},
+  {eco:"BLAST TV",type:"BLAST Channels",status:"Y",name:"BLAST TV ads - 11 November",loc:"400",ccy:"EUR",eur:400},
+  {eco:"Riot (Studio)",type:"Publisher Fee",status:"Y",name:"Global Event Support",loc:"900000",ccy:"EUR",eur:900000},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"Volkswagen",loc:"",ccy:"EUR",eur:0},
+  {eco:"PUBG",type:"Publisher Fee",status:"Y",name:"PUBG - NA",loc:"",ccy:"EUR",eur:0},
+  {eco:"PUBG",type:"Publisher Fee",status:"Y",name:"Prize Money",loc:"",ccy:"EUR",eur:0},
+  {eco:"FNCS",type:"In-Game",status:"Y",name:"Legends Landing 2026 - In-Game Yellow",loc:"75000",ccy:"USD",eur:63993},
+  {eco:"Premier",type:"Ticketing",status:"Y",name:"Ticketing - Porto - Open",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"Premier",type:"Ticketing",status:"Y",name:"Ticketing - Fort Worth -",loc:"",ccy:"EUR",eur:0},
+  {eco:"Supercell",type:"Publisher Fee",status:"Y",name:"Brawl Challengers Final",loc:"300000",ccy:"USD",eur:255973},
+  {eco:"Dota",type:"Ticketing",status:"Y",name:"Ticketing Rev Share - Chengdu - SLAM VI",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"FNCS",type:"Publisher Fee",status:"Y",name:"FNCS Legends Landing",loc:"250000",ccy:"USD",eur:213311},
+  {eco:"Premier",type:"Media Rights",status:"Y",name:"DE - Winamax - Premier 26",loc:"60000",ccy:"EUR",eur:60000},
+  {eco:"R6",type:"In-Game",status:"Y",name:"1. In-Game Transactions & MTX (R6) - Q1 - Y",loc:"261609",ccy:"EUR",eur:261609},
+  {eco:"R6",type:"In-Game",status:"Y",name:"4. In-Game Transactions & MTX (R6) - Q4 - Y",loc:"206259",ccy:"EUR",eur:206259},
+  {eco:"R6",type:"In-Game",status:"Y",name:"3. In-Game Transactions & MTX (R6) - Q3 - Y",loc:"212069",ccy:"EUR",eur:212069},
+  {eco:"R6",type:"In-Game",status:"Y",name:"2. In-Game Transactions & MTX (R6) - Q2 - Y",loc:"145063",ccy:"EUR",eur:145063},
+  {eco:"FNCS",type:"Sponsorship",status:"Y",name:"Zowie",loc:"",ccy:"EUR",eur:0},
+  {eco:"R6",type:"Publisher Fee",status:"Y",name:"Ubisoft - R6 - Production - \"Additional Tencent R6 SOW\"",loc:"1200000",ccy:"EUR",eur:1200000},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"TIXR Porto Premier (additional)",loc:"20000",ccy:"EUR",eur:20000},
+  {eco:"Dota",type:"BLAST Channels",status:"Y",name:"Advertising - Youtube Slam 26",loc:"18786",ccy:"EUR",eur:18786},
+  {eco:"Premier",type:"Ticketing",status:"Y",name:"Ticketing - Fort Worth - Additional Potential",loc:"",ccy:"EUR",eur:0},
+  {eco:"Premier",type:"Ticketing",status:"Y",name:"Ticketing - Fort Worth - Additional Potential",loc:"200000",ccy:"USD",eur:170648},
+  {eco:"Supercell",type:"Ticketing",status:"Y",name:"Ticketing - Berlin",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"Supercell",type:"Ticketing",status:"Y",name:"Ticketing - Japan",loc:"200000",ccy:"EUR",eur:200000},
+  {eco:"Premier",type:"Sponsorship",status:"Y",name:"Exitlag - Premier",loc:"100000",ccy:"EUR",eur:100000},
+  {eco:"FNCS",type:"Sponsorship",status:"Y",name:"LEGO",loc:"300000",ccy:"EUR",eur:300000},
+  {eco:"RLCS",type:"Sponsorship",status:"Y",name:"",loc:"",ccy:"EUR",eur:0},
+],ecos:["BLAST TV", "Dota", "FNCS", "New Formats", "Other Publishers", "PUBG", "Premier", "R6", "RLCS", "Riot (New Biz)", "Riot (Studio)", "Supercell", "Wimbledon"],types:["BLAST Channels", "Host City", "In-Game", "Media Rights", "Merchandise", "Publisher Fee", "Sponsorship", "Ticketing"]};
 /* ══════════ END DATA BLOCK ══════════ */
 
 let SC="BGY",SEL_ECO=null,YOY_MODE="abs",SHOW_BG=true;
@@ -498,39 +906,19 @@ function xR(id){document.querySelectorAll("."+id).forEach(r=>r.classList.toggle(
 function buildBridge(){
   var S4=["B","BG","BGY","BGYR"];
   var fv=function(v){if(v===0)return"\u2014";var s=vc(v);return"<span class="+s+">"+fm(v)+"</span>";};
+  var TORD=["Sponsorship","Publisher Fee","Host City","Ticketing","Cost of Sales","Various"];
 
-  var TORD=[
-    "Sponsorship","Media Rights","Host City","Publisher","Publisher Fee",
-    "BLAST Channels","Ticketing","Merchandise","In-Game","Other Revenue",
-    "Cost of Sales","Various"
-  ];
-
-  // Material filter — totals still use full BI
-  var BI_MAT=BI.filter(function(b){return S4.some(function(s){return Math.abs(b[s]||0)>=0.05;});});
-
-  var types=[...new Set(BI_MAT.map(function(b){return b.t;}))].sort(function(a,b){
+  var types=[...new Set(BI.map(function(b){return b.t;}))].sort(function(a,b){
     var ai=TORD.indexOf(a),bi=TORD.indexOf(b);
     return(ai<0?99:ai)-(bi<0?99:bi);
   });
 
   var SPRI={"B":0,"BG":1,"BGY":2,"BGYR":3};
-  function itemStatus(it){
-    if(it.B&&it.B!==0)return"B";
-    if(it.BG&&it.BG!==0)return"BG";
-    if(it.BGY&&it.BGY!==0)return"BGY";
+  function itemStatus(item){
+    if(item.B&&item.B!==0)return"B";
+    if(item.BG&&item.BG!==0)return"BG";
+    if(item.BGY&&item.BGY!==0)return"BGY";
     return"BGYR";
-  }
-
-  // Name simplifier for matching
-  function simplify(n){
-    n=(n||"").toLowerCase().replace(/^\d+\.\s*/,"").replace(/[^a-z0-9 ]/g," ").replace(/\s+/g," ").trim();
-    return n;
-  }
-  function matchScore(a,b){
-    var aw=new Set(simplify(a).split(" ")), bw=new Set(simplify(b).split(" "));
-    var overlap=0; aw.forEach(function(w){if(bw.has(w))overlap++;});
-    var total=new Set([...aw,...bw]).size;
-    return total?overlap/total:0;
   }
 
   var h="<thead><tr><th>Movement</th>"+S4.map(function(s){
@@ -543,202 +931,89 @@ function buildBridge(){
   body+="</tr>";
 
   types.forEach(function(typ){
-    var typeItems=BI_MAT.filter(function(b){return b.t===typ&&S4.some(function(s){return b[s]&&b[s]!==0;});});
+    var typeItems=BI.filter(function(b){return b.t===typ&&S4.some(function(s){return b[s]&&b[s]!==0;});});
     if(!typeItems.length)return;
 
-    var isPublisher=typ.toLowerCase().indexOf("publisher")>=0;
+    var reasonMap={};
+    var reasonOrder=[];
+    typeItems.forEach(function(item){
+      if(!reasonMap[item.l]){reasonMap[item.l]=[];reasonOrder.push(item.l);}
+      reasonMap[item.l].push(item);
+    });
+
     var safe=typ.replace(/[^a-zA-Z0-9]/g,"_");
     var typeXid="bxt_"+safe;
+    var nD=typeItems.length, nR=reasonOrder.length;
 
-    // Type header row
     body+="<tr class='bgh br-toggle' data-xid='"+typeXid+"'><td>";
     body+="<span id='ic_"+typeXid+"' style='font-size:9px;margin-right:4px'>\u25b8</span>";
-    body+=typ;
-    body+=" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+typeItems.length+" item"+(typeItems.length===1?"":"s")+")</span></td>";
+    body+=typ+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+nR+" reason"+(nR===1?"":"s")+" \u00b7 "+nD+" deal"+(nD===1?"":"s")+")</span></td>";
     S4.forEach(function(s){
       var v=typeItems.reduce(function(a,b){return a+(b[s]||0);},0);
       body+="<td>"+fv(v)+"</td>";
     });
     body+="</tr>";
 
-    if(isPublisher){
-      // ── Publisher: Ecosystem → Reason → Rev deal + paired CoS ──
-      var ecos=[...new Set(typeItems.map(function(b){return b.e;}))].sort();
+    reasonOrder.sort(function(a,b){
+      var av=Math.abs(reasonMap[a].reduce(function(s,i){return s+(i[SC]||0);},0));
+      var bv=Math.abs(reasonMap[b].reduce(function(s,i){return s+(i[SC]||0);},0));
+      return bv-av;
+    });
 
-      ecos.forEach(function(eco){
-        var ecoItems=typeItems.filter(function(b){return b.e===eco;});
-        var ecoSafe=eco.replace(/[^a-zA-Z0-9]/g,"_");
-        var ecoXid="bxe_"+safe+"_"+ecoSafe;
+    reasonOrder.forEach(function(rsn){
+      var rsnItems=reasonMap[rsn];
+      var rsnSafe=rsn.replace(/[^a-zA-Z0-9]/g,"_");
+      var rsnXid="bxr_"+safe+"_"+rsnSafe;
+      var isCoS=rsnItems[0]&&rsnItems[0].lnk;
 
-        // Eco sub-header
-        body+="<tr class='bxrow "+typeXid+" br-toggle' data-xid='"+ecoXid+"'>";
-        body+="<td style='padding-left:18px;font-weight:600;font-size:11px'>";
-        body+="<span id='ic_"+ecoXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
-        body+=eco+"</td>";
-        S4.forEach(function(s){
-          var v=ecoItems.reduce(function(a,b){return a+(b[s]||0);},0);
-          body+="<td>"+fv(v)+"</td>";
-        });
+      body+="<tr class='bxrow "+typeXid+(isCoS?" bln":"")+" br-toggle' data-xid='"+rsnXid+"'>";
+      body+="<td style='padding-left:18px'>";
+      body+="<span id='ic_"+rsnXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
+      body+=rsn+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
+      S4.forEach(function(s){
+        var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
+        body+="<td>"+fv(v)+"</td>";
+      });
+      body+="</tr>";
+
+      rsnItems.slice().sort(function(a,b){
+        var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
+        if(sp!==0)return sp;
+        return Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
+      }).forEach(function(item){
+        body+="<tr class='bxrow "+rsnXid+(item.lnk?" bln":"")+"'>";
+        var dealLabel=(item.n?item.n+" \u2014 ":"")+(item.e||"");
+        body+="<td style='padding-left:32px;font-size:10.5px;color:var(--t2)'>"+dealLabel+"</td>";
+        S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(item[s]||0)+"</td>";});
         body+="</tr>";
-
-        // Group eco items by reason
-        var revEco=ecoItems.filter(function(b){return !b.lnk;});
-        var cosEco=ecoItems.filter(function(b){return b.lnk;});
-
-        // Group revenue by reason
-        var rsnMap={}, rsnOrder=[];
-        revEco.forEach(function(it){
-          if(!rsnMap[it.l]){rsnMap[it.l]=[];rsnOrder.push(it.l);}
-          rsnMap[it.l].push(it);
-        });
-        // Sort reasons by abs value
-        rsnOrder.sort(function(a,b){
-          var av=Math.abs(rsnMap[a].reduce(function(s,i){return s+(i[SC]||0);},0));
-          var bv=Math.abs(rsnMap[b].reduce(function(s,i){return s+(i[SC]||0);},0));
-          return bv-av;
-        });
-
-        var usedCos=new Set();
-
-        rsnOrder.forEach(function(rsn){
-          var rsnItems=rsnMap[rsn];
-          var rsnSafe=rsn.replace(/[^a-zA-Z0-9]/g,"_");
-          var rsnXid="bxr_"+safe+"_"+ecoSafe+"_"+rsnSafe;
-
-          // Reason sub-header
-          body+="<tr class='bxrow "+ecoXid+" br-toggle' data-xid='"+rsnXid+"'>";
-          body+="<td style='padding-left:28px;font-size:10.5px;color:var(--t2)'>";
-          body+="<span id='ic_"+rsnXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
-          body+=rsn+" <span style='font-size:9px;color:var(--t3)'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
-          S4.forEach(function(s){
-            var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
-            body+="<td>"+fv(v)+"</td>";
-          });
-          body+="</tr>";
-
-          // Each rev deal + its matched CoS
-          rsnItems.slice().sort(function(a,b){
-            var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
-            return sp!==0?sp:Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
-          }).forEach(function(rev){
-            body+="<tr class='bxrow "+rsnXid+"'>";
-            body+="<td style='padding-left:38px;font-size:10.5px;color:var(--t2)'>"+rev.n+"</td>";
-            S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(rev[s]||0)+"</td>";});
-            body+="</tr>";
-
-            // Find matching CoS
-            cosEco.forEach(function(cos,ci){
-              if(usedCos.has(ci))return;
-              if(matchScore(cos.n,rev.n)>=0.45){
-                usedCos.add(ci);
-                body+="<tr class='bxrow "+rsnXid+" bln'>";
-                body+="<td style='padding-left:48px;font-size:10px;color:var(--t3)'>";
-                body+="\u2514 "+cos.l.replace("CoS \u2014 ","")+" \u00b7 "+cos.n+"</td>";
-                S4.forEach(function(s){body+="<td style='font-size:10px'>"+fv(cos[s]||0)+"</td>";});
-                body+="</tr>";
-              }
-            });
-          });
-        });
-
-        // Any unmatched CoS for this eco (shouldn't happen after fix, but safety net)
-        cosEco.forEach(function(cos,ci){
-          if(!usedCos.has(ci)){
-            body+="<tr class='bxrow "+ecoXid+" bln'>";
-            body+="<td style='padding-left:38px;font-size:10px;color:var(--t3)'>\u2514 "+cos.l.replace("CoS \u2014 ","")+" \u00b7 "+cos.n+"</td>";
-            S4.forEach(function(s){body+="<td style='font-size:10px'>"+fv(cos[s]||0)+"</td>";});
-            body+="</tr>";
-          }
-        });
       });
-
-    } else {
-      // ── Normal types: Reason → Deals ──
-      var reasonMap={}, reasonOrder=[];
-      typeItems.forEach(function(it){
-        if(!reasonMap[it.l]){reasonMap[it.l]=[];reasonOrder.push(it.l);}
-        reasonMap[it.l].push(it);
-      });
-      reasonOrder.sort(function(a,b){
-        var av=Math.abs(reasonMap[a].reduce(function(s,i){return s+(i[SC]||0);},0));
-        var bv=Math.abs(reasonMap[b].reduce(function(s,i){return s+(i[SC]||0);},0));
-        return bv-av;
-      });
-
-      reasonOrder.forEach(function(rsn){
-        var rsnItems=reasonMap[rsn];
-        var rsnSafe=rsn.replace(/[^a-zA-Z0-9]/g,"_");
-        var rsnXid="bxr_"+safe+"_"+rsnSafe;
-        var isCoS=rsnItems[0]&&rsnItems[0].lnk;
-
-        body+="<tr class='bxrow "+typeXid+(isCoS?" bln":"")+" br-toggle' data-xid='"+rsnXid+"'>";
-        body+="<td style='padding-left:18px'>";
-        body+="<span id='ic_"+rsnXid+"' style='font-size:9px;color:#aaa;margin-right:4px'>\u25b8</span>";
-        body+=rsn+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
-        S4.forEach(function(s){
-          var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
-          body+="<td>"+fv(v)+"</td>";
-        });
-        body+="</tr>";
-
-        rsnItems.slice().sort(function(a,b){
-          var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
-          return sp!==0?sp:Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
-        }).forEach(function(it){
-          var dealLabel=(it.n?it.n+" \u2014 ":"")+(it.e||"");
-          body+="<tr class='bxrow "+rsnXid+(it.lnk?" bln":"")+"'>";
-          body+="<td style='padding-left:32px;font-size:10.5px;color:var(--t2)'>"+dealLabel+"</td>";
-          S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(it[s]||0)+"</td>";});
-          body+="</tr>";
-        });
-      });
-    }
+    });
   });
 
-  // Totals use full BI
   body+="<tr class='btot'><td>Total movement</td>";
   S4.forEach(function(s){
     var v=+BI.reduce(function(a,b){return a+(b[s]||0);},0).toFixed(1);
     body+="<td>"+fv(v)+"</td>";
   });
   body+="</tr>";
+
   body+="<tr class='bse'><td>EBITDA "+CUR_D+" \u2014 close</td>";
   S4.forEach(function(s){body+="<td class='"+(CUR.eb[s]>=0?"pos":"neg")+"'>"+fm(CUR.eb[s])+"</td>";});
   body+="</tr>";
 
   document.getElementById("t-br").innerHTML=h+body+"</tbody>";
 
+  // Delegated click handler — no inline onclick needed
   document.getElementById("t-br").addEventListener("click",function(ev){
     var row=ev.target.closest("tr.br-toggle");
     if(!row)return;
     var xid=row.getAttribute("data-xid");
     if(!xid)return;
-    var children=document.querySelectorAll("."+xid);
-    var opening=!children[0]||!children[0].classList.contains("open");
-
-    function closeAll(id){
-      document.querySelectorAll("."+id).forEach(function(r){
-        r.classList.remove("open");
-        var cid=r.getAttribute("data-xid");
-        if(cid) closeAll(cid);
-        var cic=document.getElementById("ic_"+cid);
-        if(cic) cic.textContent="\u25b8";
-      });
-    }
-
-    if(opening){
-      children.forEach(function(r){r.classList.add("open");});
-      var ic=document.getElementById("ic_"+xid);
-      if(ic) ic.textContent="\u25be";
-    } else {
-      closeAll(xid);
-      children.forEach(function(r){r.classList.remove("open");});
-      var ic=document.getElementById("ic_"+xid);
-      if(ic) ic.textContent="\u25b8";
-    }
+    document.querySelectorAll("."+xid).forEach(function(r){r.classList.toggle("open");});
+    var ic=document.getElementById("ic_"+xid);
+    if(ic)ic.textContent=(ic.textContent==="\u25b8")?"\u25be":"\u25b8";
   });
 }
-
 
 
 
@@ -1087,6 +1362,7 @@ document.querySelectorAll(".tab").forEach(function(btn){btn.addEventListener("cl
   btn.classList.add("on");
   document.getElementById("pane-"+btn.dataset.t).classList.add("on");
   if(btn.dataset.t==="ebitda")buildWaterfalls();
+  if(btn.dataset.t==="deals")buildDeals();
 });});
 document.querySelectorAll(".scb[data-s]").forEach(function(btn){btn.addEventListener("click",function(){
   SC=btn.dataset.s;
@@ -1095,7 +1371,214 @@ document.querySelectorAll(".scb[data-s]").forEach(function(btn){btn.addEventList
   refresh();
 });});
 
+function buildDeals(){
+  var ST_ORDER=["B","G","Y","R"];
+  var ST_LABEL={"B":"Booked","G":"Green","Y":"Yellow","R":"Red"};
+  var ST_COLOR={"B":"#1D9E75","G":"#4CAF7D","Y":"#B45309","R":"#C2410C"};
+  var TYPE_ORDER=["Sponsorship","Media Rights","Host City","Publisher Fee","BLAST Channels","Ticketing","Merchandise","In-Game","Other Revenue"];
+
+  // Get filter values
+  var selEco  = document.getElementById("dl-eco").value;
+  var selType = document.getElementById("dl-type").value;
+  var srchTxt = (document.getElementById("dl-search").value||"").toLowerCase().trim();
+
+  // Filter deals
+  var filtered=DEALS.filter(function(d){
+    if(selEco  && d.eco  !== selEco)  return false;
+    if(selType && d.type !== selType) return false;
+    if(srchTxt && d.name.toLowerCase().indexOf(srchTxt)<0) return false;
+    return true;
+  });
+
+  // Group: eco → type → status → deals
+  var ECO_ORD=["Premier","Dota","Supercell","FNCS","RLCS","R6","Riot (Studio)","Riot (New Biz)","Other Publishers","New Formats","Acquisitions","BLAST TV"];
+  var presentEcos=new Set(DEALS.map(function(d){return d.eco;}));
+  var ecoOrder=ECO_ORD.filter(function(e){return presentEcos.has(e);});
+  presentEcos.forEach(function(e){if(ecoOrder.indexOf(e)<0&&e)ecoOrder.push(e);});
+  var typeOrder=TYPE_ORDER.filter(function(t){return filtered.some(function(d){return d.type===t;});});
+  // add any types not in TYPE_ORDER
+  filtered.forEach(function(d){if(typeOrder.indexOf(d.type)<0)typeOrder.push(d.type);});
+
+  // Summary counts
+  var totEur=filtered.reduce(function(a,d){return a+d.eur;},0);
+  var byCcy={};
+  filtered.forEach(function(d){
+    var k=d.ccy; if(!byCcy[k])byCcy[k]={count:0,eur:0};
+    byCcy[k].count++; byCcy[k].eur+=d.eur;
+  });
+
+  var html="";
+
+  // Stats bar
+  html+="<div style='display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px'>";
+  ST_ORDER.forEach(function(st){
+    var cnt=filtered.filter(function(d){return d.st===st||d.status===st;}).length;
+    var val=filtered.filter(function(d){return d.status===st;}).reduce(function(a,d){return a+d.eur;},0);
+    if(!cnt)return;
+    html+="<div style='background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:8px 12px;min-width:100px'>";
+    html+="<div style='font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:"+ST_COLOR[st]+"'>"+ST_LABEL[st]+"</div>";
+    html+="<div style='font-size:16px;font-weight:700;margin-top:2px'>"+cnt+"</div>";
+    html+="<div style='font-size:10px;color:#64748B'>"+fmtEur(val)+"</div>";
+    html+="</div>";
+  });
+  html+="<div style='background:#fff;border:1px solid #E2E8F0;border-radius:8px;padding:8px 12px;min-width:100px;margin-left:auto'>";
+  html+="<div style='font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748B'>Total shown</div>";
+  html+="<div style='font-size:16px;font-weight:700;margin-top:2px'>"+filtered.length+"</div>";
+  html+="<div style='font-size:10px;color:#64748B'>"+fmtEur(totEur)+"</div>";
+  html+="</div></div>";
+
+  if(!filtered.length){
+    html+="<div style='padding:32px;text-align:center;color:#94A3B8;font-size:13px'>No deals match the current filters.</div>";
+    document.getElementById("deals-body").innerHTML=html;
+    return;
+  }
+
+  // Group by eco
+  var ecoGroups={};
+  filtered.forEach(function(d){
+    if(!ecoGroups[d.eco]) ecoGroups[d.eco]={};
+    if(!ecoGroups[d.eco][d.type]) ecoGroups[d.eco][d.type]={};
+    if(!ecoGroups[d.eco][d.type][d.status]) ecoGroups[d.eco][d.type][d.status]=[];
+    ecoGroups[d.eco][d.type][d.status].push(d);
+  });
+
+  var ecos=ecoOrder.filter(function(e){return ecoGroups[e];});
+
+  ecos.forEach(function(eco){
+    var ecoDeals=filtered.filter(function(d){return d.eco===eco;});
+    var ecoTotal=ecoDeals.reduce(function(a,d){return a+d.eur;},0);
+    var ecoSafe=eco.replace(/[^a-zA-Z0-9]/g,"_");
+    var ecoXid="dleco_"+ecoSafe;
+
+    // Eco header
+    html+="<div class='card' style='margin-bottom:10px;overflow:hidden'>";
+    html+="<div class='ch dl-toggle' data-xid='"+ecoXid+"' style='cursor:pointer;user-select:none'>";
+    html+="<span id='ic_"+ecoXid+"' style='font-size:10px;margin-right:6px'>\u25b8</span>";
+    html+="<strong>"+eco+"</strong>";
+    html+=" <span style='font-size:10px;font-weight:400;color:#64748B;margin-left:6px'>"+ecoDeals.length+" deal"+(ecoDeals.length===1?"":"s")+" &nbsp;\u00b7&nbsp; "+fmtEur(ecoTotal)+"</span>";
+    html+="</div>";
+    html+="<div class='dl-children "+ecoXid+"' style='display:none'>";
+
+    // Type sub-groups
+    var types=typeOrder.filter(function(t){return ecoGroups[eco]&&ecoGroups[eco][t];});
+    types.forEach(function(typ){
+      var typDeals=ecoDeals.filter(function(d){return d.type===typ;});
+      var typTotal=typDeals.reduce(function(a,d){return a+d.eur;},0);
+      var typSafe=typ.replace(/[^a-zA-Z0-9]/g,"_");
+      var typXid="dltyp_"+ecoSafe+"_"+typSafe;
+
+      html+="<div style='border-top:1px solid #F1F5F9'>";
+      html+="<div class='dl-toggle' data-xid='"+typXid+"' style='padding:7px 14px 7px 24px;cursor:pointer;background:#FAFAFA;display:flex;align-items:center;user-select:none'>";
+      html+="<span id='ic_"+typXid+"' style='font-size:9px;margin-right:5px;color:#94A3B8'>\u25b8</span>";
+      html+="<span style='font-size:11px;font-weight:600;color:#475569'>"+typ+"</span>";
+      html+=" <span style='font-size:10px;color:#94A3B8;margin-left:6px'>"+typDeals.length+" deal"+(typDeals.length===1?"":"s")+" &nbsp;\u00b7&nbsp; "+fmtEur(typTotal)+"</span>";
+      html+="</div>";
+      html+="<div class='dl-children "+typXid+"' style='display:none'>";
+
+      // Table per status group
+      ST_ORDER.forEach(function(st){
+        var stDeals=(ecoGroups[eco][typ]&&ecoGroups[eco][typ][st])||[];
+        if(!stDeals.length)return;
+        // Sort by value desc
+        stDeals=stDeals.slice().sort(function(a,b){return b.eur-a.eur;});
+
+        html+="<div style='border-top:1px solid #F8FAFC'>";
+        html+="<div style='padding:4px 14px 4px 32px;background:#fff;display:flex;align-items:center;gap:8px'>";
+        html+="<span style='font-size:9px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:"+ST_COLOR[st]+"'>"+ST_LABEL[st]+"</span>";
+        html+="<span style='font-size:9px;color:#94A3B8'>"+stDeals.length+" deal"+(stDeals.length===1?"":"s")+"</span>";
+        html+="</div>";
+
+        html+="<table style='width:100%;border-collapse:collapse;font-size:11px'>";
+        html+="<thead><tr style='background:#FAFAFA'>";
+        html+="<th style='padding:4px 8px 4px 36px;text-align:left;font-weight:600;color:#64748B;font-size:10px;border-bottom:1px solid #F1F5F9'>Deal Name</th>";
+        html+="<th style='padding:4px 8px;text-align:right;font-weight:600;color:#64748B;font-size:10px;border-bottom:1px solid #F1F5F9;white-space:nowrap'>Value (LOC)</th>";
+        html+="<th style='padding:4px 8px;text-align:center;font-weight:600;color:#64748B;font-size:10px;border-bottom:1px solid #F1F5F9'>CCY</th>";
+        html+="<th style='padding:4px 8px;text-align:right;font-weight:600;color:#64748B;font-size:10px;border-bottom:1px solid #F1F5F9;white-space:nowrap'>Value (€)</th>";
+        html+="</tr></thead><tbody>";
+
+        stDeals.forEach(function(d,i){
+          html+="<tr style='border-bottom:1px solid #F8FAFC;background:"+(i%2===0?"#fff":"#FAFAFA")+"'>";
+          html+="<td style='padding:5px 8px 5px 36px;color:#0F172A'>"+d.name+"</td>";
+          html+="<td style='padding:5px 8px;text-align:right;color:#475569;font-variant-numeric:tabular-nums'>"+Number(d.loc||0).toLocaleString()+"</td>";
+          html+="<td style='padding:5px 8px;text-align:center;color:#94A3B8;font-size:10px'>"+d.ccy+"</td>";
+          html+="<td style='padding:5px 8px;text-align:right;font-weight:500;color:#0F172A;font-variant-numeric:tabular-nums'>"+fmtEur(d.eur)+"</td>";
+          html+="</tr>";
+        });
+        html+="</tbody></table></div>";
+      });
+
+      html+="</div></div>"; // close type children + type div
+    });
+
+    html+="</div></div>"; // close eco children + eco card
+  });
+
+  document.getElementById("deals-body").innerHTML=html;
+
+  // Attach toggle handlers
+  document.getElementById("deals-body").querySelectorAll(".dl-toggle").forEach(function(el){
+    el.addEventListener("click",function(){
+      var xid=el.getAttribute("data-xid");
+      if(!xid)return;
+      var children=document.querySelectorAll(".dl-children."+xid);
+      var ic=document.getElementById("ic_"+xid);
+      var opening=children[0]&&children[0].style.display==="none";
+
+      function closeAllDl(id){
+        document.querySelectorAll(".dl-children."+id).forEach(function(c){
+          c.style.display="none";
+          // close nested
+          c.querySelectorAll(".dl-toggle[data-xid]").forEach(function(sub){
+            var cid=sub.getAttribute("data-xid");
+            if(cid){
+              document.querySelectorAll(".dl-children."+cid).forEach(function(gc){gc.style.display="none";});
+              var sic=document.getElementById("ic_"+cid);
+              if(sic)sic.textContent="\u25b8";
+            }
+          });
+        });
+        var lic=document.getElementById("ic_"+id);
+        if(lic)lic.textContent="\u25b8";
+      }
+
+      if(opening){
+        children.forEach(function(c){c.style.display="block";});
+        if(ic)ic.textContent="\u25be";
+      } else {
+        closeAllDl(xid);
+        if(ic)ic.textContent="\u25b8";
+      }
+    });
+  });
+}
+
+function fmtEur(v){
+  if(!v&&v!==0)return"\u2014";
+  var s=(v<0?"(":"")+"\u20ac"+Math.round(Math.abs(v)).toLocaleString()+(v<0?")":"");
+  return s;
+}
+
+function initDealsTab(deals,ecos,types){
+  window.DEALS=deals;
+  // Populate ecosystem filter
+  var ecoSel=document.getElementById("dl-eco");
+  ecoSel.innerHTML="<option value=''>All ecosystems</option>";
+  ecos.forEach(function(e){if(e)ecoSel.innerHTML+="<option value='"+e+"'>"+e+"</option>";});
+  // Populate type filter
+  var typSel=document.getElementById("dl-type");
+  typSel.innerHTML="<option value=''>All revenue types</option>";
+  var TYPE_ORDER=["Sponsorship","Media Rights","Host City","Publisher Fee","BLAST Channels","Ticketing","Merchandise","In-Game","Other Revenue"];
+  TYPE_ORDER.filter(function(t){return types.indexOf(t)>=0;}).forEach(function(t){
+    typSel.innerHTML+="<option value='"+t+"'>"+t+"</option>";
+  });
+  types.filter(function(t){return TYPE_ORDER.indexOf(t)<0;}).forEach(function(t){
+    typSel.innerHTML+="<option value='"+t+"'>"+t+"</option>";
+  });
+  buildDeals();
+}
+
 kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();buildEcoGrid();buildYoy();buildYoyTable();
+initDealsTab(DEALS_DATA.deals,DEALS_DATA.ecos,DEALS_DATA.types);
 </script>
 </body>
 </html>

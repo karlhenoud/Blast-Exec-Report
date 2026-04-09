@@ -1796,67 +1796,13 @@ kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();
 }
 
 function generateCommentary(){
+  document.getElementById("comm").textContent=COMMENTARY_TEXT;
   var btn=document.getElementById("comm-btn");
-  var div=document.getElementById("comm");
-  btn.disabled=true;
-  btn.textContent="Generating...";
-
-  var S4=["B","BG","BGY","BGYR"];
-  var SC_NAMES={"B":"Booked",BG:"+Green","BGY":"+Yellow","BGYR":"+Red"};
-
-  // Build movements summary from BI data
-  var material=BI.filter(function(b){
-    return !b.lnk && S4.some(function(s){return Math.abs(b[s]||0)>=0.05;});
-  });
-  var TORD=["Sponsorship","Publisher Fee","Host City","Ticketing","BLAST Channels","Media Rights","Other Revenue","Cost of Sales"];
-  var lines=[];
-  TORD.forEach(function(typ){
-    var items=material.filter(function(b){return b.t===typ;})
-      .sort(function(a,b){return Math.abs(b.BGY||0)-Math.abs(a.BGY||0);})
-      .slice(0,6);
-    items.forEach(function(it){
-      lines.push("["+typ+"] "+it.l+": "+it.n+" ("+it.e+") BGY="+(it.BGY>=0?"+":"")+it.BGY.toFixed(2)+"m BGYR="+(it.BGYR>=0?"+":"")+it.BGYR.toFixed(2)+"m");
-    });
-  });
-
-  var revDelta=+(CUR.rev.BGY-PRV.rev.BGY).toFixed(1);
-  var ebDelta=+(CUR.eb.BGY-PRV.eb.BGY).toFixed(1);
-  var ebVsBud=+(CUR.eb.BGY-BUD_E).toFixed(1);
-
-  var prompt="Write 3-4 sentences of executive P&L commentary comparing "+CUR_D+" vs "+PRV_D+".\n\n"+
-    "KEY METRICS (+Yellow):\n"+
-    "- Revenue: €"+CUR.rev.BGY+"m ("+( revDelta>=0?"+":"")+revDelta+"m vs prev, budget €"+BUD_R+"m)\n"+
-    "- EBITDA: €"+CUR.eb.BGY+"m ("+(ebDelta>=0?"+":"")+ebDelta+"m vs prev, "+(ebVsBud>=0?"+":"")+ebVsBud+"m vs budget €"+BUD_E+"m)\n\n"+
-    "MATERIAL MOVEMENTS:\n"+lines.join("\n")+"\n\n"+
-    "Requirements: lead with overall EBITDA movement and key drivers, name 2-3 specific deals/items, flag key risks or watch items. "+
-    "Flowing prose, no bullets, no headers. Values in €m. Do not start with 'This fortnight' or 'The period'.";
-
-  fetch("https://api.anthropic.com/v1/messages",{
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify({
-      model:"claude-sonnet-4-20250514",
-      max_tokens:400,
-      messages:[{role:"user",content:prompt}]
-    })
-  })
-  .then(function(r){return r.json();})
-  .then(function(data){
-    if(data.content&&data.content[0]){
-      div.textContent=data.content[0].text;
-      btn.textContent="Regenerate";
-    } else {
-      div.textContent="Could not generate commentary. Please try again.";
-      btn.textContent="Generate commentary";
-    }
-    btn.disabled=false;
-  })
-  .catch(function(){
-    div.textContent="Error generating commentary.";
-    btn.textContent="Generate commentary";
-    btn.disabled=false;
-  });
+  btn.textContent="Generated ✓";
+  btn.style.color="#1D9E75";
 }
+var COMMENTARY_TEXT='+Yellow EBITDA declined €1.4m to (€11.6m) vs the prior period, driven primarily by a €1.9m increase in Cost of Sales — notably a €1.0m uplift in Riot Studio production costs and higher Other CoS across the portfolio. On revenue, a new Acquisitions deal (Project Raven, +€1.8m) partially offsets downward pressure from Global Betting revisions across Premier (€1.0m) and Dota (€0.5m). Two Premier Host City deals (Malta Film Commission and Malta Studio Leasing) moved from Red back to Yellow, adding €0.6m in visibility. Key watch items: RLCS US event deal lost (€0.2m), Volvic downgraded Yellow to Red with a value reduction, and +Red EBITDA is €8.9m behind prior period as further Global Betting and sponsorship losses crystallise.';
+
 
 document.querySelectorAll(".tab").forEach(function(btn){btn.addEventListener("click",function(){
   document.querySelectorAll(".tab,.pane").forEach(function(el){el.classList.remove("on");});
@@ -2080,6 +2026,7 @@ function initDealsTab(deals,ecos,types){
 
 
 kpis();buildPL();buildRev();buildCos();buildBridge();buildEBTable();buildEcoGrid();buildYoy();buildYoyTable();
+document.getElementById("comm").textContent=COMMENTARY_TEXT;
 initDealsTab(DEALS_DATA.deals,DEALS_DATA.ecos,DEALS_DATA.types);
 </script>
 </body>

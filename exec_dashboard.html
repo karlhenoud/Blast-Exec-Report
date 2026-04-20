@@ -116,7 +116,38 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
         <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Start/End</span><span><span class="ldot" style="background:#185FA5"></span>Positive</span><span><span class="ldot" style="background:#DC2626"></span>Negative</span><span><span class="ldot" style="background:#B4B2A9"></span>Residual</span></div>
       </div>
     </div>
+    <!-- CVP drill -->
+    <div id="wf-drill-cvp" style="display:none;margin:0 0 18px 0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span id="wf-drill-cvp-title" style="font-size:11px;font-weight:600;color:var(--t1)"></span>
+        <button onclick="document.getElementById('wf-drill-cvp').style.display='none'" style="border:none;background:none;cursor:pointer;color:var(--t3);font-size:11px">✕ close</button>
+      </div>
+      <table id="wf-drill-cvp-tbl" style="width:100%;font-size:11px;border-collapse:collapse"></table>
+    </div>
+    <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#94A3B8;margin:14px 0 6px;padding:0 2px">Current vs Budget</div>
+    <div class="g2">
+      <div class="card">
+        <div class="ch">By ecosystem <small id="bud-sc-lbl"></small></div>
+        <div class="cw" style="height:280px"><canvas id="c-wf-bud-eco"></canvas></div>
+        <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Budget/Current</span><span><span class="ldot" style="background:#185FA5"></span>Ahead</span><span><span class="ldot" style="background:#DC2626"></span>Behind</span></div>
+      </div>
+      <div class="card">
+        <div class="ch">By P&amp;L category</div>
+        <div class="cw" style="height:280px"><canvas id="c-wf-bud-cat"></canvas></div>
+        <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Budget/Current</span><span><span class="ldot" style="background:#185FA5"></span>Ahead</span><span><span class="ldot" style="background:#DC2626"></span>Behind</span></div>
+      </div>
+    </div>
+    <!-- CVB drill -->
+    <div id="wf-drill-cvb" style="display:none;margin:0 0 18px 0">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+        <span id="wf-drill-cvb-title" style="font-size:11px;font-weight:600;color:var(--t1)"></span>
+        <button onclick="document.getElementById('wf-drill-cvb').style.display='none'" style="border:none;background:none;cursor:pointer;color:var(--t3);font-size:11px">✕ close</button>
+      </div>
+      <table id="wf-drill-cvb-tbl" style="width:100%;font-size:11px;border-collapse:collapse"></table>
+    </div>
   </div>
+  
+
   <div class="pane" id="pane-eco">
     <div class="egrid" id="egrid"></div>
     <div class="card"><div class="ch" id="eco-ch">Select an ecosystem above</div><div class="cx"><table id="t-eco"></table></div></div>
@@ -135,13 +166,20 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
     </div>
     <div class="card"><div class="ch">Checkpoint summary <small id="bud-sc-lbl"></small></div><div class="cx"><table id="t-yoy"></table></div></div>
   </div>
-  <div class="pane" id="pane-deals"><div id="deals-body"></div></div>
+  <div class="pane" id="pane-deals">
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <select id="dl-eco" style="font-size:11px;padding:4px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--t1)"><option value="">All Ecosystems</option></select>
+      <select id="dl-type" style="font-size:11px;padding:4px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--t1)"><option value="">All Types</option></select>
+      <input id="dl-search" type="text" placeholder="Search deals…" style="font-size:11px;padding:4px 8px;border:1px solid var(--bd);border-radius:6px;background:var(--card);color:var(--t1);min-width:140px">
+    </div>
+    <div id="deals-body"></div>
+  </div>
   </div>
 </div>
 <footer><span id="ftl"></span><span>€m unless stated · B=Booked · G=Green · Y=Yellow · R=Red · WV=Weighted</span></footer>
 
 <script>/* ══════════ DATA BLOCK ══════════ */
-const CUR_D="17.04.2026";
+const CUR_D="20.04.2026";
 const PRV_D="07.04.2026";
 const BUD_R=145.0;
 const BUD_E=13.3;
@@ -165,14 +203,14 @@ const PRV={
   eb:{B:-52.4,BG:-24.5,BGY:-11.6,BGYR:22.1,WV:-14.4},
 };
 const RCAT=[
-  {n:"Brand Commercialisation",c:"#3266AD",t:{bud:45422,B:23738,BG:25369,BGY:36541,BGYR:62747,WV:33473},r:[
-    {n:"Sponsorship",bud:26792,B:10374,BG:11070,BGY:17607,BGYR:41845,WV:16924},
-    {n:"Media Rights",bud:15679,B:13214,BG:13369,BGY:13653,BGYR:13883,WV:13530},
+  {n:"Brand Commercialisation",c:"#3266AD",t:{bud:45422,B:23738,BG:25399,BGY:36467,BGYR:60090,WV:33067},r:[
+    {n:"Sponsorship",bud:26792,B:10374,BG:11070,BGY:17563,BGYR:39218,WV:16521},
+    {n:"Media Rights",bud:15679,B:13214,BG:13399,BGY:13623,BGYR:13853,WV:13527},
     {n:"Host City",bud:2951,B:150,BG:930,BGY:3489,BGYR:5227,WV:2392},
     {n:"Other Revenue",bud:0,B:0,BG:0,BGY:1792,BGYR:1792,WV:627},
   ]},
-  {n:"Production Fee",c:"#7F77DD",t:{bud:86003,B:24328,BG:63167,BGY:65656,BGYR:89125,WV:67932},r:[
-    {n:"Publisher Fee",bud:86003,B:24328,BG:63167,BGY:65656,BGYR:89125,WV:67932},
+  {n:"Production Fee",c:"#7F77DD",t:{bud:86003,B:24328,BG:63167,BGY:65711,BGYR:89180,WV:67960},r:[
+    {n:"Publisher Fee",bud:86003,B:24328,BG:63167,BGY:65711,BGYR:89180,WV:67960},
   ]},
   {n:"Consumer Monetisation",c:"#D85A30",t:{bud:13563,B:3988,BG:8086,BGY:11680,BGYR:14025,WV:9821},r:[
     {n:"BLAST Channels",bud:1240,B:173,BG:189,BGY:740,BGYR:1940,WV:780},
@@ -181,7 +219,7 @@ const RCAT=[
     {n:"In-Game",bud:3250,B:0,BG:1728,BGY:2617,BGYR:3506,WV:2000},
   ]},
 ];
-const RTOT={bud:144988,B:52054,BG:96622,BGY:113877,BGYR:165897,WV:111226};
+const RTOT={bud:144988,B:52054,BG:96652,BGY:113858,BGYR:163295,WV:110848};
 const CROW=[
   {n:"Event Costs",bud:-79679,B:-55424,BG:-70410,BGY:-72499,BGYR:-88921,WV:-73918},
   {n:"Prize Money",bud:-16730,B:-14646,BG:-16356,BGY:-16356,BGYR:-20186,WV:-16930},
@@ -207,8 +245,8 @@ const ECOS_RAW=[
 const COLS=["bud","B","BG","BGY","BGYR","WV"];
 const EKEYS=["rev","cos","gp","ts","con","opex","eb"];
 const WEEKS=["W3","W5","W7","W9","W11","W13","W15","W17","W19","W21","W23","W25","W27","W29","W31","W33","W35","W37","W39","W41","W43","W45","W47","W52"];
-const B26=[44.2,45.3,45.7,47.5,50.6,51.7,52.1],BG26=[81.6,91.3,91.4,95.5,97.2,96.6,96.6],BUD26=145,BUD25=121;
-const D26=["23.01","10.02","23.02","9.03","23.03","7.04","17.04"];
+const B26=[44.2,45.3,45.7,47.5,50.6,51.7,52.1,52.1],BG26=[81.6,91.3,91.4,95.5,97.2,96.6,96.6],BUD26=145,BUD25=121;
+const D26=["23.01","10.02","23.02","9.03","23.03","7.04","17.04","20.04"];
 const B25=[66.1,65.8,76.5,76.6,77.6,78.7,79.3,80.1,84,86.8,88.6,87.3,87.9,88.8,91.6,94,94.4,95.2,98.1,98.4,99,100.3,100.3,114.7];
 const BG25=[79.8,83.1,85.3,88.6,89,89.8,91,91.8,94.7,91.8,102.7,104.9,106.2,108,110.3,111.1,111.8,113.6,116.6,116.9,119,119.8,119.8,130.4];
 const D25=["27.01","10.02","24.02","10.03","24.03","14.04","28.04","12.05","27.05","9.06","23.06","7.07","21.07","4.08","18.08","1.09","15.09","29.09","13.10","27.10","10.11","24.11","8.12","19.12"];
@@ -225,13 +263,19 @@ const RIOT_COMB=mkComb(rS,rN,"Riot (Combined)","#6B6B68");
 const ECOS_ALL=[TOTAL_ECO,RIOT_COMB,...ECOS_RAW];
 const BI=[
   {l:"Signed",t:"Media Rights",e:"Premier",n:"PT - RTP - Premier 26",B:0.03,BG:0.0,BGY:0.0,BGYR:0.0,lid:"MRPR175-26"},
+  {l:"Deal Value Updated",t:"Media Rights",e:"Premier",n:"DE - Winamax - Premier 26",B:0.0,BG:0.0,BGY:-0.06,BGYR:-0.06,lid:"MRPR1092-26"},
+  {l:"Deal Value Updated",t:"Media Rights",e:"Premier",n:"DE - Winamax - Premier 26",B:0.0,BG:0.03,BGY:0.03,BGYR:0.03,lid:"MRPR1388-26"},
   {l:"Signed",t:"Publisher Fee",e:"FNCS",n:"FNCS Legends Landing",B:0.235,BG:0.235,BGY:0.021,BGYR:0.021,lid:"PUFN1048-26"},
+  {l:"New Deal",t:"Publisher Fee",e:"RLCS",n:"testkarl",B:0.0,BG:0.0,BGY:0.055,BGYR:0.055,lid:"PURL1389-26"},
   {l:"New Deal",t:"Publisher Fee",e:"Supercell",n:"Brawl Stars - BSC Prize Money Distribution Fee",B:0.0,BG:0.051,BGY:0.051,BGYR:0.051,lid:"PUSU1324-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"Dota",n:"Dude Wipes",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.35,lid:"SPDO865-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"Dota",n:"Dollar Shave Club deal",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.64,lid:"SPDO925-26"},
+  {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"KP Snacks - Chips - FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.39,lid:"SPFN744-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"FNCS Event Deals London",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.2,lid:"SPFN757-26"},
+  {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"Peripherals FNCS 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.15,lid:"SPFN760-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"Red Magic - FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.2,lid:"SPFN765-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"Paramount Pictures - Scream 7",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.128,lid:"SPFN949-26"},
+  {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"Current - FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-1.024,lid:"SPFN966-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"FNCS",n:"EE",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.234,lid:"SPFN1118-26"},
   {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"FNCS",n:"LEGO",B:0.0,BG:0.0,BGY:-0.3,BGYR:-0.2,lid:"SPFN1243-26"},
   {l:"Deal Value Updated",t:"Sponsorship",e:"FNCS",n:"Mous - FNCS Major Summit 1",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.05,lid:"SPFN1252-26"},
@@ -242,14 +286,18 @@ const BI=[
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Event deals - France - Premier 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.05,lid:"SPPR710-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Earnin",B:0.0,BG:0.0,BGY:0.0,BGYR:-1.0,lid:"SPPR971-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Nova Wallet Premier (2)",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.262,lid:"SPPR1023-26"},
+  {l:"Deal Value Updated",t:"Sponsorship",e:"Premier",n:"Hong Kong Broadband Network and China Mobile",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.279,lid:"SPPR1119-26"},
   {l:"Signed",t:"Sponsorship",e:"Premier",n:"Refrag - Premier 2026 (from April)",B:0.099,BG:0.0,BGY:0.0,BGYR:0.0,lid:"SPPR1148-26"},
   {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"Premier",n:"Exitlag - Premier",B:0.0,BG:0.0,BGY:-0.1,BGYR:-0.06,lid:"SPPR1242-26"},
   {l:"Deal Value Updated",t:"Sponsorship",e:"Premier",n:"Magnum Premier Porto 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.045,lid:"SPPR1251-26"},
   {l:"Deal Value Updated",t:"Sponsorship",e:"Premier",n:"Momax - Premier HK",B:0.0,BG:0.0,BGY:0.005,BGYR:0.005,lid:"SPPR1292-26"},
+  {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"IPVanish",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.015,lid:"SPPR1313-26"},
   {l:"New Deal",t:"Sponsorship",e:"Premier",n:"IPVanish",B:0.0,BG:0.013,BGY:0.013,BGYR:0.013,lid:"SPPR1321-26"},
   {l:"New Deal",t:"Sponsorship",e:"Premier",n:"Resorts World Sentosa - 2027 Title - Launch 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.128,lid:"SPPR1322-26"},
   {l:"New Deal",t:"Sponsorship",e:"Premier",n:"TradeNation",B:0.0,BG:0.0,BGY:0.584,BGYR:0.584,lid:"SPPR1328-26"},
-  {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"RLCS",n:"Nascar - RLCS 2026",B:0.0,BG:0.0,BGY:0.3,BGYR:0.0,lid:"SPRL746-26"},
+  {l:"Lost Deal",t:"Sponsorship",e:"RLCS",n:"KP Snacks - RLCS 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.39,lid:"SPRL551-26"},
+  {l:"Lost Deal",t:"Sponsorship",e:"RLCS",n:"Automotive - RLCS 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.335,lid:"SPRL739-26"},
+  {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"RLCS",n:"Nascar - RLCS 2026",B:0.0,BG:0.0,BGY:0.256,BGYR:-0.044,lid:"SPRL746-26"},
   {l:"Deal Value Updated",t:"Sponsorship",e:"RLCS",n:"Six Flags 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.043,lid:"SPRL937-26"},
   {l:"Lost Deal",t:"Sponsorship",e:"RLCS",n:"Ciao drinks - RLCS Paris",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.1,lid:"SPRL1276-26"},
   {l:"New Deal",t:"Sponsorship",e:"RLCS",n:"Cash App",B:0.0,BG:0.0,BGY:0.0,BGYR:0.171,lid:"SPRL1325-26"},
@@ -263,6 +311,7 @@ const BI=[
   {l:"Deal Value Updated",t:"Ticketing",e:"RLCS",n:"Ticketing - Forth Worth - RLCS Worlds",B:0.0,BG:-0.128,BGY:-0.128,BGYR:-0.128,lid:"TIRL645-26"},
   {l:"Deal Value Updated",t:"Ticketing",e:"RLCS",n:"Ticketing - Forth Worth - RLCS Worlds",B:0.0,BG:0.0,BGY:0.171,BGYR:0.171,lid:"TIRL646-26"},
   {l:"Deal Value Updated",t:"Ticketing",e:"RLCS",n:"Ticketing - Fort Worth - RLCS Worlds",B:0.0,BG:0.0,BGY:0.0,BGYR:0.085,lid:"TIRL647-26"},
+  {l:"Signed",t:"Other Cost of Sales",e:"Dota",n:"Advertising - Kick Slam 26",B:-0.01,BG:-0.01,BGY:-0.01,BGYR:-0.01,lnk:1,lid:"CHDO1201-26-OC",st:"Other CoS"},
   {l:"Other CoS Update",t:"Host City",e:"Dota",n:"Host City - Chengdu - Slam VI",B:0.0,BG:0.0,BGY:0.023,BGYR:0.023,lnk:1,dep:"HCDO111-26",lid:"HCDO111-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Host City",e:"Premier",n:"Host City - Hong Kong - Rivals",B:0.0,BG:0.0,BGY:0.0,BGYR:0.047,lnk:1,dep:"HCPR294-26",lid:"HCPR294-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Host City",e:"Premier",n:"Host City - Hong Kong - Rivals",B:0.0,BG:0.0,BGY:0.039,BGYR:0.039,lnk:1,dep:"HCPR430-26",lid:"HCPR430-26-PA",st:"Partner Act."},
@@ -278,35 +327,74 @@ const BI=[
   {l:"Other CoS Update",t:"Media Rights",e:"Dota",n:"BR & LatAm -  Bet Boom - Slam 26",B:-0.002,BG:-0.002,BGY:-0.002,BGYR:-0.002,lnk:1,dep:"MRDO398-26",lid:"MRDO398-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Media Rights",e:"Premier",n:"CIS - Bet Boom - Premier 26",B:-0.072,BG:-0.072,BGY:-0.072,BGYR:-0.072,lnk:1,dep:"MRPR11-26",lid:"MRPR11-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Media Rights",e:"Premier",n:"BR - Bet Boom - Premier 26",B:-0.029,BG:-0.029,BGY:-0.029,BGYR:-0.029,lnk:1,dep:"MRPR12-26",lid:"MRPR12-26-PA",st:"Partner Act."},
+  {l:"Deal Value Updated",t:"Media Rights",e:"Premier",n:"DE - Winamax - Premier 26",B:0.0,BG:-0.027,BGY:-0.027,BGYR:-0.027,lnk:1,dep:"MRPR1388-26",lid:"MRPR1388-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Blacklyte 2026 Multi Ecosystem - Slam",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPDO8-26",lid:"SPDO8-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Global Betting - Slam 26",B:0.0,BG:0.0,BGY:0.005,BGYR:0.005,lnk:1,dep:"SPDO375-26",lid:"SPDO375-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Zenni",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.01,lnk:1,dep:"SPDO830-26",lid:"SPDO830-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Gaming Malta - Dota - 2026",B:0.049,BG:0.049,BGY:0.049,BGYR:0.049,lnk:1,dep:"SPDO832-26",lid:"SPDO832-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Visa",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.015,lnk:1,dep:"SPDO839-26",lid:"SPDO839-26-PA",st:"Partner Act."},
   {l:"Lost Deal",t:"Sponsorship",e:"Dota",n:"Dude Wipes",B:0.0,BG:0.0,BGY:0.0,BGYR:0.018,lnk:1,dep:"SPDO865-26",lid:"SPDO865-26-PA",st:"Partner Act."},
   {l:"Lost Deal",t:"Sponsorship",e:"Dota",n:"Dollar Shave Club deal",B:0.0,BG:0.0,BGY:0.0,BGYR:0.032,lnk:1,dep:"SPDO925-26",lid:"SPDO925-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Polymarket - Predictions",B:-0.004,BG:-0.004,BGY:-0.004,BGYR:-0.004,lnk:1,dep:"SPDO1111-26",lid:"SPDO1111-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"IC Markets",B:0.0,BG:0.0,BGY:-0.003,BGYR:-0.003,lnk:1,dep:"SPDO1117-26",lid:"SPDO1117-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Dota",n:"Tuborg - Dota 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.004,lnk:1,dep:"SPDO1253-26",lid:"SPDO1253-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Blacklyte 2026 Multi Ecosystem - FNCS",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPFN7-26",lid:"SPFN7-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Alienware - Monitors and Computers FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.002,lnk:1,dep:"SPFN410-26",lid:"SPFN410-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Goodyear - FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.004,lnk:1,dep:"SPFN567-26",lid:"SPFN567-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Epic Games Store - FNCS 2026",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPFN736-26",lid:"SPFN736-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Visa - FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.026,lnk:1,dep:"SPFN840-26",lid:"SPFN840-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Spectrum - FNCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.021,lnk:1,dep:"SPFN933-26",lid:"SPFN933-26-PA",st:"Partner Act."},
   {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"FNCS",n:"LEGO",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.002,lnk:1,dep:"SPFN1243-26",lid:"SPFN1243-26-PA",st:"Partner Act."},
   {l:"Deal Value Updated",t:"Sponsorship",e:"FNCS",n:"Mous - FNCS Major Summit 1",B:0.0,BG:0.0,BGY:0.0,BGYR:0.005,lnk:1,dep:"SPFN1252-26",lid:"SPFN1252-26-AC",st:"Agency Com."},
   {l:"Deal Value Updated",t:"Sponsorship",e:"FNCS",n:"Mous - FNCS Major Summit 1",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.001,lnk:1,dep:"SPFN1252-26",lid:"SPFN1252-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Mentos",B:0.0,BG:0.0,BGY:0.0,BGYR:0.012,lnk:1,dep:"SPFN1308-26",lid:"SPFN1308-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"Hot Toys",B:0.0,BG:0.0,BGY:0.0,BGYR:0.007,lnk:1,dep:"SPFN1316-26",lid:"SPFN1316-26-PA",st:"Partner Act."},
   {l:"New Deal",t:"Sponsorship",e:"FNCS",n:"AMEX - FNCS London",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.032,lnk:1,dep:"SPFN1379-26",lid:"SPFN1379-26-AC",st:"Agency Com."},
   {l:"Other CoS Update",t:"Sponsorship",e:"FNCS",n:"AMEX - FNCS London",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.003,lnk:1,dep:"SPFN1379-26",lid:"SPFN1379-26-PA",st:"Partner Act."},
   {l:"New Deal",t:"Sponsorship",e:"FNCS",n:"Paysafe",B:0.0,BG:0.0,BGY:-0.003,BGYR:-0.003,lnk:1,dep:"SPFN1387-26",lid:"SPFN1387-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Blacklyte Multi Ecosystem - Premier - 2026",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPPR1-26",lid:"SPPR1-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Gaming Malta - Premier - 2026",B:0.049,BG:0.049,BGY:0.049,BGYR:0.049,lnk:1,dep:"SPPR30-26",lid:"SPPR30-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"ASUS - Monitors and Computers - Premier 2026",B:0.003,BG:0.003,BGY:0.003,BGYR:0.003,lnk:1,dep:"SPPR72-26",lid:"SPPR72-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Nova Wallet - Premier 2026",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPPR216-26",lid:"SPPR216-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Global Betting - Premier 2026",B:0.0,BG:0.0,BGY:0.015,BGYR:0.015,lnk:1,dep:"SPPR378-26",lid:"SPPR378-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"EFM - Logistics 2026 Q1",B:0.0,BG:0.003,BGY:0.003,BGYR:0.003,lnk:1,dep:"SPPR421-26",lid:"SPPR421-26-PA",st:"Partner Act."},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Lynx - X Partnership Net - Premier 2026",B:0.0,BG:0.0,BGY:0.115,BGYR:0.115,lnk:1,dep:"SPPR475-26",lid:"SPPR475-26-OC",st:"Other CoS"},
   {l:"Lost Deal",t:"Sponsorship",e:"Premier",n:"Lynx - X Partnership Net - Premier 2026",B:0.0,BG:0.0,BGY:0.005,BGYR:0.005,lnk:1,dep:"SPPR475-26",lid:"SPPR475-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Global Betting - Premier 26",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.015,lnk:1,dep:"SPPR689-26",lid:"SPPR689-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Red Bull - Premier 26",B:-0.004,BG:-0.004,BGY:-0.004,BGYR:-0.004,lnk:1,dep:"SPPR721-26",lid:"SPPR721-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Corpay",B:0.011,BG:0.011,BGY:0.011,BGYR:0.011,lnk:1,dep:"SPPR734-26",lid:"SPPR734-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Polymarket - Predictions",B:0.042,BG:0.042,BGY:0.042,BGYR:0.042,lnk:1,dep:"SPPR738-26",lid:"SPPR738-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"EFM - Logistics 2026 Q2",B:0.0,BG:0.003,BGY:0.003,BGYR:0.003,lnk:1,dep:"SPPR861-26",lid:"SPPR861-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"EFM - Logistics 2026 Q3",B:0.0,BG:0.003,BGY:0.003,BGYR:0.003,lnk:1,dep:"SPPR862-26",lid:"SPPR862-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"EFM - Logistics 2026 Q4",B:0.0,BG:0.003,BGY:0.003,BGYR:0.003,lnk:1,dep:"SPPR863-26",lid:"SPPR863-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"AMD deal",B:0.0,BG:0.0,BGY:0.0,BGYR:0.03,lnk:1,dep:"SPPR930-26",lid:"SPPR930-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Razer - Premier",B:0.0,BG:-0.002,BGY:-0.002,BGYR:-0.002,lnk:1,dep:"SPPR959-26",lid:"SPPR959-26-PA",st:"Partner Act."},
-  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Hong Kong Broadband Network and China Mobile",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.002,lnk:1,dep:"SPPR1119-26",lid:"SPPR1119-26-AC",st:"Agency Com."},
-  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Hong Kong Broadband Network and China Mobile",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.006,lnk:1,dep:"SPPR1119-26",lid:"SPPR1119-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"IC Markets",B:0.0,BG:0.0,BGY:0.021,BGYR:0.021,lnk:1,dep:"SPPR1116-26",lid:"SPPR1116-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Hong Kong Broadband Network and China Mobile",B:0.0,BG:0.0,BGY:0.0,BGYR:0.029,lnk:1,dep:"SPPR1119-26",lid:"SPPR1119-26-AC",st:"Agency Com."},
+  {l:"Deal Value Updated",t:"Sponsorship",e:"Premier",n:"Hong Kong Broadband Network and China Mobile",B:0.0,BG:0.0,BGY:0.0,BGYR:0.014,lnk:1,dep:"SPPR1119-26",lid:"SPPR1119-26-OC",st:"Other CoS"},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Hong Kong Broadband Network and China Mobile",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.002,lnk:1,dep:"SPPR1119-26",lid:"SPPR1119-26-PA",st:"Partner Act."},
   {l:"Signed",t:"Sponsorship",e:"Premier",n:"Refrag - Premier 2026 (from April)",B:-0.001,BG:-0.001,BGY:-0.001,BGYR:-0.001,lnk:1,dep:"SPPR1148-26",lid:"SPPR1148-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Tradeify - Premier",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.003,lnk:1,dep:"SPPR1165-26",lid:"SPPR1165-26-PA",st:"Partner Act."},
   {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"Premier",n:"Exitlag - Premier",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.001,lnk:1,dep:"SPPR1242-26",lid:"SPPR1242-26-PA",st:"Partner Act."},
   {l:"Deal Value Updated",t:"Sponsorship",e:"Premier",n:"Magnum Premier Porto 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.001,lnk:1,dep:"SPPR1251-26",lid:"SPPR1251-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Tuborg- Premier 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.004,lnk:1,dep:"SPPR1254-26",lid:"SPPR1254-26-PA",st:"Partner Act."},
+  {l:"Deal Value Updated",t:"Sponsorship",e:"Premier",n:"Momax - Premier HK",B:0.0,BG:0.0,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPPR1292-26",lid:"SPPR1292-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Oracle (Short term work)",B:0.0,BG:0.0,BGY:0.009,BGYR:0.009,lnk:1,dep:"SPPR1310-26",lid:"SPPR1310-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"Premier",n:"Oracle (Short term work)",B:0.0,BG:0.0,BGY:0.0,BGYR:0.007,lnk:1,dep:"SPPR1311-26",lid:"SPPR1311-26-PA",st:"Partner Act."},
   {l:"New Deal",t:"Sponsorship",e:"Premier",n:"Resorts World Sentosa - 2027 Title - Launch 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.002,lnk:1,dep:"SPPR1322-26",lid:"SPPR1322-26-PA",st:"Partner Act."},
   {l:"New Deal",t:"Sponsorship",e:"Premier",n:"TradeNation",B:0.0,BG:0.0,BGY:-0.009,BGYR:-0.009,lnk:1,dep:"SPPR1328-26",lid:"SPPR1328-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"R6",n:"Blacklyte 2026 Multi Ecosystem - R6 allocation SI Feb 26",B:0.0,BG:0.002,BGY:0.002,BGYR:0.002,lnk:1,dep:"SPRA5-26",lid:"SPRA5-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"R6",n:"Blacklyte 2026 Multi Ecosystem - R6 allocation 26/27 season",B:0.0,BG:0.004,BGY:0.004,BGYR:0.004,lnk:1,dep:"SPRA977-26",lid:"SPRA977-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Blacklyte 2026 Multi Ecosystem - RLCS",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPRL6-26",lid:"SPRL6-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Progressive Insurance RLCS 2026",B:0.008,BG:0.008,BGY:0.008,BGYR:0.008,lnk:1,dep:"SPRL88-26",lid:"SPRL88-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"License - FifaE RLCS - 2026",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPRL157-26",lid:"SPRL157-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"La Banque Postal - RLCS 2026",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPRL165-26",lid:"SPRL165-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Epic Games Store - RLCS 2026",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPRL595-26",lid:"SPRL595-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Michelin - RLCS 2026",B:0.002,BG:0.002,BGY:0.002,BGYR:0.002,lnk:1,dep:"SPRL741-26",lid:"SPRL741-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Nascar - RLCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.001,lnk:1,dep:"SPRL745-26",lid:"SPRL745-26-PA",st:"Partner Act."},
   {l:"Visible Status Update - Red to Yellow",t:"Sponsorship",e:"RLCS",n:"Nascar - RLCS 2026",B:0.0,BG:0.0,BGY:-0.004,BGYR:-0.004,lnk:1,dep:"SPRL746-26",lid:"SPRL746-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Alienware - Monitors and Computers - RLCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:0.002,lnk:1,dep:"SPRL749-26",lid:"SPRL749-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Midas",B:0.001,BG:0.001,BGY:0.001,BGYR:0.001,lnk:1,dep:"SPRL858-26",lid:"SPRL858-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"NHTSA",B:-0.005,BG:-0.005,BGY:-0.005,BGYR:-0.005,lnk:1,dep:"SPRL935-26",lid:"SPRL935-26-PA",st:"Partner Act."},
   {l:"Deal Value Updated",t:"Sponsorship",e:"RLCS",n:"Six Flags 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.004,lnk:1,dep:"SPRL937-26",lid:"SPRL937-26-AC",st:"Agency Com."},
   {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Red Bull RLCS 2026",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.001,lnk:1,dep:"SPRL1114-26",lid:"SPRL1114-26-PA",st:"Partner Act."},
@@ -314,6 +402,8 @@ const BI=[
   {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Visit Morocco",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.015,lnk:1,dep:"SPRL1204-26",lid:"SPRL1204-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"PC Componentes",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.002,lnk:1,dep:"SPRL1250-26",lid:"SPRL1250-26-PA",st:"Partner Act."},
   {l:"Lost Deal",t:"Sponsorship",e:"RLCS",n:"Ciao drinks - RLCS Paris",B:0.0,BG:0.0,BGY:0.0,BGYR:0.005,lnk:1,dep:"SPRL1276-26",lid:"SPRL1276-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"AT&T",B:0.0,BG:0.0,BGY:0.0,BGYR:0.018,lnk:1,dep:"SPRL1293-26",lid:"SPRL1293-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Sponsorship",e:"RLCS",n:"Sargento",B:0.0,BG:0.0,BGY:0.0,BGYR:0.007,lnk:1,dep:"SPRL1307-26",lid:"SPRL1307-26-PA",st:"Partner Act."},
   {l:"New Deal",t:"Sponsorship",e:"RLCS",n:"Cash App - RLCS Worlds",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.003,lnk:1,dep:"SPRL1325-26",lid:"SPRL1325-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Partner Activation",e:"RLCS",n:"Paysafe",B:0.0,BG:0.0,BGY:-0.004,BGYR:-0.004,lnk:1,dep:"SPRL1329-26",lid:"SPRL1329-26-PA",st:"Partner Act."},
   {l:"Visible Status Update - Yellow to Red",t:"Sponsorship",e:"Supercell",n:"Burger King",B:0.0,BG:0.0,BGY:0.081,BGYR:0.059,lnk:1,dep:"SPSU1102-26",lid:"SPSU1102-26-AC",st:"Agency Com."},
@@ -332,28 +422,23 @@ const BI=[
   {l:"Other CoS Update",t:"Ticketing",e:"R6",n:"Ticketing - SI Paris - Live Nation MG",B:-0.005,BG:-0.005,BGY:-0.005,BGYR:-0.005,lnk:1,dep:"TIRA635-26",lid:"TIRA635-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Ticketing",e:"R6",n:"Ticketing - SI Paris - Additional Box Office",B:-0.001,BG:-0.001,BGY:-0.001,BGYR:-0.001,lnk:1,dep:"TIRA639-26",lid:"TIRA639-26-PA",st:"Partner Act."},
   {l:"Other CoS Update",t:"Ticketing",e:"RLCS",n:"Ticketing - Boston - RLCS Major Feb",B:-0.005,BG:-0.005,BGY:-0.005,BGYR:-0.005,lnk:1,dep:"TIRL641-26",lid:"TIRL641-26-PA",st:"Partner Act."},
+  {l:"Other CoS Update",t:"Ticketing",e:"RLCS",n:"Ticketing - Paris - RLCS May",B:0.01,BG:0.01,BGY:0.01,BGYR:0.01,lnk:1,dep:"TIRL644-26",lid:"TIRL644-26-PA",st:"Partner Act."},
   {l:"Deal Value Updated",t:"Ticketing",e:"RLCS",n:"Ticketing - Forth Worth - RLCS Worlds",B:0.0,BG:-0.004,BGY:-0.004,BGYR:-0.004,lnk:1,dep:"TIRL645-26",lid:"TIRL645-26-PA",st:"Partner Act."},
   {l:"Signed",t:"Event Costs",e:"FNCS",n:"FNCS Legends Landing",B:-0.199,BG:-0.199,BGY:-0.008,BGYR:-0.008,lnk:1,dep:"PUFN1048-26",lid:"PUFN1048-26-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"New Formats",n:"Fortnite Amazon Content Series",B:0.0,BG:0.0,BGY:0.0,BGYR:-0.091,lnk:1,dep:"PUNF1317-26",lid:"PUNF1317-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Other Publishers",n:"Wimbledon - 2026 - New Format",B:0.0,BG:0.0,BGY:0.014,BGYR:0.014,lnk:1,dep:"PUOP67-26",lid:"PUOP67-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot January Studio Base",B:0.079,BG:0.079,BGY:0.079,BGYR:0.079,lnk:1,lid:"PURI364-26-01-SB-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot 2026 Studio work stretch",B:0.0,BG:0.0,BGY:0.0,BGYR:0.01,lnk:1,dep:"PURI779-26",lid:"PURI779-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Global Event Support",B:0.0,BG:0.0,BGY:0.018,BGYR:0.018,lnk:1,dep:"PURI841-26",lid:"PURI841-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Global Game Changers",B:0.0,BG:0.0,BGY:0.0,BGYR:0.01,lnk:1,dep:"PURI842-26",lid:"PURI842-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"T2 Americas",B:0.0,BG:0.0,BGY:0.0,BGYR:0.01,lnk:1,dep:"PURI844-26",lid:"PURI844-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (New Biz)",n:"Riot - New Biz - LEC Roadshow Nice 2026",B:0.0,BG:0.026,BGY:0.026,BGYR:0.026,lnk:1,dep:"PURI1043-26",lid:"PURI1043-26-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot February Studio Base",B:0.082,BG:0.082,BGY:0.082,BGYR:0.082,lnk:1,lid:"PURI1063-26-02-SB-EC",st:"Event Costs"},
+  {l:"Airtable Fix/Update",t:"Event Costs",e:"Other Publishers",n:"Wimbledon - 2026 - New Format",B:0.0,BG:-0.123,BGY:0.014,BGYR:0.014,lnk:1,dep:"PUOP67-26",lid:"PUOP67-26-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot March Studio Base",B:0.0,BG:-0.193,BGY:-0.193,BGYR:-0.193,lnk:1,lid:"PURI1064-26-03-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot April Studio Base",B:0.0,BG:-0.603,BGY:-0.603,BGYR:-0.603,lnk:1,lid:"PURI1068-26-04-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot May Studio Base",B:0.0,BG:-0.207,BGY:-0.207,BGYR:-0.207,lnk:1,lid:"PURI1070-26-05-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot June Studio Base",B:0.0,BG:0.393,BGY:0.393,BGYR:0.393,lnk:1,lid:"PURI1071-26-06-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot July Studio Base",B:0.0,BG:-1.544,BGY:-1.544,BGYR:-1.544,lnk:1,lid:"PURI1072-26-07-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot August Studio Base",B:0.0,BG:0.57,BGY:0.57,BGYR:0.57,lnk:1,lid:"PURI1073-26-08-SB-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot September Studio Base",B:0.0,BG:-0.8,BGY:-0.8,BGYR:-0.8,lnk:1,lid:"PURI1078-26-09-SB-EC",st:"Event Costs"},
+  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot September Studio Base",B:0.0,BG:0.545,BGY:0.545,BGYR:0.545,lnk:1,lid:"PURI1078-26-09-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot October Studio Base",B:0.0,BG:0.57,BGY:0.57,BGYR:0.57,lnk:1,lid:"PURI1080-26-10-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot November Studio Base",B:0.0,BG:0.57,BGY:0.57,BGYR:0.57,lnk:1,lid:"PURI1082-26-11-SB-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Riot December Studio Base",B:0.0,BG:0.57,BGY:0.57,BGYR:0.57,lnk:1,lid:"PURI1084-26-12-SB-EC",st:"Event Costs"},
-  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Studio Base Delta",B:0.0,BG:0.511,BGY:0.511,BGYR:0.511,lnk:1,lid:"PURI1314-26-DEL-SB-EC",st:"Event Costs"},
+  {l:"Airtable Fix/Update",t:"Event Costs",e:"Riot (Studio)",n:"Studio Base Delta",B:0.0,BG:-0.673,BGY:-0.673,BGYR:-0.673,lnk:1,lid:"PURI1314-26-DEL-SB-EC",st:"Event Costs"},
+  {l:"New Deal",t:"Event Costs",e:"RLCS",n:"testkarl",B:0.0,BG:0.0,BGY:-0.047,BGYR:-0.047,lnk:1,lid:"PURL1389-26-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Supercell",n:"Brawl Stars Cup Event Additions",B:0.0,BG:0.002,BGY:0.002,BGYR:0.002,lnk:1,dep:"PUSU1193-26",lid:"PUSU1193-26-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Supercell",n:"2026 Prize Pool Support - Road to LCQ",B:0.0,BG:0.018,BGY:0.018,BGYR:0.018,lnk:1,dep:"PUSU1197-26",lid:"PUSU1197-26-EC",st:"Event Costs"},
   {l:"Airtable Fix/Update",t:"Event Costs",e:"Supercell",n:"2026 Prize Pool Support - Icebreaker",B:0.0,BG:-0.017,BGY:-0.017,BGYR:-0.017,lnk:1,dep:"PUSU1255-26",lid:"PUSU1255-26-EC",st:"Event Costs"},
@@ -778,22 +863,22 @@ const DEALS_DATA={deals:[
   {eco:"Supercell",type:"Ticketing",status:"B",name:"Ticketing - Berlin",loc:"65000",ccy:"EUR",eur:65000},
 ],ecos:["Premier", "Dota", "Supercell", "FNCS", "RLCS", "R6", "Riot (Studio)", "Riot (New Biz)", "Other Publishers", "New Formats", "Acquisitions", "BLAST TV", ""],types:["BLAST Channels", "Host City", "In-Game", "Media Rights", "Merchandise", "Other Revenue", "Publisher Fee", "Sponsorship", "Ticketing"]};
 const ECO_DRILL = {
-  "Premier":{"B":{"rev":{"BLAST Channels": 94, "Host City": 150, "Media Rights": 8551, "Sponsorship": 4416, "Ticketing": 984},"ec_event":-12956,"ec_prize":-5709,"ocs":-658},"BG":{"rev":{"BLAST Channels": 103, "Host City": 547, "Media Rights": 8578, "Sponsorship": 4883, "Ticketing": 2456},"ec_event":-12956,"ec_prize":-5709,"ocs":-888},"BGY":{"rev":{"BLAST Channels": 307, "Host City": 2263, "Merchandise": 22, "Media Rights": 8752, "Sponsorship": 9372, "Ticketing": 3480},"ec_event":-12956,"ec_prize":-5709,"ocs":-1428},"BGYR":{"rev":{"BLAST Channels": 307, "Host City": 3321, "Merchandise": 22, "Media Rights": 8872, "Sponsorship": 14615, "Ticketing": 3480},"ec_event":-12956,"ec_prize":-5709,"ocs":-1963}},
-  "Dota":{"B":{"rev":{"BLAST Channels": 20, "Media Rights": 4663, "Sponsorship": 1893},"ec_event":-4124,"ec_prize":-3665,"ocs":-147},"BG":{"rev":{"BLAST Channels": 20, "Host City": 50, "Media Rights": 4663, "Sponsorship": 1893},"ec_event":-4124,"ec_prize":-3665,"ocs":-147},"BGY":{"rev":{"BLAST Channels": 80, "Host City": 764, "Merchandise": 4, "Media Rights": 4683, "Sponsorship": 3093, "Ticketing": 110},"ec_event":-4124,"ec_prize":-3665,"ocs":-323},"BGYR":{"rev":{"BLAST Channels": 80, "Host City": 764, "Merchandise": 4, "Media Rights": 4743, "Sponsorship": 5293, "Ticketing": 110},"ec_event":-4124,"ec_prize":-3665,"ocs":-363}},
-  "RLCS":{"B":{"rev":{"BLAST Channels": 58, "Publisher Fee": 7119, "Sponsorship": 3144, "Ticketing": 2332},"ec_event":-12047,"ec_prize":0,"ocs":-558},"BG":{"rev":{"BLAST Channels": 58, "Host City": 332, "Media Rights": 52, "Publisher Fee": 7119, "Sponsorship": 3208, "Ticketing": 2631},"ec_event":-12047,"ec_prize":0,"ocs":-572},"BGY":{"rev":{"BLAST Channels": 225, "Host City": 460, "Merchandise": 12, "Media Rights": 87, "Publisher Fee": 7119, "Sponsorship": 3830, "Ticketing": 2972},"ec_event":-12047,"ec_prize":0,"ocs":-583},"BGYR":{"rev":{"BLAST Channels": 225, "Host City": 724, "Merchandise": 12, "Media Rights": 137, "Publisher Fee": 9713, "Sponsorship": 8095, "Ticketing": 3228},"ec_event":-13059,"ec_prize":-1277,"ocs":-788}},
-  "FNCS":{"B":{"rev":{"Publisher Fee": 8881, "Sponsorship": 873},"ec_event":-8364,"ec_prize":0,"ocs":-84},"BG":{"rev":{"In-Game": 128, "Media Rights": 18, "Publisher Fee": 8881, "Sponsorship": 873, "Ticketing": 584},"ec_event":-8364,"ec_prize":0,"ocs":-139},"BGY":{"rev":{"BLAST Channels": 75, "In-Game": 192, "Merchandise": 8, "Media Rights": 73, "Publisher Fee": 8881, "Sponsorship": 1048, "Ticketing": 909},"ec_event":-8364,"ec_prize":0,"ocs":-152},"BGYR":{"rev":{"BLAST Channels": 75, "Host City": 167, "In-Game": 256, "Merchandise": 8, "Media Rights": 73, "Publisher Fee": 12569, "Sponsorship": 13033, "Ticketing": 909},"ec_event":-9164,"ec_prize":-2553,"ocs":-785}},
-  "R6":{"B":{"rev":{"Publisher Fee": 5697, "Ticketing": 434},"ec_event":-16100,"ec_prize":-5272,"ocs":-229},"BG":{"rev":{"In-Game": 1599, "Media Rights": 58, "Publisher Fee": 21697, "Sponsorship": 167, "Ticketing": 434},"ec_event":-16100,"ec_prize":-5272,"ocs":-388},"BGY":{"rev":{"BLAST Channels": 40, "In-Game": 2424, "Merchandise": 8, "Media Rights": 58, "Publisher Fee": 22897, "Sponsorship": 167, "Ticketing": 434},"ec_event":-17120,"ec_prize":-5272,"ocs":-392},"BGYR":{"rev":{"BLAST Channels": 40, "In-Game": 3249, "Merchandise": 8, "Media Rights": 58, "Publisher Fee": 22897, "Sponsorship": 167, "Ticketing": 434},"ec_event":-17120,"ec_prize":-5272,"ocs":-392}},
-  "Riot (Studio)":{"B":{"rev":{"Publisher Fee": 2631},"ec_event":-1834,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 10922},"ec_event":-7736,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 11822},"ec_event":-8501,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 13322},"ec_event":-9776,"ec_prize":0,"ocs":0}},
-  "Riot (New Biz)":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 2520},"ec_event":-2165,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 2520},"ec_event":-2165,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 4823},"ec_event":-4123,"ec_prize":0,"ocs":0}},
+  "Premier":{"B":{"rev":{"BLAST Channels": 94, "Host City": 150, "Media Rights": 8551, "Sponsorship": 4416, "Ticketing": 984},"ec_event":-12956,"ec_prize":-5709,"ocs":-551},"BG":{"rev":{"BLAST Channels": 103, "Host City": 547, "Media Rights": 8608, "Sponsorship": 4883, "Ticketing": 2456},"ec_event":-12956,"ec_prize":-5709,"ocs":-798},"BGY":{"rev":{"BLAST Channels": 307, "Host City": 2263, "Merchandise": 22, "Media Rights": 8722, "Sponsorship": 9372, "Ticketing": 3480},"ec_event":-12956,"ec_prize":-5709,"ocs":-1291},"BGYR":{"rev":{"BLAST Channels": 307, "Host City": 3321, "Merchandise": 22, "Media Rights": 8842, "Sponsorship": 14321, "Ticketing": 3480},"ec_event":-12956,"ec_prize":-5709,"ocs":-1741}},
+  "Dota":{"B":{"rev":{"BLAST Channels": 20, "Media Rights": 4663, "Sponsorship": 1893},"ec_event":-4124,"ec_prize":-3665,"ocs":-107},"BG":{"rev":{"BLAST Channels": 20, "Host City": 50, "Media Rights": 4663, "Sponsorship": 1893},"ec_event":-4124,"ec_prize":-3665,"ocs":-107},"BGY":{"rev":{"BLAST Channels": 80, "Host City": 764, "Merchandise": 4, "Media Rights": 4683, "Sponsorship": 3093, "Ticketing": 110},"ec_event":-4124,"ec_prize":-3665,"ocs":-278},"BGYR":{"rev":{"BLAST Channels": 80, "Host City": 764, "Merchandise": 4, "Media Rights": 4743, "Sponsorship": 5293, "Ticketing": 110},"ec_event":-4124,"ec_prize":-3665,"ocs":-318}},
+  "RLCS":{"B":{"rev":{"BLAST Channels": 58, "Publisher Fee": 7119, "Sponsorship": 3144, "Ticketing": 2332},"ec_event":-12047,"ec_prize":0,"ocs":-534},"BG":{"rev":{"BLAST Channels": 58, "Host City": 332, "Media Rights": 52, "Publisher Fee": 7119, "Sponsorship": 3208, "Ticketing": 2631},"ec_event":-12047,"ec_prize":0,"ocs":-548},"BGY":{"rev":{"BLAST Channels": 225, "Host City": 460, "Merchandise": 12, "Media Rights": 87, "Publisher Fee": 7174, "Sponsorship": 3786, "Ticketing": 2972},"ec_event":-12094,"ec_prize":0,"ocs":-558},"BGYR":{"rev":{"BLAST Channels": 225, "Host City": 724, "Merchandise": 12, "Media Rights": 137, "Publisher Fee": 9768, "Sponsorship": 7326, "Ticketing": 3228},"ec_event":-13106,"ec_prize":-1277,"ocs":-735}},
+  "FNCS":{"B":{"rev":{"Publisher Fee": 8881, "Sponsorship": 873},"ec_event":-8364,"ec_prize":0,"ocs":-82},"BG":{"rev":{"In-Game": 128, "Media Rights": 18, "Publisher Fee": 8881, "Sponsorship": 873, "Ticketing": 584},"ec_event":-8364,"ec_prize":0,"ocs":-137},"BGY":{"rev":{"BLAST Channels": 75, "In-Game": 192, "Merchandise": 8, "Media Rights": 73, "Publisher Fee": 8881, "Sponsorship": 1048, "Ticketing": 909},"ec_event":-8364,"ec_prize":0,"ocs":-150},"BGYR":{"rev":{"BLAST Channels": 75, "Host City": 167, "In-Game": 256, "Merchandise": 8, "Media Rights": 73, "Publisher Fee": 12569, "Sponsorship": 11469, "Ticketing": 909},"ec_event":-9164,"ec_prize":-2553,"ocs":-738}},
+  "R6":{"B":{"rev":{"Publisher Fee": 5697, "Ticketing": 434},"ec_event":-16100,"ec_prize":-5272,"ocs":-229},"BG":{"rev":{"In-Game": 1599, "Media Rights": 58, "Publisher Fee": 21697, "Sponsorship": 167, "Ticketing": 434},"ec_event":-16100,"ec_prize":-5272,"ocs":-382},"BGY":{"rev":{"BLAST Channels": 40, "In-Game": 2424, "Merchandise": 8, "Media Rights": 58, "Publisher Fee": 22897, "Sponsorship": 167, "Ticketing": 434},"ec_event":-17120,"ec_prize":-5272,"ocs":-386},"BGYR":{"rev":{"BLAST Channels": 40, "In-Game": 3249, "Merchandise": 8, "Media Rights": 58, "Publisher Fee": 22897, "Sponsorship": 167, "Ticketing": 434},"ec_event":-17120,"ec_prize":-5272,"ocs":-386}},
+  "Riot (Studio)":{"B":{"rev":{"Publisher Fee": 2631},"ec_event":-1994,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 10922},"ec_event":-8757,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 11822},"ec_event":-9540,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 13322},"ec_event":-10844,"ec_prize":0,"ocs":0}},
+  "Riot (New Biz)":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 2520},"ec_event":-1170,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 2520},"ec_event":-1170,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 4823},"ec_event":-3128,"ec_prize":0,"ocs":0}},
   "Supercell":{"B":{"rev":{"Ticketing": 65},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 12026, "Ticketing": 65},"ec_event":-6919,"ec_prize":-1709,"ocs":0},"BGY":{"rev":{"Publisher Fee": 12239, "Sponsorship": 50, "Ticketing": 365},"ec_event":-7100,"ec_prize":-1709,"ocs":-9},"BGYR":{"rev":{"Host City": 250, "Publisher Fee": 12282, "Sponsorship": 593, "Ticketing": 365},"ec_event":-7137,"ec_prize":-1709,"ocs":-166}},
   "Wimbledon":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGY":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGYR":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0}},
   "BLAST TV":{"B":{"rev":{"Sponsorship": 49},"ec_event":0,"ec_prize":0,"ocs":-201},"BG":{"rev":{"Sponsorship": 49},"ec_event":0,"ec_prize":0,"ocs":-201},"BGY":{"rev":{"Sponsorship": 49},"ec_event":0,"ec_prize":0,"ocs":-201},"BGYR":{"rev":{"BLAST Channels": 1200, "Sponsorship": 49},"ec_event":0,"ec_prize":0,"ocs":-201}},
-  "Other Publishers":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 175},"ec_event":-123,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 2821},"ec_event":-2371,"ec_prize":0,"ocs":0}},
+  "Other Publishers":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{},"ec_event":-123,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 175},"ec_event":-123,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 2821},"ec_event":-2371,"ec_prize":0,"ocs":0}},
   "New Formats":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGY":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 10695},"ec_event":-8767,"ec_prize":0,"ocs":0}},
   "Corporate":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGY":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGYR":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0}},
   "Acquisitions":{"B":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BG":{"rev":{},"ec_event":0,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Other Revenue": 1792},"ec_event":0,"ec_prize":0,"ocs":-846},"BGYR":{"rev":{"Other Revenue": 1792},"ec_event":0,"ec_prize":0,"ocs":-846}},
-  "Total":{"B":{"rev":{"BLAST Channels": 172, "Host City": 150, "Media Rights": 13214, "Publisher Fee": 24328, "Sponsorship": 10375, "Ticketing": 3815},"ec_event":-55424,"ec_prize":-14646,"ocs":-1877},"BG":{"rev":{"BLAST Channels": 181, "Host City": 929, "In-Game": 1727, "Media Rights": 13369, "Publisher Fee": 63165, "Sponsorship": 11073, "Ticketing": 6170},"ec_event":-70410,"ec_prize":-16356,"ocs":-2334},"BGY":{"rev":{"BLAST Channels": 727, "Host City": 3487, "In-Game": 2616, "Merchandise": 54, "Media Rights": 13653, "Other Revenue": 1792, "Publisher Fee": 65653, "Sponsorship": 17609, "Ticketing": 8270},"ec_event":-72499,"ec_prize":-16356,"ocs":-3934},"BGYR":{"rev":{"BLAST Channels": 1927, "Host City": 5226, "In-Game": 3505, "Merchandise": 54, "Media Rights": 13883, "Other Revenue": 1792, "Publisher Fee": 89122, "Sponsorship": 41845, "Ticketing": 8526},"ec_event":-88596,"ec_prize":-20186,"ocs":-5504}},
-  "Riot (Combined)":{"B":{"rev":{"Publisher Fee": 2631},"ec_event":-1834,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 13442},"ec_event":-9901,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 14342},"ec_event":-10666,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 18145},"ec_event":-13899,"ec_prize":0,"ocs":0}}
+  "Total":{"B":{"rev":{"BLAST Channels": 172, "Host City": 150, "Media Rights": 13214, "Publisher Fee": 24328, "Sponsorship": 10375, "Ticketing": 3815},"ec_event":-55585,"ec_prize":-14646,"ocs":-1704},"BG":{"rev":{"BLAST Channels": 181, "Host City": 929, "In-Game": 1727, "Media Rights": 13399, "Publisher Fee": 63165, "Sponsorship": 11073, "Ticketing": 6170},"ec_event":-70559,"ec_prize":-16356,"ocs":-2172},"BGY":{"rev":{"BLAST Channels": 727, "Host City": 3487, "In-Game": 2616, "Merchandise": 54, "Media Rights": 13623, "Other Revenue": 1792, "Publisher Fee": 65708, "Sponsorship": 17565, "Ticketing": 8270},"ec_event":-72590,"ec_prize":-16356,"ocs":-3719},"BGYR":{"rev":{"BLAST Channels": 1927, "Host City": 5226, "In-Game": 3505, "Merchandise": 54, "Media Rights": 13853, "Other Revenue": 1792, "Publisher Fee": 89177, "Sponsorship": 39218, "Ticketing": 8526},"ec_event":-88716,"ec_prize":-20186,"ocs":-5130}},
+  "Riot (Combined)":{"B":{"rev":{"Publisher Fee": 2631},"ec_event":-1994,"ec_prize":0,"ocs":0},"BG":{"rev":{"Publisher Fee": 13442},"ec_event":-9927,"ec_prize":0,"ocs":0},"BGY":{"rev":{"Publisher Fee": 14342},"ec_event":-10710,"ec_prize":0,"ocs":0},"BGYR":{"rev":{"Publisher Fee": 18145},"ec_event":-13972,"ec_prize":0,"ocs":0}}
 };
 const ECO_BUD={
   "Premier":{rev:{"Sponsorship":9439,"Media Rights":9655,"Host City":1464,"BLAST Channels":295,"Ticketing":3511,"Merchandise":23},ec_event:-11767,ec_prize:-5709,rs:0,other_cos:-659},

@@ -975,7 +975,7 @@ function buildPL(){
   const SWV=[...SCS,"WV"];
   let h="<thead><tr><th>Line item</th><th>Budget</th>";
   SWV.forEach(s=>h+="<th style=\"color:"+SC_C[s]+"\">"+SC_L[s]+"</th>");
-  h+="<th style=\"color:#B45309\">Δ "+(PREV_MODE==="wv"?"WV vs WV":"prev "+SC)+"</th><th style=\"color:#7C3AED\">Δ bud</th></tr></thead><tbody>";
+  h+="<th style=\"color:#B45309\">Δ "+(PREV_MODE==="wv"?"WV vs WV":"prev "+SC)+"</th><th style=\"color:#7C3AED\">"+(PREV_MODE==="wv"?"WV vs bud":"Δ bud")+"</th></tr></thead><tbody>";
   let b="";
   rows.forEach(r=>{
     const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
@@ -988,10 +988,13 @@ function buildPL(){
     const pv=PREV_MODE==="wv"?pv_wv:(PRV[r.k]&&PRV[r.k][SC]);
     const cv_for_delta=PREV_MODE==="wv"?cv_wv:cv;
     if(!r.pct&&typeof cv_for_delta==="number"&&typeof pv==="number"){const d=+(cv_for_delta-pv).toFixed(1);b+="<td class=\""+vc(d)+"\">"+(d>=0?"+":"")+d+"m</td>";}else b+="<td>—</td>";
-    if(!r.pct&&typeof cv==="number"&&typeof r.bv==="number"){const db=+(cv-r.bv).toFixed(1);b+="<td class=\""+vc(db)+"\">"+(db>=0?"+":"")+db+"m</td>";}else b+="<td>—</td>";
+    // Δ bud: in WV mode compare CUR.WV vs budget; else compare selected scenario vs budget
+    const cv_bud=PREV_MODE==="wv"?cv_wv:cv;
+    if(!r.pct&&typeof cv_bud==="number"&&typeof r.bv==="number"){const db=+(cv_bud-r.bv).toFixed(1);b+="<td class=\""+vc(db)+"\">"+(db>=0?"+":"")+db+"m</td>";}else b+="<td>—</td>";
     b+="</tr>";
   });
-  document.getElementById("t-pl").innerHTML=h+b+"</tbody>";
+  document.getElementById("t-pl").style.cssText="width:100%;table-layout:fixed";
+  document.getElementById("t-pl").innerHTML="<colgroup><col style='width:22%'><col style='width:9%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'></colgroup>"+h+b+"</tbody>";
   document.getElementById("comm").textContent=COMMENTARY_TEXT;
   buildPrvPL();
 }
@@ -1010,7 +1013,7 @@ function buildPrvPL(){
   // Match current table header exactly (same 9 cols), last 2 blank for alignment
   let h="<thead><tr><th>Line item</th><th>Budget</th>";
   SWV.forEach(s=>h+='<th style="color:'+(SC_C[s]||"#5F5E5A")+'">'+(SC_L[s]||s)+'</th>');
-  h+='<th style="color:transparent">—</th><th style="color:transparent">—</th>';
+  h+='<th style="color:transparent;min-width:0"></th><th style="color:transparent;min-width:0"></th>';
   h+="</tr></thead><tbody>";
   let b="";
   rows.forEach(r=>{
@@ -1021,7 +1024,10 @@ function buildPrvPL(){
     b+="</tr>";
   });
   var tbl=document.getElementById("t-prv-pl");
-  if(tbl)tbl.innerHTML=h+b+"</tbody>";
+  if(tbl){
+    tbl.style.cssText="width:100%;table-layout:fixed";
+    tbl.innerHTML="<colgroup><col style='width:22%'><col style='width:9%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'><col style='width:8%'></colgroup>"+h+b+"</tbody>";
+  }
 }
 
 function buildRev(){

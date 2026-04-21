@@ -10,7 +10,7 @@
 body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:var(--bg);color:var(--t1);font-size:13px}
 #hdr{background:linear-gradient(135deg,#0F172A,#1e3a5f);color:#fff;padding:14px 20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px}
 .ht{font-size:15px;font-weight:700}.hs{font-size:10px;color:rgba(255,255,255,.5);margin-top:3px;display:flex;gap:14px;flex-wrap:wrap}.hs b{color:rgba(255,255,255,.85)}
-#kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 20px}
+#kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:12px 20px}#kpis-wv{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding:10px 20px;background:var(--bg);border-top:1px solid var(--bd)}
 @media(max-width:600px){#kpis{grid-template-columns:repeat(2,1fr)}}
 .kpi{background:#fff;border:1px solid var(--bd);border-radius:10px;padding:12px 14px}
 .kl{font-size:9px;text-transform:uppercase;letter-spacing:.6px;color:var(--t2);font-weight:600;margin-bottom:6px}
@@ -73,7 +73,13 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
   <div class="kpi"><div class="kl">Revenue</div><div class="kv" id="kv0"></div><div class="kt" id="kt0"></div><div class="kb"><div class="kbf" id="kf0"></div></div></div>
   <div class="kpi"><div class="kl">Gross Margin</div><div class="kv" id="kv1"></div><div class="kt" id="kt1"></div></div>
   <div class="kpi"><div class="kl">EBITDA</div><div class="kv" id="kv2"></div><div class="kt" id="kt2"></div></div>
-  <div class="kpi"><div class="kl">+Yellow vs Budget</div><div class="kv" id="kv3"></div><div class="kt" id="kt3"></div><div class="kb"><div class="kbf" id="kf3" style="background:#B45309"></div></div></div>
+  <div class="kpi" id="kpi3"><div class="kl" id="kl3">vs Budget</div><div style="margin-top:4px"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px"><span style="font-size:10px;color:var(--t3)">Revenue</span><span id="kb3r" style="font-size:13px;font-weight:700"></span></div><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:3px"><span style="font-size:10px;color:var(--t3)">Gross Margin</span><span id="kb3g" style="font-size:13px;font-weight:700"></span></div><div style="display:flex;justify-content:space-between;align-items:baseline"><span style="font-size:10px;color:var(--t3)">EBITDA</span><span id="kb3e" style="font-size:13px;font-weight:700"></span></div></div><div class="kb" style="margin-top:6px"><div class="kbf" id="kf3"></div></div></div>
+</div>
+<div id="kpis-wv">
+  <div class="kpi"><div class="kl">Weighted Revenue</div><div class="kv" id="kvw0"></div><div class="kt" id="ktw0"></div><div class="kb"><div class="kbf" id="kfw0"></div></div></div>
+  <div class="kpi"><div class="kl">WV Gross Margin</div><div class="kv" id="kvw1"></div><div class="kt" id="ktw1"></div></div>
+  <div class="kpi"><div class="kl">WV EBITDA</div><div class="kv" id="kvw2"></div><div class="kt" id="ktw2"></div></div>
+  <div class="kpi"><div class="kl" id="klw3">WV Gap vs Budget</div><div style="margin-top:6px;display:flex;flex-direction:column;gap:5px"><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="kt" style="margin:0">Revenue</span><span id="kvw3r" style="font-size:13px;font-weight:700"></span></div><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="kt" style="margin:0">Gross Margin</span><span id="kvw3g" style="font-size:13px;font-weight:700"></span></div><div style="display:flex;justify-content:space-between;align-items:baseline"><span class="kt" style="margin:0">EBITDA</span><span id="kvw3e" style="font-size:13px;font-weight:700"></span></div></div><div class="kb" style="margin-top:6px"><div class="kbf" id="kfw3" style="background:#5F5E5A"></div></div></div>
 </div>
 <div id="tb">
   <div class="tabs">
@@ -92,11 +98,12 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
 </div>
 <div id="ct">
   <div class="pane on" id="pane-pl">
-    <div class="card"><div class="ch">P&L Summary <small>€m · selected scenario highlighted</small></div><div class="cx"><table id="t-pl"></table></div></div>
+    <div class="card"><div class="ch" style="display:flex;align-items:center;justify-content:space-between">P&L Summary <small>€m · selected scenario highlighted</small><span style="display:flex;gap:4px"><button id="prev-sc-btn" onclick="setPrevMode('sc')" class="scb on BGY" style="font-size:9px;padding:2px 7px">Δ vs prev scenario</button><button id="prev-wv-btn" onclick="setPrevMode('wv')" class="scb" style="font-size:9px;padding:2px 7px">WV vs prev WV</button></span></div><div class="cx"><table id="t-pl"></table></div></div>
     <div class="g2">
       <div class="card"><div class="ch">Revenue by stream <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-rev"></table></div></div>
       <div class="card"><div class="ch">Cost of sales <small>€000s · ▸ expand</small></div><div class="cx"><table id="t-cos"></table></div></div>
     </div>
+    <div class="card" style="margin-top:12px"><div class="ch">Previous Period P&L <small id="prv-pl-sub"></small></div><div class="cx"><table id="t-prv-pl"></table></div></div>
     
   </div>
   <div class="pane" id="pane-bridge">
@@ -893,7 +900,7 @@ function generateCommentary(){
 }
 
 
-let SC="BGY",SEL_ECO=null,YOY_MODE="abs",SHOW_BG=true;
+let SC="BGY",SEL_ECO=null,YOY_MODE="abs",SHOW_BG=true,PREV_MODE="sc";
 const CH={};
 const SC_C={B:"#1D9E75",BG:"#4CAF7D",BGY:"#B45309",BGYR:"#C2410C",WV:"#5F5E5A"};
 const SC_L={B:"Booked",BG:"+Green",BGY:"+Yellow",BGYR:"+Red",WV:"Weighted"};
@@ -925,10 +932,36 @@ function kpis(){
   document.getElementById("kv2").textContent=fm(eb);
   document.getElementById("kv2").style.color=eb>=0?"var(--pos)":"var(--neg)";
   document.getElementById("kt2").innerHTML="<span class=\""+clsV(dE)+"\">"+sgn(dE)+" vs "+PRV_D+"</span> · vs budget: <span class=\""+clsV(eb-BUD_E)+"\">"+sgn(eb-BUD_E)+"</span>";
-  document.getElementById("kv3").textContent=fm(yR);
-  document.getElementById("kv3").style.color=yGap>=0?"var(--pos)":"var(--neg)";
-  document.getElementById("kt3").innerHTML="<span class=\""+clsV(yGap)+"\">"+sgn(yGap)+" vs €"+BUD_R+"m</span> · "+Math.round(yR/BUD_R*100)+"% covered";
-  document.getElementById("kf3").style.width=Math.min(100,yR/BUD_R*100)+"%";
+  // Widget 3: vs Budget (Rev, GM, EBITDA deltas — dynamic on SC)
+  var dRb=+(rv-BUD_R).toFixed(1), dGb2=+(gm-BUD_GM).toFixed(1), dEb=+(eb-BUD_E).toFixed(1);
+  var kl3=document.getElementById("kl3");
+  if(kl3)kl3.textContent="vs Budget ("+(SC==="BGY"?"+Yellow":SC=="B"?"Booked":SC=="BG"?"+Green":"+Red")+")";
+  var kb3r=document.getElementById("kb3r"),kb3g=document.getElementById("kb3g"),kb3e=document.getElementById("kb3e");
+  if(kb3r){kb3r.textContent=(dRb>=0?"+":"")+dRb+"m";kb3r.className=clsV(dRb);}
+  if(kb3g){kb3g.textContent=(dGb2>=0?"+":"")+dGb2+"m";kb3g.className=clsV(dGb2);}
+  if(kb3e){kb3e.textContent=(dEb>=0?"+":"")+dEb+"m";kb3e.className=clsV(dEb);}
+  document.getElementById("kf3").style.cssText="width:"+Math.min(100,rv/BUD_R*100)+"%;background:"+SC_C[SC];
+  // WV row
+  var wRev=CUR.rev.WV,wGm=CUR.gm.WV,wEb=CUR.eb.WV;
+  var kw0=document.getElementById("kvw0"),kw1=document.getElementById("kvw1"),kw2=document.getElementById("kvw2");
+  if(kw0){kw0.textContent=fm(wRev);kw0.style.color="var(--t1)";}
+  var kfw0=document.getElementById("kfw0");
+  if(kfw0)kfw0.style.cssText="width:"+Math.min(100,wRev/BUD_R*100)+"%;background:#5F5E5A";
+  var kfw3=document.getElementById("kfw3");
+  if(kfw3)kfw3.style.width=Math.min(100,wRev/BUD_R*100)+"%";
+  if(kw1){kw1.textContent=fm(wGm);kw1.style.color=wGm>=0?"var(--pos)":"var(--neg)";}
+  if(kw2){kw2.textContent=fm(wEb);kw2.style.color=wEb>=0?"var(--pos)":"var(--neg)";}
+  var kw0t=document.getElementById("ktw0"),kw1t=document.getElementById("ktw1"),kw2t=document.getElementById("ktw2");
+  var wRevPrv=PRV.rev.WV,wGmPrv=PRV.gm.WV,wEbPrv=PRV.eb.WV;
+  if(kw0t)kw0t.innerHTML="<span class='"+clsV(wRev-wRevPrv)+"'>"+(wRev-wRevPrv>=0?"+":"")+((wRev-wRevPrv).toFixed(1))+"m vs "+PRV_D+"</span>";
+  if(kw1t)kw1t.innerHTML="<span class='"+clsV(wGm-wGmPrv)+"'>"+(wGm-wGmPrv>=0?"+":"")+((wGm-wGmPrv).toFixed(1))+"m vs "+PRV_D+"</span>";
+  if(kw2t)kw2t.innerHTML="<span class='"+clsV(wEb-wEbPrv)+"'>"+(wEb-wEbPrv>=0?"+":"")+((wEb-wEbPrv).toFixed(1))+"m vs "+PRV_D+"</span>";
+  // WV vs BGY deltas
+  var kvw3r=document.getElementById("kvw3r"),kvw3g=document.getElementById("kvw3g"),kvw3e=document.getElementById("kvw3e");
+  var dWr=+(wRev-CUR.rev.BGY).toFixed(1),dWg=+(wGm-CUR.gm.BGY).toFixed(1),dWe=+(wEb-CUR.eb.BGY).toFixed(1);
+  if(kvw3r){kvw3r.textContent=(dWr>=0?"+":"")+dWr+"m";kvw3r.className=clsV(dWr);}
+  if(kvw3g){kvw3g.textContent=(dWg>=0?"+":"")+dWg+"m";kvw3g.className=clsV(dWg);}
+  if(kvw3e){kvw3e.textContent=(dWe>=0?"+":"")+dWe+"m";kvw3e.className=clsV(dWe);}
 }
 
 function buildPL(){
@@ -942,19 +975,53 @@ function buildPL(){
   const SWV=[...SCS,"WV"];
   let h="<thead><tr><th>Line item</th><th>Budget</th>";
   SWV.forEach(s=>h+="<th style=\"color:"+SC_C[s]+"\">"+SC_L[s]+"</th>");
-  h+="<th style=\"color:#B45309\">Δ prev</th><th style=\"color:#7C3AED\">Δ bud</th></tr></thead><tbody>";
+  h+="<th style=\"color:#B45309\">Δ "+(PREV_MODE==="wv"?"WV vs WV":"prev "+SC)+"</th><th style=\"color:#7C3AED\">Δ bud</th></tr></thead><tbody>";
   let b="";
   rows.forEach(r=>{
     const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
     b+="<tr class=\""+cl+"\"><td>"+r.l+"</td><td>"+(r.pct?r.bv:fm(r.bv))+"</td>";
     SWV.forEach(s=>{const v=CUR[r.k]&&CUR[r.k][s];b+="<td "+(s===SC?colH(s):"")+" class=\""+(r.pct?"":vc(v))+"\">"+(r.pct?(v||"—"):fm(v))+"</td>";});
-    const cv=CUR[r.k]&&CUR[r.k][SC],pv=PRV[r.k]&&PRV[r.k][SC];
-    if(!r.pct&&typeof cv==="number"&&typeof pv==="number"){const d=+(cv-pv).toFixed(1);b+="<td class=\""+vc(d)+"\">"+(d>=0?"+":"")+d+"m</td>";}else b+="<td>—</td>";
+    const cv=CUR[r.k]&&CUR[r.k][SC];
+    // WV mode: always compare CUR.WV vs PRV.WV (weighted vs weighted, scenario-independent)
+    const cv_wv=CUR[r.k]&&CUR[r.k].WV;
+    const pv_wv=PRV[r.k]&&PRV[r.k].WV;
+    const pv=PREV_MODE==="wv"?pv_wv:(PRV[r.k]&&PRV[r.k][SC]);
+    const cv_for_delta=PREV_MODE==="wv"?cv_wv:cv;
+    if(!r.pct&&typeof cv_for_delta==="number"&&typeof pv==="number"){const d=+(cv_for_delta-pv).toFixed(1);b+="<td class=\""+vc(d)+"\">"+(d>=0?"+":"")+d+"m</td>";}else b+="<td>—</td>";
     if(!r.pct&&typeof cv==="number"&&typeof r.bv==="number"){const db=+(cv-r.bv).toFixed(1);b+="<td class=\""+vc(db)+"\">"+(db>=0?"+":"")+db+"m</td>";}else b+="<td>—</td>";
     b+="</tr>";
   });
   document.getElementById("t-pl").innerHTML=h+b+"</tbody>";
   document.getElementById("comm").textContent=COMMENTARY_TEXT;
+  buildPrvPL();
+}
+
+function buildPrvPL(){
+  var sub=document.getElementById("prv-pl-sub");
+  if(sub)sub.textContent=PRV_D+" — all scenarios";
+  const rows=[
+    {l:"Revenue",k:"rev",bold:1,bv:145.0},{l:"Cost of Sales",k:"cos",ind:1,bv:-99.2},
+    {l:"Gross Margin",k:"gm",bold:1,bv:45.8},{l:"GM%",k:"gmP",pct:1,bv:"32%"},
+    {l:"Team Share",k:"ts",ind:1,bv:-2.8},{l:"Contribution",k:"con",bold:1,bv:43.0},
+    {l:"OPEX",k:"opex",ind:1,bv:-29.7},
+    {l:"EBITDA",k:"eb",bold:1,bv:13.3},{l:"EBITDA%",k:"ebP",pct:1,bv:"9%"},
+  ];
+  const SWV=[...SCS,"WV"];
+  // Match current table header exactly (same 9 cols), last 2 blank for alignment
+  let h="<thead><tr><th>Line item</th><th>Budget</th>";
+  SWV.forEach(s=>h+='<th style="color:'+(SC_C[s]||"#5F5E5A")+'">'+(SC_L[s]||s)+'</th>');
+  h+='<th style="color:transparent">—</th><th style="color:transparent">—</th>';
+  h+="</tr></thead><tbody>";
+  let b="";
+  rows.forEach(r=>{
+    const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
+    b+="<tr class=\""+cl+"\"><td>"+r.l+"</td><td>"+(r.pct?r.bv:fm(r.bv))+"</td>";
+    SWV.forEach(s=>{const v=PRV[r.k]&&PRV[r.k][s];b+="<td class=\""+(r.pct?"":vc(v))+"\">"+( r.pct?(v||"—"):fm(v))+"</td>";});
+    b+="<td></td><td></td>";
+    b+="</tr>";
+  });
+  var tbl=document.getElementById("t-prv-pl");
+  if(tbl)tbl.innerHTML=h+b+"</tbody>";
 }
 
 function buildRev(){
@@ -2002,6 +2069,13 @@ function buildYoyTable(){
 
 function setYoyMode(m){YOY_MODE=m;document.getElementById("y-abs").className="scb"+(m==="abs"?" on BGY":"");document.getElementById("y-pct").className="scb"+(m==="pct"?" on BGY":"");buildYoy();}
 function toggleBG(){SHOW_BG=!SHOW_BG;document.getElementById("y-bg").className="scb"+(SHOW_BG?" on GRN":"");buildYoy();}
+
+function setPrevMode(m){
+  PREV_MODE=m;
+  document.getElementById("prev-sc-btn").className="scb"+(m==="sc"?" on BGY":"");
+  document.getElementById("prev-wv-btn").className="scb"+(m==="wv"?" on BGY":"");
+  buildPL();
+}
 
 function refresh(){
 

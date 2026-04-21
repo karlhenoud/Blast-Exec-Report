@@ -128,12 +128,14 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
         <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Start/End</span><span><span class="ldot" style="background:#185FA5"></span>Positive</span><span><span class="ldot" style="background:#DC2626"></span>Negative</span><span><span class="ldot" style="background:#B4B2A9"></span>Residual</span></div>
       </div>
     </div>
-    <div id="wf-drill-cvp" style="display:none;margin:0 0 18px 0">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span id="wf-drill-cvp-title" style="font-size:11px;font-weight:600;color:var(--t1)"></span>
-        <button onclick="document.getElementById('wf-drill-cvp').style.display='none'" style="border:none;background:none;cursor:pointer;color:var(--t3);font-size:11px">✕ close</button>
+    <div id="wf-drill-cvp" style="display:none;margin:12px 0 18px 0;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid #F1F5F9">
+        <div id="wf-drill-cvp-title" style="font-size:11px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:6px;flex:1"></div>
+        <button onclick="document.getElementById('wf-drill-cvp').style.display='none';document.getElementById('wf-drill-cvp').dataset.activeKey='';" style="border:none;background:#F1F5F9;cursor:pointer;color:#64748B;font-size:10px;padding:3px 8px;border-radius:4px;margin-left:12px">✕ close</button>
       </div>
-      <table id="wf-drill-cvp-tbl" style="width:100%;font-size:11px;border-collapse:collapse"></table>
+      <div style="overflow-x:auto">
+        <table id="wf-drill-cvp-tbl" style="width:100%;font-size:11px;border-collapse:collapse"></table>
+      </div>
     </div>
     <div style="font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.6px;color:#94A3B8;margin:14px 0 6px;padding:0 2px">Current vs Budget</div>
     <div class="g2">
@@ -148,12 +150,14 @@ footer{padding:8px 20px 18px;font-size:10px;color:var(--t3);display:flex;justify
         <div class="leg"><span><span class="ldot" style="background:#64748B"></span>Budget/Current</span><span><span class="ldot" style="background:#185FA5"></span>Ahead</span><span><span class="ldot" style="background:#DC2626"></span>Behind</span></div>
       </div>
     </div>
-    <div id="wf-drill-cvb" style="display:none;margin:0 0 18px 0">
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-        <span id="wf-drill-cvb-title" style="font-size:11px;font-weight:600;color:var(--t1)"></span>
-        <button onclick="document.getElementById('wf-drill-cvb').style.display='none'" style="border:none;background:none;cursor:pointer;color:var(--t3);font-size:11px">✕ close</button>
+    <div id="wf-drill-cvb" style="display:none;margin:12px 0 18px 0;border:1px solid #E2E8F0;border-radius:10px;overflow:hidden;box-shadow:0 2px 8px rgba(0,0,0,.06)">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:#fff;border-bottom:1px solid #F1F5F9">
+        <div id="wf-drill-cvb-title" style="font-size:11px;font-weight:600;color:var(--t1);display:flex;align-items:center;gap:6px;flex:1"></div>
+        <button onclick="document.getElementById('wf-drill-cvb').style.display='none';document.getElementById('wf-drill-cvb').dataset.activeKey='';" style="border:none;background:#F1F5F9;cursor:pointer;color:#64748B;font-size:10px;padding:3px 8px;border-radius:4px;margin-left:12px">✕ close</button>
       </div>
-      <table id="wf-drill-cvb-tbl" style="width:100%;font-size:11px;border-collapse:collapse"></table>
+      <div style="overflow-x:auto">
+        <table id="wf-drill-cvb-tbl" style="width:100%;font-size:11px;border-collapse:collapse"></table>
+      </div>
     </div>
   </div>
   
@@ -1622,76 +1626,160 @@ function buildBudgetWaterfall(canvasId, mode){
 
 // ── Waterfall drill-down functions ──
 function wfDrill(canvasId, key, groupFn) {
-  var drillDiv   = document.getElementById("wf-drill-cvp");
-  var titleEl    = document.getElementById("wf-drill-cvp-title");
-  var tblEl      = document.getElementById("wf-drill-cvp-tbl");
+  var drillDiv = document.getElementById("wf-drill-cvp");
+  var titleEl  = document.getElementById("wf-drill-cvp-title");
+  var tblEl    = document.getElementById("wf-drill-cvp-tbl");
   if(!drillDiv||!titleEl||!tblEl) return;
 
-  var items = BI.filter(function(b){ return (b[SC]||0) && groupFn(b)===key; });
-  if(!items.length) return;
+  // Toggle same bar
+  if(drillDiv.dataset.activeKey===key && drillDiv.style.display!=="none") {
+    drillDiv.style.display="none"; drillDiv.dataset.activeKey=""; return;
+  }
+  drillDiv.dataset.activeKey = key;
 
-  titleEl.textContent = key + " — movements vs " + PRV_D + " (" + SC_L[SC] + " scenario)";
+  var allItems = BI.filter(function(b){ return groupFn(b)===key; });
+  var cosItems = allItems.filter(function(b){ return b.lnk; });
 
-  var S4=["B","BG","BGY","BGYR"];
-  var colStyle = "text-align:right;padding:5px 8px;font-size:11px;white-space:nowrap";
-  var hdrStyle = "text-align:right;padding:5px 8px;font-size:10px;font-weight:600;white-space:nowrap;border-bottom:2px solid var(--b1)";
+  if(!allItems.length) return;
 
-  var h = "<thead><tr>" +
-    "<th style='text-align:left;padding:5px 8px;font-size:10px;font-weight:600;border-bottom:2px solid var(--b1);min-width:220px'>Deal</th>" +
-    "<th style='text-align:left;padding:5px 8px;font-size:10px;font-weight:600;border-bottom:2px solid var(--b1)'>Reason</th>" +
-    S4.map(function(s){ return "<th style='"+hdrStyle+";color:"+SC_C[s]+"'>"+SC_L[s]+"</th>"; }).join("") +
-    "</tr></thead><tbody>";
+  // Pre-compute net impact per deal for sorting
+  var _cosMap = {};
+  allItems.filter(function(c){return c.lnk&&c.dep;}).forEach(function(c){
+    _cosMap[c.dep] = (_cosMap[c.dep]||0) + (c[SC]||0);
+  });
 
-  var revItems = items.filter(function(x){return !x.lnk;}).sort(function(a,b){return Math.abs(b[SC]||0)-Math.abs(a[SC]||0);});
-  var cosItems = items.filter(function(x){return x.lnk;});
-  var usedCos  = new Set();
+  // Grouping: eco waterfall → group by P&L type; cat waterfall → group by ecosystem
+  var groupByType = (canvasId === "c-wf-eco");
+  var TYPE_ORD=["Sponsorship","Media Rights","Host City","Publisher Fee",
+    "BLAST Channels","Ticketing","Merchandise","In-Game","Other Revenue",
+    "Event Costs","Prize Money","Various"];
+  var ECO_ORD=["Premier","Dota","RLCS","FNCS","R6","Riot (Studio)","Riot (New Biz)",
+    "Supercell","Wimbledon","BLAST TV","Other Publishers","New Formats","Corporate","Acquisitions"];
+  var ST_ORD=["B","G","Y","R"];
 
-  function fmCell(v,sc) {
-    if(!v||v===0) return "<td style='"+colStyle+";color:var(--t3)'>—</td>";
-    return "<td style='"+colStyle+";color:"+(v>0?"#1D9E75":"#DC2626")+"'>"+(v>0?"+":"")+fmCoS(v)+"</td>";
+  function itemSt(x){
+    if(x.B&&x.B!==0)return"B"; if(x.BG&&x.BG!==0)return"G";
+    if(x.BGY&&x.BGY!==0)return"Y"; return"R";
+  }
+  function groupOf(it){ return groupByType ? it.t : it.e; }
+  function groupColor(it){
+    if(groupByType){
+      var tc={"Sponsorship":"#185FA5","Media Rights":"#0F6E56","Host City":"#534AB7",
+        "Publisher Fee":"#7F77DD","BLAST Channels":"#3266AD","Ticketing":"#D85A30",
+        "Merchandise":"#B45309","In-Game":"#993C1D","Other Revenue":"#888780"};
+      return tc[it.t]||"#64748B";
+    }
+    var eco=ECOS_RAW.find(function(e){return e.k===it.e;}); return(eco&&eco.c)||"#64748B";
   }
 
-  revItems.forEach(function(it) {
-    // Find linked CoS
-    var linked = cosItems.filter(function(c,ci){
-      if(usedCos.has(ci)) return false;
-      if((it.lid&&c.dep===it.lid)||(!c.dep&&matchScore(c.n,it.n)>=0.45)){usedCos.add(ci);return true;}
-      return false;
+  var revItems = allItems.filter(function(b){ return !b.lnk; })
+    .sort(function(a,b){
+      var ga=groupByType?TYPE_ORD.indexOf(a.t):ECO_ORD.indexOf(a.e);
+      var gb=groupByType?TYPE_ORD.indexOf(b.t):ECO_ORD.indexOf(b.e);
+      if(ga<0)ga=99; if(gb<0)gb=99;
+      if(ga!==gb) return ga-gb;
+      var si=ST_ORD.indexOf(itemSt(a)), sj=ST_ORD.indexOf(itemSt(b));
+      if(si!==sj) return si-sj;
+      return Math.abs((b[SC]||0)+(_cosMap[b.lid]||0))-Math.abs((a[SC]||0)+(_cosMap[a.lid]||0));
     });
 
-    // Rev row
-    h += "<tr style='border-bottom:1px solid var(--b1)'>" +
-      "<td style='padding:5px 8px;font-size:11px;color:var(--t1)'>" + (it.n||"") +
-        (it.e?" <span style='color:var(--t3);font-size:10px'>· "+it.e+"</span>":"") + "</td>" +
-      "<td style='padding:5px 8px;font-size:10.5px;color:var(--t2)'>" + (it.l||"") + "</td>" +
-      S4.map(function(s){return fmCell(it[s]||0,s);}).join("") + "</tr>";
+  var totRev = revItems.reduce(function(a,b){return a+(b[SC]||0);},0);
+  var totCos = cosItems.reduce(function(a,b){return a+(b[SC]||0);},0);
+  var totNet = +(totRev+totCos).toFixed(3);
 
-    // Summed CoS row if any
-    if(linked.length) {
-      var cosSum = {}; S4.forEach(function(s){cosSum[s]=linked.reduce(function(a,c){return a+(c[s]||0);},0);});
-      var bd = linked.filter(function(c){return Math.abs(c[SC]||0)>=0.005;})
-        .map(function(c){return (c.st||c.t)+" "+(c[SC]>0?"+":"")+((c[SC]||0).toFixed(1))+"m";}).join(" · ");
-      h += "<tr style='border-bottom:1px solid var(--b1);border-left:2px solid #B45309;background:rgba(180,83,9,.04)'>" +
-        "<td style='padding:4px 8px 4px 16px;font-size:10.5px;color:#B45309;font-style:italic'>↳ CoS" +
-          (bd?" <span style='font-size:9.5px;font-weight:400;font-style:normal;opacity:.85'>("+bd+")</span>":"") + "</td>" +
-        "<td style='padding:4px 8px;font-size:10px;color:var(--t3)'></td>" +
-        S4.map(function(s){return fmCell(cosSum[s]||0,s);}).join("") + "</tr>";
+  titleEl.innerHTML =
+    "<span style='font-weight:700;color:var(--t1)'>"+key+"</span>" +
+    "<span style='font-size:10px;color:var(--t2);margin-left:8px'>vs "+PRV_D+" &nbsp;&middot;&nbsp; "+SC_L[SC]+" scenario</span>" +
+    "<span style='margin-left:auto;font-size:13px;font-weight:700;color:"+(totNet>=0?"#1D9E75":"#DC2626")+"'>"+(totNet>=0?"+":"")+totNet.toFixed(1)+"m net</span>";
+
+  function fmV(v){
+    if(!v||v===0) return "<span style='color:#94A3B8'>—</span>";
+    return "<span style='color:"+(v>0?"#1D9E75":"#DC2626")+";font-weight:600'>"+(v>0?"+":"")+fmCoS(v)+"</span>";
+  }
+
+  var rows="", usedCos=new Set(), lastGroup=null;
+
+  revItems.forEach(function(it){
+    var grp=groupOf(it);
+    if(grp!==lastGroup){
+      lastGroup=grp;
+      var gc=groupColor(it);
+      var grpItems=revItems.filter(function(x){return groupOf(x)===grp;});
+      var grpNet=grpItems.reduce(function(a,x){return a+(x[SC]||0)+(_cosMap[x.lid]||0);},0);
+      rows+=
+        "<tr style='background:#F1F5F9;border-top:2px solid #E2E8F0'>" +
+          "<td style='padding:7px 12px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:"+gc+"'>" +
+            "<span style='display:inline-block;width:8px;height:8px;border-radius:2px;background:"+gc+";margin-right:6px;vertical-align:middle'></span>"+grp+
+          "</td>" +
+          "<td style='padding:7px 12px;text-align:right;font-size:10px;color:#94A3B8'>"+grpItems.length+" deal"+(grpItems.length===1?"":"s")+"</td>" +
+          "<td></td>" +
+          "<td style='padding:7px 12px;text-align:right;font-size:11px;font-weight:700;color:"+(grpNet>=0?"#1D9E75":"#DC2626")+"'>"+(grpNet>=0?"+":"")+grpNet.toFixed(1)+"m</td>" +
+        "</tr>";
     }
+
+    var linked=cosItems.filter(function(c,ci){
+      if(usedCos.has(ci))return false;
+      if((it.lid&&c.dep===it.lid)||(!c.dep&&it.lid&&c.lid&&c.lid.indexOf(it.lid)===0)){usedCos.add(ci);return true;}
+      return false;
+    });
+    var revVal=it[SC]||0, cosVal=linked.reduce(function(a,c){return a+(c[SC]||0);},0);
+    var net=+(revVal+cosVal).toFixed(3);
+    var st=itemSt(it), stC={"B":"#1D9E75","G":"#4CAF7D","Y":"#B45309","R":"#C2410C"}[st]||"#94A3B8";
+    var stL={"B":"Booked","G":"Green","Y":"Yellow","R":"Red"}[st]||st;
+
+    rows+=
+      "<tr style='border-bottom:1px solid #F1F5F9'>" +
+        "<td style='padding:9px 12px'>" +
+          "<div style='font-size:12px;font-weight:600;color:#0F172A;line-height:1.3'>"+(it.n||"")+"</div>" +
+          "<div style='font-size:10px;color:#94A3B8;margin-top:2px;display:flex;gap:8px;align-items:center'>" +
+            "<span style='color:"+groupColor(it)+";font-weight:600'>"+(groupByType?it.e:it.t)+"</span>" +
+            "<span style='background:"+stC+"18;color:"+stC+";font-size:9px;font-weight:700;padding:1px 5px;border-radius:3px;text-transform:uppercase'>"+stL+"</span>" +
+            (it.l?"<span style='color:#94A3B8'>"+it.l+"</span>":"") +
+          "</div>" +
+        "</td>" +
+        "<td style='padding:9px 12px;text-align:right;width:90px'>"+fmV(revVal)+"</td>" +
+        "<td style='padding:9px 12px;text-align:right;width:90px'>"+(linked.length?fmV(cosVal):"<span style='color:#94A3B8'>—</span>")+"</td>" +
+        "<td style='padding:9px 12px;text-align:right;width:90px'><span style='font-weight:700;color:"+(net>=0?"#1D9E75":"#DC2626")+"'>"+(net>=0?"+":"")+fmCoS(net)+"</span></td>" +
+      "</tr>";
+
+    linked.forEach(function(c){
+      var cv=c[SC]||0; if(!cv)return;
+      rows+=
+        "<tr style='border-bottom:1px solid #F8FAFC;background:#FAFAFA'>" +
+          "<td style='padding:5px 12px 5px 28px'>" +
+            "<span style='display:inline-block;width:2px;height:12px;background:#B45309;opacity:.4;border-radius:1px;vertical-align:middle;margin-right:6px'></span>" +
+            "<span style='font-size:10.5px;color:#B45309;font-style:italic'>"+(c.st||c.t)+"</span>" +
+            (c.n&&c.n!==it.n?"<span style='font-size:9.5px;color:#94A3B8;margin-left:4px'>· "+c.n+"</span>":"") +
+          "</td>" +
+          "<td></td><td style='padding:5px 12px;text-align:right'>"+fmV(cv)+"</td><td></td>" +
+        "</tr>";
+    });
   });
 
   // Unlinked CoS
   cosItems.forEach(function(c,ci){
-    if(usedCos.has(ci)) return;
-    h += "<tr style='border-bottom:1px solid var(--b1);border-left:2px solid #B45309;background:rgba(180,83,9,.04)'>" +
-      "<td style='padding:4px 8px 4px 16px;font-size:10.5px;color:#B45309;font-style:italic'>↳ CoS · "+(c.st||c.t)+" · "+(c.n||"")+"</td>" +
-      "<td style='padding:4px 8px;font-size:10px;color:var(--t3)'>"+(c.l||"")+"</td>" +
-      S4.map(function(s){return fmCell(c[s]||0,s);}).join("") + "</tr>";
+    if(usedCos.has(ci))return; var cv=c[SC]||0;
+    rows+="<tr style='border-bottom:1px solid #F8FAFC;background:#FFF7ED'><td style='padding:8px 12px'><div style='font-size:11px;color:#B45309;font-style:italic'>"+(c.st||c.t)+" · "+(c.n||"")+"</div><div style='font-size:10px;color:#94A3B8'>"+(c.l||"")+"</div></td><td></td><td style='padding:8px 12px;text-align:right'>"+fmV(cv)+"</td><td style='padding:8px 12px;text-align:right'>"+fmV(cv)+"</td></tr>";
   });
 
-  h += "</tbody>";
-  tblEl.innerHTML = h;
-  drillDiv.style.display = "block";
-  if(drillDiv.scrollIntoView) drillDiv.scrollIntoView({behavior:"smooth",block:"nearest"});
+  rows+=
+    "<tr style='background:#F8FAFC;border-top:2px solid #E2E8F0'>" +
+      "<td style='padding:10px 12px;font-size:11px;font-weight:700;color:#475569'>Total impact</td>" +
+      "<td style='padding:10px 12px;text-align:right'>"+fmV(totRev)+"</td>" +
+      "<td style='padding:10px 12px;text-align:right'>"+fmV(totCos)+"</td>" +
+      "<td style='padding:10px 12px;text-align:right'><span style='font-size:14px;font-weight:700;color:"+(totNet>=0?"#1D9E75":"#DC2626")+"'>"+(totNet>=0?"+":"")+totNet.toFixed(1)+"m</span></td>" +
+    "</tr>";
+
+  tblEl.innerHTML =
+    "<thead><tr style='background:#F8FAFC;border-bottom:2px solid #E2E8F0'>" +
+      "<th style='padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748B'>Deal / Movement</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748B;width:90px'>Revenue &#916;</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#B45309;width:90px'>Cost &#916;</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748B;width:90px'>Net &#916;</th>" +
+    "</tr></thead><tbody>"+rows+"</tbody>";
+
+  drillDiv.style.display="block";
+  setTimeout(function(){drillDiv.scrollIntoView({behavior:"smooth",block:"nearest"});},50);
 }
 
 function wfDrillBud(canvasId, mode, key) {
@@ -1700,68 +1788,87 @@ function wfDrillBud(canvasId, mode, key) {
   var tblEl    = document.getElementById("wf-drill-cvb-tbl");
   if(!drillDiv||!titleEl||!tblEl) return;
 
-  var colStyle = "text-align:right;padding:5px 8px;font-size:11px;white-space:nowrap";
-  var hdrStyle = "text-align:right;padding:5px 8px;font-size:10px;font-weight:600;border-bottom:2px solid var(--b1)";
+  var activeKey = canvasId+"|"+mode+"|"+key;
+  if(drillDiv.dataset.activeKey===activeKey && drillDiv.style.display!=="none") {
+    drillDiv.style.display="none"; drillDiv.dataset.activeKey=""; return;
+  }
+  drillDiv.dataset.activeKey = activeKey;
 
-  var h = "<thead><tr>" +
-    "<th style='text-align:left;padding:5px 8px;font-size:10px;font-weight:600;border-bottom:2px solid var(--b1);min-width:160px'>Line</th>" +
-    "<th style='"+hdrStyle+";color:#64748B'>Budget</th>" +
-    "<th style='"+hdrStyle+";color:"+SC_C[SC]+"'>Current</th>" +
-    "<th style='"+hdrStyle+";color:var(--t2)'>Δ vs Budget</th>" +
-    "</tr></thead><tbody>";
-
-  function row(label, cur, bud, bold) {
-    var delta = +(cur - bud).toFixed(1);
-    var boldStyle = bold ? ";font-weight:600" : "";
-    var bgStyle = bold ? ";background:rgba(0,0,0,.025)" : "";
-    return "<tr style='border-bottom:1px solid var(--b1)"+bgStyle+"'>" +
-      "<td style='padding:5px 8px;font-size:11px;color:var(--t1)"+boldStyle+"'>" + label + "</td>" +
-      "<td style='"+colStyle+";color:#64748B'>" + fm(bud) + "</td>" +
-      "<td style='"+colStyle+";color:"+(cur>=0?"#1D9E75":"#DC2626")+"'>" + fm(cur) + "</td>" +
-      "<td style='"+colStyle+";color:"+(delta>0?"#1D9E75":delta<0?"#DC2626":"var(--t3)")+"'>" +
-        (delta===0?"—":(delta>0?"+":"")+delta+"m") + "</td>" +
-      "</tr>";
+  function fmDelta(v){
+    if(v===null||v===undefined||v===0)return"<span style='color:#94A3B8'>—</span>";
+    return"<span style='color:"+(v>0?"#1D9E75":"#DC2626")+";font-weight:700'>"+(v>0?"+":"")+v.toFixed(1)+"m</span>";
+  }
+  function fmAbs(v,bold){
+    if(v===null||v===undefined)return"<span style='color:#94A3B8'>—</span>";
+    var neg=v<0, s=(neg?"(":"")+"€"+Math.abs(v).toFixed(1)+"m"+(neg?")":"");
+    return bold?"<strong style='color:"+(neg?"#DC2626":"#0F172A")+"'>"+s+"</strong>":
+                "<span style='color:"+(neg?"#DC2626":"#475569")+"'>"+s+"</span>";
+  }
+  function row(label,cur,bud,isBold,indent){
+    var delta=(typeof cur==="number"&&typeof bud==="number")?+(cur-bud).toFixed(1):null;
+    var pct=(typeof cur==="number"&&typeof bud==="number"&&bud!==0)?Math.round(cur/bud*100)+"%":"—";
+    var bg=isBold?"background:#F8FAFC;":"";
+    var pl="padding-left:"+(12+(indent||0))+"px;";
+    return"<tr style='border-bottom:1px solid #F1F5F9;"+bg+"'>" +
+      "<td style='"+pl+"padding-top:"+(isBold?10:7)+"px;padding-bottom:"+(isBold?10:7)+"px;font-size:"+(isBold?12:11)+"px'>" +
+        (isBold?"<strong style='color:#0F172A'>"+label+"</strong>":"<span style='color:#475569'>"+label+"</span>") +
+      "</td>" +
+      "<td style='text-align:right;padding:7px 12px;font-size:11px'>"+fmAbs(bud,false)+"</td>" +
+      "<td style='text-align:right;padding:7px 12px;font-size:11px'>"+fmAbs(cur,isBold)+"</td>" +
+      "<td style='text-align:right;padding:7px 12px'>"+fmDelta(delta)+"</td>" +
+      "<td style='text-align:right;padding:7px 12px;font-size:10px;color:#94A3B8'>"+pct+"</td>" +
+    "</tr>";
   }
 
-  if(mode==="eco") {
-    var eco = ECOS_ALL.find(function(e){return e.k===key;});
-    if(!eco){tblEl.innerHTML="<tr><td>No data for "+key+"</td></tr>";drillDiv.style.display="block";return;}
-    titleEl.textContent = key + " — Budget vs Current (" + SC_L[SC] + ")";
-    [{k:"rev",l:"Revenue",bold:0},{k:"cos",l:"Cost of Sales",bold:0},
-     {k:"gp", l:"Gross Profit",bold:1},{k:"ts",l:"Team Share",bold:0},
-     {k:"con",l:"Contribution",bold:1},{k:"opex",l:"OPEX",bold:0},
-     {k:"eb", l:"EBITDA",bold:1}
+  var headerHTML =
+    "<thead><tr style='background:#F8FAFC;border-bottom:2px solid #E2E8F0'>" +
+      "<th style='padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748B'>Line item</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#64748B'>Budget</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:"+SC_C[SC]+"'>"+SC_L[SC]+"</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#7C3AED'>vs Budget</th>" +
+      "<th style='padding:8px 12px;text-align:right;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.5px;color:#94A3B8'>% of bud</th>" +
+    "</tr></thead>";
+
+  var bodyRows="";
+
+  titleEl.innerHTML =
+    "<span style='font-weight:700;color:var(--t1)'>"+key+"</span>" +
+    "<span style='font-size:10px;color:var(--t2);margin-left:8px'>Current vs Budget ("+SC_L[SC]+")</span>";
+
+  if(mode==="eco"){
+    var eco=ECOS_ALL.find(function(e){return e.k===key;});
+    if(!eco){tblEl.innerHTML=headerHTML+"<tbody><tr><td colspan=5 style='padding:16px;color:#94A3B8'>No data</td></tr></tbody>";drillDiv.style.display="block";return;}
+    [{k:"rev",l:"Revenue",bold:1},{k:"cos",l:"Cost of Sales",bold:0,indent:12},
+     {k:"gp",l:"Gross Profit",bold:1},{k:"ts",l:"Team Share",bold:0,indent:12},
+     {k:"con",l:"Contribution",bold:1},{k:"opex",l:"OPEX",bold:0,indent:12},
+     {k:"eb",l:"EBITDA",bold:1}
     ].forEach(function(f){
-      var cur=(eco[f.k]&&eco[f.k][SC])||0;
-      var bud=(eco[f.k]&&eco[f.k].bud)||0;
-      h+=row(f.l, cur, bud, f.bold);
+      var cur=(eco[f.k]&&eco[f.k][SC]!==undefined)?eco[f.k][SC]/1000:null;
+      var bud=(eco[f.k]&&eco[f.k].bud!==undefined)?eco[f.k].bud/1000:null;
+      bodyRows+=row(f.l,cur,bud,!!f.bold,f.indent||0);
     });
   } else {
-    // Cat mode: show revenue stream or P&L line
-    titleEl.textContent = key + " — Budget vs Current (" + SC_L[SC] + ")";
-    var catRows = {
-      "Revenue":       [{l:"Revenue",       cur:CUR.rev[SC], bud:BUD_R}],
-      "Cost of Sales": [{l:"Cost of Sales", cur:CUR.cos[SC], bud:-(BUD_R-BUD_GM)}],
-      "Gross Profit":  [{l:"Gross Profit",  cur:CUR.gm[SC],  bud:BUD_GM}],
-      "OPEX":          [{l:"OPEX",          cur:CUR.opex[SC],bud:-29.7}],
-      "Team Share":    [{l:"Team Share",    cur:CUR.ts[SC],  bud:-2.8}],
-      "EBITDA":        [{l:"EBITDA",        cur:CUR.eb[SC],  bud:BUD_E}],
-      "CoS":           [{l:"Cost of Sales", cur:CUR.cos[SC], bud:-(BUD_R-BUD_GM)}],
+    var catMap={
+      "Revenue":[{l:"Revenue",cur:CUR.rev[SC],bud:BUD_R,bold:1}],
+      "Cost of Sales":[{l:"Cost of Sales",cur:CUR.cos[SC],bud:-(BUD_R-BUD_GM),bold:1}],
+      "Gross Profit":[{l:"Gross Margin",cur:CUR.gm[SC],bud:BUD_GM,bold:1}],
+      "OPEX":[{l:"OPEX",cur:CUR.opex[SC],bud:-29.7,bold:0,indent:12},{l:"Contribution",cur:CUR.con[SC],bud:43.0,bold:1}],
+      "EBITDA":[{l:"Revenue",cur:CUR.rev[SC],bud:BUD_R,bold:0},{l:"Gross Margin",cur:CUR.gm[SC],bud:BUD_GM,bold:0},{l:"EBITDA",cur:CUR.eb[SC],bud:BUD_E,bold:1}],
     };
-    var rows = catRows[key] || catRows[key.replace("…","")];
-    // Fallback: check RCAT for revenue streams
-    if(!rows) {
-      var rcat = RCAT.reduce(function(a,c){return a.concat(c.r);},[]).find(function(r){return r.n===key||r.n.startsWith(key.slice(0,8));});
-      if(rcat) rows=[{l:rcat.n, cur:rcat[SC]||0, bud:rcat.bud||0}];
+    var rStream=null;
+    RCAT.forEach(function(cat){cat.r.forEach(function(r){if(r.n===key||r.n.startsWith(key.slice(0,8))){rStream=r;}});});
+    if(rStream){
+      bodyRows+=row(rStream.n,rStream[SC]/1000,rStream.bud/1000,true,0);
+    } else {
+      var rows2=catMap[key]||catMap[key.replace("…","")];
+      if(rows2){rows2.forEach(function(r2){bodyRows+=row(r2.l,r2.cur,r2.bud,r2.bold,r2.indent||0);});}
+      else{bodyRows="<tr><td colspan=5 style='padding:16px 12px;color:#94A3B8;font-size:11px'>Click an ecosystem bar for the full P&L breakdown</td></tr>";}
     }
-    if(rows) { rows.forEach(function(r){h+=row(r.l,r.cur,r.bud,true);}); }
-    else { h+="<tr><td colspan=4 style='padding:8px;color:var(--t3)'>Click an ecosystem bar for a full P&amp;L breakdown</td></tr>"; }
   }
 
-  h += "</tbody>";
-  tblEl.innerHTML = h;
-  drillDiv.style.display = "block";
-  if(drillDiv.scrollIntoView) drillDiv.scrollIntoView({behavior:"smooth",block:"nearest"});
+  tblEl.innerHTML=headerHTML+"<tbody>"+bodyRows+"</tbody>";
+  drillDiv.style.display="block";
+  setTimeout(function(){drillDiv.scrollIntoView({behavior:"smooth",block:"nearest"});},50);
 }
 
 

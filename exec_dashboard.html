@@ -980,7 +980,11 @@ function buildPL(){
   rows.forEach(r=>{
     const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
     b+="<tr class=\""+cl+"\"><td>"+r.l+"</td><td>"+(r.pct?r.bv:fm(r.bv))+"</td>";
-    SWV.forEach(s=>{const v=CUR[r.k]&&CUR[r.k][s];b+="<td "+(s===SC?colH(s):"")+" class=\""+(r.pct?"":vc(v))+"\">"+(r.pct?(v||"—"):fm(v))+"</td>";});
+    SWV.forEach(s=>{var v=CUR[r.k]&&CUR[r.k][s];
+      if(r.pct&&r.k==="gmP"){var _r=CUR.rev[s],_g=CUR.gm[s];v=(_r&&_r!==0)?Math.round(_g/_r*100)+"%":"—";}
+      else if(r.pct&&r.k==="conP"){var _r=CUR.rev[s],_c=CUR.con[s];v=(_r&&_r!==0)?Math.round(_c/_r*100)+"%":"—";}
+      else if(r.pct&&r.k==="ebP"){var _r=CUR.rev[s],_e=CUR.eb[s];v=(_r&&_r!==0)?Math.round(_e/_r*100)+"%":"—";}
+      b+="<td "+(s===SC?colH(s):"")+" class=\"" +(r.pct?"":vc(v))+ "\">"+(r.pct?(v||"—"):fm(v))+"</td>";});
     const cv=CUR[r.k]&&CUR[r.k][SC];
     // WV mode: always compare CUR.WV vs PRV.WV (weighted vs weighted, scenario-independent)
     const cv_wv=CUR[r.k]&&CUR[r.k].WV;
@@ -1019,7 +1023,13 @@ function buildPrvPL(){
   rows.forEach(r=>{
     const cl=r.bold?"bold":r.pct?"pct":r.ind?"ind":"";
     b+="<tr class=\""+cl+"\"><td>"+r.l+"</td><td>"+(r.pct?r.bv:fm(r.bv))+"</td>";
-    SWV.forEach(s=>{const v=PRV[r.k]&&PRV[r.k][s];b+="<td class=\""+(r.pct?"":vc(v))+"\">"+( r.pct?(v||"—"):fm(v))+"</td>";});
+    SWV.forEach(s=>{
+      var v=PRV[r.k]&&PRV[r.k][s];
+      if(r.pct && r.k==="gmP"){const rev=PRV.rev[s],gm=PRV.gm[s];v=(rev&&rev!==0)?Math.round(gm/rev*100)+"%":"—";}
+      else if(r.pct && r.k==="conP"){const rev=PRV.rev[s],con=PRV.con[s];v=(rev&&rev!==0)?Math.round(con/rev*100)+"%":"—";}
+      else if(r.pct && r.k==="ebP"){const rev=PRV.rev[s],eb=PRV.eb[s];v=(rev&&rev!==0)?Math.round(eb/rev*100)+"%":"—";}
+      b+="<td class=\""+(r.pct?"":vc(v))+"\">"+( r.pct?(v||"—"):fm(v))+"</td>";
+    });
     b+="<td></td><td></td>";
     b+="</tr>";
   });

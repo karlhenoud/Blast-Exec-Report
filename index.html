@@ -6,71 +6,111 @@
   <title>BLAST 2026 — Executive Reports</title>
   <style>
     *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F1F5F9;min-height:100vh;padding:40px 24px}
-    .wrap{max-width:680px;margin:0 auto}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F1F5F9;min-height:100vh;padding:48px 24px}
+    .wrap{max-width:700px;margin:0 auto}
     h1{font-size:22px;font-weight:700;color:#0F172A;margin-bottom:4px}
-    .sub{font-size:13px;color:#64748B;margin-bottom:32px}
+    .sub{font-size:13px;color:#64748B;margin-bottom:36px}
 
-    .section-label{font-size:11px;font-weight:600;color:#94A3B8;text-transform:uppercase;letter-spacing:.06em;margin-bottom:10px;margin-top:24px}
+    .section-label{font-size:10px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px;margin-top:32px}
     .section-label:first-of-type{margin-top:0}
 
-    .card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:20px 24px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;transition:box-shadow .15s}
-    .card:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
-    .card-l .date{font-size:13px;font-weight:700;color:#0F172A}
-    .card-l .label{font-size:11px;color:#64748B;margin-top:2px}
-    .badge{font-size:11px;font-weight:600;padding:4px 10px;border-radius:20px;background:#0F172A;color:#fff}
-    .badge.old{background:#F1F5F9;color:#64748B}
+    /* Base card */
+    .card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:18px 22px;margin-bottom:10px;display:flex;align-items:center;justify-content:space-between;text-decoration:none;color:inherit;transition:box-shadow .15s,border-color .15s}
+    .card:hover{box-shadow:0 4px 20px rgba(0,0,0,.09)}
+    .card-l{display:flex;align-items:center;gap:14px}
+    .card-icon{width:36px;height:36px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:16px}
+    .card-text .title{font-size:13px;font-weight:700;color:#0F172A}
+    .card-text .label{font-size:11px;color:#64748B;margin-top:2px}
+    .badge{font-size:11px;font-weight:600;padding:5px 12px;border-radius:20px;white-space:nowrap}
 
-    .card.cashflow{border-color:#CBD5E1;background:#fff}
-    .card.cashflow:hover{box-shadow:0 4px 16px rgba(0,0,0,.08)}
-    .card.cashflow .card-l .date{color:#0F172A}
-    .card.cashflow .card-l .label{color:#64748B}
-    .badge.cf{background:#1E40AF;color:#fff}
+    /* May Board — purple */
+    .card.may-board{border-color:#DDD6FE;background:#FAFAFF}
+    .card.may-board:hover{border-color:#C4B5FD;box-shadow:0 4px 20px rgba(139,92,246,.1)}
+    .card.may-board .card-icon{background:#EDE9FE;color:#7C3AED}
+    .card.may-board .card-text .title{color:#1E1040}
+    .badge.may-board{background:#7C3AED;color:#fff}
 
+    /* Internal forecast — dark green */
+    .card.internal{border-color:#BBF7D0;background:#F0FDF4}
+    .card.internal:hover{border-color:#86EFAC;box-shadow:0 4px 20px rgba(34,197,94,.1)}
+    .card.internal .card-icon{background:#DCFCE7;color:#16A34A}
+    .card.internal .card-text .title{color:#052E16}
+    .badge.internal{background:#16A34A;color:#fff}
 
-    footer{margin-top:40px;font-size:11px;color:#94A3B8;text-align:center}
+    /* P&L cards */
+    .card.pl{border-color:#E2E8F0}
+    .card.pl .card-icon{background:#F1F5F9;color:#475569}
+    .badge.latest{background:#0F172A;color:#fff}
+    .badge.archive{background:#F1F5F9;color:#94A3B8}
+
+    footer{margin-top:48px;font-size:11px;color:#94A3B8;text-align:center}
   </style>
 </head>
 <body>
-  <div class="wrap">
-    <h1>BLAST 2026 — Executive Reports</h1>
-    <p class="sub">Bi-weekly P&amp;L · Budget: €145m revenue · €13.3m EBITDA</p>
+<div class="wrap">
+  <h1>BLAST 2026 — Executive Reports</h1>
+  <p class="sub">Bi-weekly P&amp;L · Budget: €145m revenue · €13.3m EBITDA</p>
 
-    <div class="section-label">Cashflow</div>
-    <a class="card cashflow" href="cashflow.html">
-      <div class="card-l">
-        <div class="date">2026 Cashflow Scenarios</div>
-        <div class="label">Booked · Green · Yellow · Red · Weighted</div>
+  <div class="section-label">Cashflow</div>
+
+  <a class="card may-board" href="cashflow_may_board.html">
+    <div class="card-l">
+      <div class="card-icon">📋</div>
+      <div class="card-text">
+        <div class="title">Cashflow May Board</div>
+        <div class="label">Budget Rework · Scenario 1 · Scenario 2 · Scenario 3 · May board pack assumptions</div>
       </div>
-      <span class="badge cf">View →</span>
-    </a>
+    </div>
+    <span class="badge may-board">View →</span>
+  </a>
 
-    <div class="section-label">P&amp;L Reports</div>
-    <a class="card" href="exec_dashboard.html">
-      <div class="card-l">
-        <div class="date">20.04.2026</div>
+  <a class="card internal" href="cashflow_breakdown.html">
+    <div class="card-l">
+      <div class="card-icon">📊</div>
+      <div class="card-text">
+        <div class="title">Cashflow Internal Forecast</div>
+        <div class="label">Booked · B+Green · B+G+Yellow · B+G+Y+Red · P&amp;L breakdown &amp; reconciliation</div>
+      </div>
+    </div>
+    <span class="badge internal">View →</span>
+  </a>
+
+  <div class="section-label">P&amp;L Reports</div>
+
+  <a class="card pl" href="exec_dashboard.html">
+    <div class="card-l">
+      <div class="card-icon">📈</div>
+      <div class="card-text">
+        <div class="title">20.04.2026</div>
         <div class="label">vs 07.04.2026 · Latest report</div>
       </div>
-      <span class="badge">Latest</span>
-    </a>
+    </div>
+    <span class="badge latest">Latest</span>
+  </a>
 
-    <a class="card" href="report_07_04_2026.html">
-      <div class="card-l">
-        <div class="date">07.04.2026</div>
+  <a class="card pl" href="report_07_04_2026.html">
+    <div class="card-l">
+      <div class="card-icon">📈</div>
+      <div class="card-text">
+        <div class="title">07.04.2026</div>
         <div class="label">vs 23.03.2026</div>
       </div>
-      <span class="badge old">Archive</span>
-    </a>
+    </div>
+    <span class="badge archive">Archive</span>
+  </a>
 
-    <a class="card" href="report_23_03_2026.html">
-      <div class="card-l">
-        <div class="date">23.03.2026</div>
+  <a class="card pl" href="report_23_03_2026.html">
+    <div class="card-l">
+      <div class="card-icon">📈</div>
+      <div class="card-text">
+        <div class="title">23.03.2026</div>
         <div class="label">vs 09.03.2026</div>
       </div>
-      <span class="badge old">Archive</span>
-    </a>
+    </div>
+    <span class="badge archive">Archive</span>
+  </a>
 
-    <footer>BLAST 2026 · Updated 20.04.2026</footer>
-  </div>
+  <footer>BLAST 2026 · Updated 30.04.2026</footer>
+</div>
 </body>
 </html>

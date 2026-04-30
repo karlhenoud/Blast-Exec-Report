@@ -112,6 +112,8 @@
     <button class="page-tab active" onclick="setPage('chart', this)">Chart &amp; Closing Balances</button>
     <button class="page-tab"        onclick="setPage('breakdown', this)">P&amp;L Breakdown</button>
     <button class="page-tab"        onclick="setPage('recon', this)">P&amp;L Reconciliation</button>
+    <button class="page-tab"        onclick="setPage('budgetchart', this)">Budget Comparison — Chart</button>
+    <button class="page-tab"        onclick="setPage('budgetpl', this)">Budget Comparison — P&amp;L</button>
   </div>
 
   <!-- ══ PAGE 1: CHART ══ -->
@@ -171,6 +173,41 @@
     <p class="note">Actuals: Revenue payments Total Paid · PIVOT Invoices status=PAID only (Total price incl. taxes EUR) · Projections: Cash Day post 28 Apr 2026</p>
   </div>
 
+
+  <!-- ══ PAGE 4: BUDGET COMPARISON CHART ══════════════════════════════════ -->
+  <div class="page" id="page-budgetchart">
+    <div class="anchor-strip" style="margin-bottom:24px">
+      <div class="anchor-item">Budget <strong>Dec-25 board figures</strong></div>
+      <div class="anchor-item">BR Incl. Financing <strong>CAPEX incl. bank financing</strong></div>
+      <div class="anchor-item">BR Excl. Financing <strong>CAPEX excl. bank financing</strong></div>
+    </div>
+    <div class="chart-card">
+      <div class="legend">
+        <span class="leg-label">Series</span>
+        <div class="leg"><div class="leg-dot" style="background:#C8C8C8"></div>Budget (Dec board)</div>
+        <div class="leg"><div class="leg-dot" style="background:#A78BFA"></div>BR Incl. Financing</div>
+        <div class="leg"><div class="leg-dot" style="background:#34D399"></div>BR Excl. Financing</div>
+      </div>
+      <div class="chart-wrap"><canvas id="budgetChart"></canvas></div>
+    </div>
+    <div class="closing-card">
+      <table id="budgetClosingTable"></table>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 5: BUDGET COMPARISON P&L ════════════════════════════════════ -->
+  <div class="page" id="page-budgetpl">
+    <div class="scenario-tabs">
+      <button class="stab" style="background:rgba(200,200,200,0.15);color:#C8C8C8" onclick="setBudgetScenario('budget')">Budget (Dec board)</button>
+      <button class="stab s-br active" onclick="setBudgetScenario('incl')" id="btab-incl">BR Incl. Financing</button>
+      <button class="stab s-s1"        onclick="setBudgetScenario('excl')" id="btab-excl">BR Excl. Financing</button>
+    </div>
+    <div class="table-outer">
+      <table class="breakdown" id="budgetBreakdownTable"></table>
+    </div>
+    <p class="note">Values in €k · Budget = Dec-25 board figures · BR = Budget Rework projection · months as columns</p>
+  </div>
+
   <footer>
     <span>BLAST · Cashflow May Board · 30.04.2026</span>
     <span>Source: Airtable Cash Day — Budget Rework / Scenario 1–3 fields</span>
@@ -188,6 +225,15 @@ const ACTUALS = {
   'Mar-26': 5400933,
   'Apr-26': 13538724,
 };
+
+
+// ─── BUDGET COMPARISON DATA ──────────────────────────────────────────────────
+const BUDGET_BOARD = {"Dec-25": 8200000, "Jan-26": 11415711, "Feb-26": 16007971, "Mar-26": 12583052, "Apr-26": 14774284, "May-26": 9216066, "Jun-26": 9477523, "Jul-26": 14607261, "Aug-26": 9133244, "Sep-26": 10498575, "Oct-26": 16694405, "Nov-26": 15098032, "Dec-26": 16227298};
+const ACTUALS_BR   = {"Dec-25": 9953250, "Jan-26": 10483610, "Feb-26": 8997086, "Mar-26": 4823000, "Apr-26": 13538724};
+const CLOSING_INCL = {"May-26": 10579424, "Jun-26": 16054464, "Jul-26": 19542450, "Aug-26": 16424962, "Sep-26": 21871442, "Oct-26": 19071204, "Nov-26": 21795410, "Dec-26": 25483655, "Jan-27": 16202574, "Feb-27": 14555494, "Mar-27": 11159493, "Apr-27": 8873454, "May-27": 6444625, "Jun-27": 4530200};
+const CLOSING_EXCL = {"May-26": 10750674, "Jun-26": 14165430, "Jul-26": 17824666, "Aug-26": 14878429, "Sep-26": 18264625, "Oct-26": 15635637, "Nov-26": 18531093, "Dec-26": 20167618, "Jan-27": 10886536, "Feb-27": 9239457, "Mar-27": 5843455, "Apr-27": 3557417, "May-27": 1128587, "Jun-27": -785838};
+const MOVES_INCL   = {"May-26": {"rev": 11708647, "evt": -8229939, "prize": -1389005, "ocos": -310285, "opex": -2907219, "capex": -1831500}, "Jun-26": {"rev": 18909205, "evt": -8490914, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": 111455}, "Jul-26": {"rev": 18626632, "evt": -7963861, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -2120079}, "Aug-26": {"rev": 10481790, "evt": -6864758, "prize": -1685517, "ocos": -310285, "opex": -2907219, "capex": -1831500}, "Sep-26": {"rev": 16448101, "evt": -6786614, "prize": -1397537, "ocos": -310285, "opex": -2907219, "capex": 400034}, "Oct-26": {"rev": 10141359, "evt": -6919662, "prize": -972932, "ocos": -310285, "opex": -2907219, "capex": -1831500}, "Nov-26": {"rev": 14977626, "evt": -6229211, "prize": -975206, "ocos": -310285, "opex": -2907219, "capex": -1831500}, "Dec-26": {"rev": 13638005, "evt": -5709744, "prize": -1413982, "ocos": -310285, "opex": -2907219, "capex": 391471}, "Jan-27": {"rev": 1729609, "evt": -4491690, "prize": -1119880, "ocos": 0, "opex": -5399121, "capex": 0}, "Feb-27": {"rev": 2698174, "evt": -3244377, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0}, "Mar-27": {"rev": 206584, "evt": -2592080, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0}, "Apr-27": {"rev": 702908, "evt": -2129622, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0}, "May-27": {"rev": 0, "evt": -1711213, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0}, "Jun-27": {"rev": 0, "evt": -1274237, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0}};
+const MOVES_EXCL   = {"May-26": {"rev": 11708647, "evt": -8229939, "prize": -1389005, "ocos": -310285, "opex": -2907219, "capex": -1660250}, "Jun-26": {"rev": 18909205, "evt": -8490914, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -1948829}, "Jul-26": {"rev": 18626632, "evt": -7963861, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -1948829}, "Aug-26": {"rev": 10481790, "evt": -6864758, "prize": -1685517, "ocos": -310285, "opex": -2907219, "capex": -1660250}, "Sep-26": {"rev": 16448101, "evt": -6786614, "prize": -1397537, "ocos": -310285, "opex": -2907219, "capex": -1660250}, "Oct-26": {"rev": 10141359, "evt": -6919662, "prize": -972932, "ocos": -310285, "opex": -2907219, "capex": -1660250}, "Nov-26": {"rev": 14977626, "evt": -6229211, "prize": -975206, "ocos": -310285, "opex": -2907219, "capex": -1660250}, "Dec-26": {"rev": 13638005, "evt": -5709744, "prize": -1413982, "ocos": -310285, "opex": -2907219, "capex": -1660250}, "Jan-27": {"rev": 1729609, "evt": -4491690, "prize": -1119880, "ocos": 0, "opex": -5399121, "capex": 0}, "Feb-27": {"rev": 2698174, "evt": -3244377, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0}, "Mar-27": {"rev": 206584, "evt": -2592080, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0}, "Apr-27": {"rev": 702908, "evt": -2129622, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0}, "May-27": {"rev": 0, "evt": -1711213, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0}, "Jun-27": {"rev": 0, "evt": -1274237, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0}};
 
 // ─── PROJECTED CLOSING BALANCES ─────────────────────────────────────────────
 const CLOSING = {"May-26": {"br": 10549220, "s1": 10279441, "s2": 9725881, "s3": 9725881}, "Jun-26": {"br": 15994056, "s1": 15109470, "s2": 13715737, "s3": 13715737}, "Jul-26": {"br": 19451839, "s1": 18006867, "s2": 15835437, "s3": 15835437}, "Aug-26": {"br": 16304148, "s1": 14872978, "s2": 12410450, "s3": 12410450}, "Sep-26": {"br": 21720424, "s1": 19744057, "s2": 16590277, "s3": 16590277}, "Oct-26": {"br": 18889982, "s1": 16979818, "s2": 13566383, "s3": 13566383}, "Nov-26": {"br": 21583983, "s1": 19212981, "s2": 15193070, "s3": 15193070}, "Dec-26": {"br": 26748021, "s1": 23749308, "s2": 19024253, "s3": 19024253}, "Jan-27": {"br": 17466939, "s1": 15119724, "s2": 10780982, "s3": 10780982}, "Feb-27": {"br": 14312354, "s1": 12166483, "s2": 7837722, "s3": 7837722}, "Mar-27": {"br": 10916353, "s1": 8997875, "s2": 4724881, "s3": 4724881}, "Apr-27": {"br": 8630314, "s1": 6853247, "s2": 2592476, "s3": 2592476}, "May-27": {"br": 6201485, "s1": 4588086, "s2": 373267, "s3": 373267}, "Jun-27": {"br": 4287060, "s1": 2796866, "s2": -1383361, "s3": -1383361}};
@@ -366,6 +412,175 @@ function setScenario(s) {
 }
 
 buildBreakdown('br');
+
+// ─── BUDGET COMPARISON CHART ─────────────────────────────────────────────────
+(function() {
+  // All months for chart: Dec-25 → Dec-26 only
+  const BCHART_MONTHS = ['Dec-25','Jan-26','Feb-26','Mar-26','Apr-26',
+    'May-26','Jun-26','Jul-26','Aug-26','Sep-26','Oct-26','Nov-26','Dec-26'];
+
+  const nullB = () => BCHART_MONTHS.map(() => null);
+
+  // Budget series
+  const dBudget = BCHART_MONTHS.map(m => BUDGET_BOARD[m] ?? null);
+
+  // BR Incl — actuals Dec-25→Apr-26, then projections
+  const dIncl = nullB();
+  BCHART_MONTHS.forEach((m, i) => {
+    if (ACTUALS_BR[m] != null) dIncl[i] = ACTUALS_BR[m];
+    else if (CLOSING_INCL[m] != null) dIncl[i] = CLOSING_INCL[m];
+  });
+
+  // BR Excl — same
+  const dExcl = nullB();
+  BCHART_MONTHS.forEach((m, i) => {
+    if (ACTUALS_BR[m] != null) dExcl[i] = ACTUALS_BR[m];
+    else if (CLOSING_EXCL[m] != null) dExcl[i] = CLOSING_EXCL[m];
+  });
+
+  new Chart(document.getElementById('budgetChart').getContext('2d'), {
+    type: 'line',
+    data: { labels: BCHART_MONTHS, datasets: [
+      { label:'Zero', data:BCHART_MONTHS.map(()=>0), borderColor:'rgba(255,255,255,.07)', borderWidth:1, pointRadius:0, spanGaps:true, order:10 },
+      { label:'Budget (Dec board)', data:dBudget, borderColor:'#C8C8C8', borderWidth:2, borderDash:[5,4], pointRadius:3, pointBackgroundColor:'#C8C8C8', pointHoverRadius:5, tension:0.2, spanGaps:false },
+      { label:'BR Incl. Financing',  data:dIncl,   borderColor:'#A78BFA', borderWidth:2, pointRadius:3, pointBackgroundColor:'#A78BFA', pointHoverRadius:5, tension:0.2, spanGaps:false },
+      { label:'BR Excl. Financing',  data:dExcl,   borderColor:'#34D399', borderWidth:2, pointRadius:3, pointBackgroundColor:'#34D399', pointHoverRadius:5, tension:0.2, spanGaps:false },
+    ]},
+    options: {
+      responsive:true, maintainAspectRatio:false,
+      interaction:{ mode:'index', intersect:false },
+      plugins:{ legend:{ display:false },
+        tooltip:{ backgroundColor:'#141720', borderColor:'#1E2230', borderWidth:1, titleColor:'#E8EAF0', bodyColor:'#8891AA', padding:14,
+          callbacks:{ label: c => c.dataset.label==='Zero'||c.parsed.y===null?null:`  ${c.dataset.label}:  ${fmt(c.parsed.y)}` }
+        }
+      },
+      scales:{
+        x:{ ticks:{ color:'#4A5068', font:{size:10,family:'DM Mono'} }, grid:{ color:'rgba(255,255,255,.04)' }, border:{color:'#1E2230'} },
+        y:{ ticks:{ color:'#4A5068', font:{size:10,family:'DM Mono'}, callback:v=>fmt(v) }, grid:{ color:'rgba(255,255,255,.04)' }, border:{color:'#1E2230'} }
+      }
+    }
+  });
+
+  // Closing balance table
+  const ALL_B_MONTHS = ['Dec-25','Jan-26','Feb-26','Mar-26','Apr-26',
+    'May-26','Jun-26','Jul-26','Aug-26','Sep-26','Oct-26','Nov-26','Dec-26',
+    'Jan-27','Feb-27','Mar-27','Apr-27','May-27','Jun-27'];
+
+  let th = '<thead><tr><th>Series</th>';
+  ALL_B_MONTHS.forEach(m => { th += `<th class="${m.includes('-27')?'yr27':''}">${m}</th>`; });
+  th += '</tr></thead>';
+
+  function bRow(label, color, dataFn) {
+    let r = `<tr><td style="color:${color};font-weight:500">${label}</td>`;
+    ALL_B_MONTHS.forEach(m => {
+      const v = dataFn(m);
+      r += v != null ? `<td class="${cls(v)}${m.includes('-27')?' yr27':''}">${fmtK(v)}</td>` : '<td class="zero">—</td>';
+    });
+    return r + '</tr>';
+  }
+
+  let tbody = '<tbody>';
+  tbody += bRow('Budget (Dec board)', '#C8C8C8', m => BUDGET_BOARD[m] ?? null);
+  tbody += bRow('BR Incl. Financing', '#A78BFA', m => ACTUALS_BR[m] ?? CLOSING_INCL[m] ?? null);
+  tbody += bRow('BR Excl. Financing', '#34D399', m => ACTUALS_BR[m] ?? CLOSING_EXCL[m] ?? null);
+  tbody += '</tbody>';
+
+  document.getElementById('budgetClosingTable').innerHTML = th + tbody;
+})();
+
+// ─── BUDGET COMPARISON P&L ───────────────────────────────────────────────────
+let currentBudgetScenario = 'incl';
+
+function buildBudgetBreakdown(s) {
+  const table = document.getElementById('budgetBreakdownTable');
+  // For budget scenario we show budget board figures as closing only (no P&L lines available)
+  // For incl/excl we show full P&L breakdown using MOVES_INCL / MOVES_EXCL
+
+  const BMOVE_MONTHS = ['May-26','Jun-26','Jul-26','Aug-26','Sep-26','Oct-26','Nov-26','Dec-26',
+    'Jan-27','Feb-27','Mar-27','Apr-27','May-27','Jun-27'];
+  const MOVES_DATA = s === 'incl' ? MOVES_INCL : MOVES_EXCL;
+  const CLOSING_DATA = s === 'incl' ? CLOSING_INCL : CLOSING_EXCL;
+  const COLOR = s === 'budget' ? '#C8C8C8' : s === 'incl' ? '#A78BFA' : '#34D399';
+  const LABEL = s === 'budget' ? 'Budget (Dec board)' : s === 'incl' ? 'BR Incl. Financing' : 'BR Excl. Financing';
+
+  let h = '<thead><tr><th>P&amp;L Line</th>';
+  BMOVE_MONTHS.forEach(m => { h += `<th class="${m.includes('-27')?'yr27':''}" style="color:${COLOR}">${m}</th>`; });
+  h += '</tr></thead><tbody>';
+
+  if (s === 'budget') {
+    // Budget — show only closing balance row
+    h += '<tr class="section-sep"><td colspan="99">Budget closing balance (Dec board figures)</td></tr>';
+    let cr = `<tr class="closing-row"><td>Closing Balance</td>`;
+    BMOVE_MONTHS.forEach(m => {
+      const v = BUDGET_BOARD[m] ?? null;
+      cr += v != null ? `<td class="${cls(v)}${m.includes('-27')?' yr27':''}">${fmtK(v)}</td>` : '<td class="zero">—</td>';
+    });
+    h += cr + '</tr></tbody>';
+    table.innerHTML = h;
+    return;
+  }
+
+  // Opening balance row
+  let runOB = 13538724;
+  let ob = `<tr class="closing-row" style="border-bottom:1px solid var(--border)"><td style="color:var(--muted);font-weight:400;font-size:11px">Opening Balance</td>`;
+  BMOVE_MONTHS.forEach(m => {
+    ob += `<td class="${cls(runOB)}${m.includes('-27')?' yr27':''}">${fmtK(runOB)}</td>`;
+    const mv = MOVES_DATA[m];
+    if (mv) runOB += Object.values(mv).reduce((a,b)=>a+b,0);
+  });
+  h += ob + '</tr>';
+
+  function dataRow(label, key) {
+    let r = `<tr><td>${label}</td>`;
+    BMOVE_MONTHS.forEach(m => {
+      const v = MOVES_DATA[m]?.[key] || 0;
+      r += `<td class="${cls(v)}${m.includes('-27')?' yr27':''}">${fmtK(v)}</td>`;
+    });
+    return r + '</tr>';
+  }
+
+  function subtotalRow(label, keys) {
+    let r = `<tr class="subtotal"><td>${label}</td>`;
+    BMOVE_MONTHS.forEach(m => {
+      const v = keys.reduce((a,k) => a+(MOVES_DATA[m]?.[k]||0), 0);
+      r += `<td class="${cls(v)}${m.includes('-27')?' yr27':''}">${fmtK(v)}</td>`;
+    });
+    return r + '</tr>';
+  }
+
+  const sep = l => `<tr class="section-sep"><td colspan="99">${l}</td></tr>`;
+  h += sep('Revenue'); h += dataRow('Revenue','rev');
+  h += sep('Event Costs');
+  h += dataRow('Event Cost','evt'); h += dataRow('Prize Money','prize'); h += dataRow('Other CoS','ocos');
+  h += subtotalRow('= Total Event Costs',['evt','prize','ocos']);
+  h += sep('OPEX'); h += dataRow('OPEX','opex');
+  h += subtotalRow('= EBITDA',['rev','evt','prize','ocos','opex']);
+  h += sep('CAPEX'); h += dataRow('CAPEX','capex');
+  h += subtotalRow('= Net Cash Movement',['rev','evt','prize','ocos','opex','capex']);
+
+  // Closing balance
+  let running2 = 13538724;
+  let cr2 = '<tr class="closing-row"><td>Closing Balance</td>';
+  BMOVE_MONTHS.forEach(m => {
+    const mv = MOVES_DATA[m];
+    if (mv) running2 += Object.values(mv).reduce((a,b)=>a+b,0);
+    cr2 += `<td class="${cls(running2)}${m.includes('-27')?' yr27':''}">${fmtK(running2)}</td>`;
+  });
+  h += cr2 + '</tr></tbody>';
+  table.innerHTML = h;
+}
+
+function setBudgetScenario(s) {
+  currentBudgetScenario = s;
+  document.querySelectorAll('#page-budgetpl .stab').forEach(t => t.classList.remove('active'));
+  const map = {'budget':'btab-budget','incl':'btab-incl','excl':'btab-excl'};
+  const el = document.getElementById(map[s]);
+  if(el) el.classList.add('active');
+  buildBudgetBreakdown(s);
+}
+
+buildBudgetBreakdown('incl');
+
 
 // ─── RECONCILIATION TABLE ────────────────────────────────────────────────────
 (function buildRecon() {

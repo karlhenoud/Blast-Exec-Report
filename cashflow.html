@@ -478,9 +478,9 @@ buildBreakdown('booked');
     rev_proj_BGYR: 151230093,
 
     // Cost actuals — "Total price (incl. taxes) in EUR" from PIVOT Invoices
-    costs_actuals_excl_capex:  34893820,  // all categories except Capital Assets
-    costs_actuals_capex:          870706,  // Capital Assets category only
-    costs_actuals_total:       35764526,
+    costs_actuals_excl_capex:  11684907,  // PIVOT Invoices PAID only, excl Capital Assets
+    costs_actuals_capex:          466192,  // PIVOT Invoices PAID only, Capital Assets
+    costs_actuals_total:       12151099,
 
     // Cost projections — Cash Day BGYR projection fields (post 28 Apr 2026)
     costs_proj_evt:   -79535655,
@@ -499,7 +499,7 @@ buildBreakdown('booked');
   };
   const clsE = v => Math.abs(v) < 1 ? 'zero' : v > 0 ? 'pos' : 'neg';
 
-  const COLS = ['Actuals', 'Booked', 'B+Green', 'B+G+Yellow', 'B+G+Y+Red'];
+  const COLS = ['Actuals (to date)', 'Booked (A+P)', 'B+Green (A+P)', 'B+G+Yellow (A+P)', 'B+G+Y+Red (A+P)'];
   const COLORS = ['#C8C8C8', '#3B82F6', '#34D399', '#FBBF24', '#F87171'];
 
   const table = document.getElementById('reconTable');
@@ -527,7 +527,7 @@ buildBreakdown('booked');
   html += sep('Revenue');
   html += row('Actuals — Revenue payments (Total Paid)', [D.rev_actuals, null, null, null, null]);
   html += row('Projections (Cash Day)', [null, D.rev_proj_B, D.rev_proj_BG, D.rev_proj_BGY, D.rev_proj_BGYR]);
-  html += row('= Total Revenue', [
+  html += row('= Total Revenue ← Actuals + Projected', [
     D.rev_actuals + 0,
     D.rev_actuals + D.rev_proj_B,
     D.rev_actuals + D.rev_proj_BG,
@@ -543,7 +543,7 @@ buildBreakdown('booked');
   html += row('Projections — Other CoS', [null, D.costs_proj_ocos, D.costs_proj_ocos, D.costs_proj_ocos, D.costs_proj_ocos]);
   html += row('Projections — OPEX', [null, D.costs_proj_opex, D.costs_proj_opex, D.costs_proj_opex, D.costs_proj_opex]);
   const proj_excl_capex = D.costs_proj_evt + D.costs_proj_prize + D.costs_proj_ocos + D.costs_proj_opex;
-  html += row('= Total Costs (excl. CAPEX)', [
+  html += row('= Total Costs (excl. CAPEX) ← Actuals + Projected', [
     -D.costs_actuals_excl_capex,
     -D.costs_actuals_excl_capex + proj_excl_capex,
     -D.costs_actuals_excl_capex + proj_excl_capex,
@@ -555,7 +555,7 @@ buildBreakdown('booked');
   html += sep('CAPEX');
   html += row('Actuals — PIVOT Invoices (Capital Assets)', [-D.costs_actuals_capex, null, null, null, null]);
   html += row('Projections — CAPEX (Cash Day)', [null, D.costs_proj_capex, D.costs_proj_capex, D.costs_proj_capex, D.costs_proj_capex]);
-  html += row('= Total CAPEX', [
+  html += row('= Total CAPEX ← Actuals + Projected', [
     -D.costs_actuals_capex,
     -D.costs_actuals_capex + D.costs_proj_capex,
     -D.costs_actuals_capex + D.costs_proj_capex,
@@ -573,7 +573,7 @@ buildBreakdown('booked');
   const net_proj_BG   = D.rev_proj_BG   + proj_excl_capex + D.costs_proj_capex + D.costs_proj_other;
   const net_proj_BGY  = D.rev_proj_BGY  + proj_excl_capex + D.costs_proj_capex + D.costs_proj_other;
   const net_proj_BGYR = D.rev_proj_BGYR + proj_excl_capex + D.costs_proj_capex + D.costs_proj_other;
-  html += row('= NET (Revenue − All Costs)', [
+  html += row('= NET ← Actuals + Projected', [
     net_actuals,
     net_actuals + net_proj_B,
     net_actuals + net_proj_BG,

@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLAST 2026 — Cashflow</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;background:#F1F5F9;min-height:100vh;padding:40px 24px}
+    .wrap{max-width:860px;margin:0 auto}
+
+    .back{display:inline-flex;align-items:center;gap:6px;font-size:13px;color:#64748B;text-decoration:none;margin-bottom:28px}
+    .back:hover{color:#0F172A}
+    .back svg{width:14px;height:14px}
+
+    h1{font-size:22px;font-weight:700;color:#0F172A;margin-bottom:4px}
+    .sub{font-size:13px;color:#64748B;margin-bottom:28px}
+
+    .balances{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:28px}
+    .bal-card{background:#fff;border:1px solid #E2E8F0;border-radius:10px;padding:14px 16px}
+    .bal-month{font-size:11px;color:#64748B;margin-bottom:4px}
+    .bal-value{font-size:15px;font-weight:700;color:#0F172A}
+    .bal-label{font-size:10px;color:#94A3B8;margin-top:2px}
+
+    .chart-card{background:#fff;border:1px solid #E2E8F0;border-radius:12px;padding:24px}
+    .chart-header{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px}
+    .chart-title{font-size:14px;font-weight:600;color:#0F172A}
+    .chart-sub{font-size:12px;color:#64748B;margin-top:2px}
+
+    .legend{display:flex;flex-wrap:wrap;gap:14px}
+    .leg-item{display:flex;align-items:center;gap:5px;font-size:11px;color:#64748B}
+    .leg-swatch{width:20px;height:3px;border-radius:2px;display:inline-block}
+    .leg-swatch.dashed{background:repeating-linear-gradient(90deg,currentColor 0,currentColor 4px,transparent 4px,transparent 7px)}
+
+    .chart-wrap{position:relative;width:100%;height:380px}
+
+    .note{font-size:11px;color:#94A3B8;margin-top:14px;text-align:right}
+
+    footer{margin-top:40px;font-size:11px;color:#94A3B8;text-align:center}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+
+    <a class="back" href="index.html">
+      <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M10 12L6 8l4-4"/>
+      </svg>
+      Back to reports
+    </a>
+
+    <h1>2026 Cashflow</h1>
+    <p class="sub">Month-end closing balance by scenario · Jan–Dec 2026</p>
+
+    <div class="chart-card">
+      <div class="chart-header">
+        <div>
+          <div class="chart-title">Scenario closing balances</div>
+          <div class="chart-sub">Jan–Dec 2026 · Jan–Mar closing actuals, Apr–Dec scenarios · vs December Board forecast</div>
+        </div>
+        <div class="legend">
+          <span class="leg-item"><span class="leg-swatch" style="background:#475569"></span>Closing actual</span>
+          <span class="leg-item"><span style="width:20px;border-top:2px dashed #94A3B8;display:inline-block;"></span>Dec Board forecast</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#185FA5"></span>Booked</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#3B6D11"></span>Green</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#BA7517"></span>Yellow</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#A32D2D;border-top:2px dashed #A32D2D;height:0;margin-top:1px;"></span>Red</span>
+          <span class="leg-item"><span class="leg-swatch" style="background:#534AB7;border-top:2px dashed #534AB7;height:0;margin-top:1px;"></span>Weighted</span>
+        </div>
+      </div>
+
+      <div class="chart-wrap">
+        <canvas id="cashChart" role="img" aria-label="Line chart of 2026 monthly closing balances across five cashflow scenarios">Five scenario closing balance lines for 2026.</canvas>
+      </div>
+      <p class="note">Closing actuals: Dec-25 €9,953,250 · Jan-26 €10,482,758 · Feb-26 €8,997,086 · Mar-26 €5,400,933</p>
+    </div>
+
+    <footer>BLAST 2026 · Cashflow · Updated 30.04.2026</footer>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <script>
+    const months = ['Dec-25','Jan-26','Feb-26','Mar-26','Apr-26','May-26','Jun-26','Jul-26','Aug-26','Sep-26','Oct-26','Nov-26','Dec-26'];
+
+    const datasets = [
+      {
+        label:'Dec Board forecast',
+        data:[8200000,11400000,16000000,12600000,14800000,9200000,9500000,14600000,8200000,9500000,16700000,15100000,16200000],
+        borderColor:'#94A3B8', backgroundColor:'rgba(148,163,184,0.0)',
+        borderWidth:2, pointRadius:3, pointHoverRadius:5, tension:0.3, spanGaps:false,
+        borderDash:[4,4], pointBackgroundColor:'#94A3B8'
+      },
+      {
+        data:[9953250,10482758,8997086,5400933,null,null,null,null,null,null,null,null,null],
+        borderColor:'#475569', backgroundColor:'rgba(71,85,105,0.05)',
+        borderWidth:2, pointRadius:5, pointHoverRadius:7, tension:0.3, spanGaps:false,
+        pointStyle:'circle', pointBackgroundColor:'#475569'
+      },
+      {
+        label:'Booked',
+        data:[null,null,null,5400933,13028184,-6178976,-22335079,-1853040,-45307122,-1308190,1210744,-46779630,-23099377],
+        borderColor:'#185FA5', backgroundColor:'rgba(24,95,165,0.05)',
+        borderWidth:2, pointRadius:4, pointHoverRadius:6, tension:0.3, spanGaps:false
+      },
+      {
+        label:'Green',
+        data:[null,null,null,5400933,13859158,-6178976,-21605609,2367280,-43928311,2664908,5782259,-42328593,-17373181],
+        borderColor:'#3B6D11', backgroundColor:'rgba(59,109,17,0.05)',
+        borderWidth:2, pointRadius:4, pointHoverRadius:6, tension:0.3, spanGaps:false
+      },
+      {
+        label:'Yellow',
+        data:[null,null,null,5400933,14049158,-6178976,-20913244,3336730,-42874113,3636694,7384337,-41022313,-13727774],
+        borderColor:'#BA7517', backgroundColor:'rgba(186,117,23,0.05)',
+        borderWidth:2, pointRadius:4, pointHoverRadius:6, tension:0.3, spanGaps:false
+      },
+      {
+        label:'Red',
+        data:[null,null,null,5400933,14049158,-6178976,-21053748,3336730,-42874113,3636694,7384337,-41022313,-13727774],
+        borderColor:'#A32D2D', backgroundColor:'rgba(163,45,45,0.05)',
+        borderWidth:1.5, pointRadius:4, pointHoverRadius:6, tension:0.3, spanGaps:false,
+        borderDash:[5,4]
+      },
+      {
+        label:'Weighted',
+        data:[null,null,null,5400933,16977583,-5960217,-20465666,-27613290,-31123107,-36886439,-38826385,-38466681,-34188681],
+        borderColor:'#534AB7', backgroundColor:'rgba(83,74,183,0.05)',
+        borderWidth:2, pointRadius:4, pointHoverRadius:6, tension:0.3, spanGaps:false,
+        borderDash:[6,3]
+      }
+    ];
+
+    const fmtTip  = v => v === null ? 'no data' : (v < 0 ? '-€' : '€') + Math.abs(Math.round(v/1000)).toLocaleString() + 'k';
+    const fmtAxis = v => (v < 0 ? '-€' : '€') + Math.abs(Math.round(v/1000000)) + 'M';
+
+    new Chart(document.getElementById('cashChart'), {
+      type: 'line',
+      data: { labels: months, datasets },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        interaction: { mode:'index', intersect:false },
+        plugins: {
+          legend: { display:false },
+          tooltip: {
+            backgroundColor:'#fff',
+            borderColor:'#E2E8F0',
+            borderWidth:1,
+            titleColor:'#0F172A',
+            bodyColor:'#64748B',
+            padding:12,
+            callbacks: {
+              label: ctx => '  ' + ctx.dataset.label + ':  ' + fmtTip(ctx.parsed.y)
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks:{ autoSkip:false, maxRotation:0, font:{size:11}, color:'#94A3B8' },
+            grid:{ color:'rgba(0,0,0,0.04)' },
+            border:{ color:'#E2E8F0' }
+          },
+          y: {
+            ticks:{ callback:fmtAxis, font:{size:11}, color:'#94A3B8' },
+            grid:{ color:'rgba(0,0,0,0.04)' },
+            border:{ color:'#E2E8F0' }
+          }
+        }
+      }
+    });
+  </script>
+</body>
+</html>

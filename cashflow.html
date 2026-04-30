@@ -246,7 +246,7 @@ const MOVES = {
   "2027-06": { Rev_B:0,Rev_BG:0,Rev_BGY:141331,Rev_BGYR:141331, Evt_B:0,Evt_BG:0,Evt_BGY:0,Evt_BGYR:0, Prz_B:-305413,Prz_BG:-433618,Prz_BGY:-433618,Prz_BGYR:-433618, OCoS_B:0,OCoS_BG:0,OCoS_BGY:0,OCoS_BGYR:0, OPEX:0,CAPEX:0,OTHER:-1493474 },
 };
 
-const MOVE_MONTHS = Object.keys(MOVES);
+const MOVE_MONTHS = Object.keys(MOVES).filter(m => m !== 'Apr-26');
 const MONTH_LABELS = {
   '2026-05':'May-26','2026-06':'Jun-26','2026-07':'Jul-26','2026-08':'Aug-26',
   '2026-09':'Sep-26','2026-10':'Oct-26','2026-11':'Nov-26','2026-12':'Dec-26',
@@ -269,7 +269,7 @@ function setPage(p) {
 // ─── CHART PAGE ──────────────────────────────────────────────────────────────
 
 const ACTUAL_MONTHS  = Object.keys(ACTUALS);
-const PROJ_MONTHS    = Object.keys(PROJECTED);
+const PROJ_MONTHS    = Object.keys(PROJECTED).filter(m => m !== 'Apr-26');
 const ALL_CHART_MONTHS = [...ACTUAL_MONTHS, ...PROJ_MONTHS];
 const ANCHOR_IDX     = ALL_CHART_MONTHS.indexOf('Apr-26');
 const ANCHOR_VAL     = ACTUALS['Apr-26'];
@@ -283,7 +283,7 @@ const nullArr = () => ALL_CHART_MONTHS.map(() => null);
 const dActual = nullArr(), dBooked = nullArr(), dBG = nullArr(), dBGY = nullArr(), dBGYR = nullArr();
 ACTUAL_MONTHS.forEach(m => { dActual[ALL_CHART_MONTHS.indexOf(m)] = ACTUALS[m]; });
 [dBooked, dBG, dBGY, dBGYR].forEach(a => { a[ANCHOR_IDX] = ANCHOR_VAL; });
-PROJ_MONTHS.forEach(m => {
+PROJ_MONTHS.filter(m => m !== 'Apr-26').forEach(m => {
   const i = ALL_CHART_MONTHS.indexOf(m), p = PROJECTED[m];
   dBooked[i]=p.booked; dBG[i]=p.bg; dBGY[i]=p.bgy; dBGYR[i]=p.bgyr;
 });
@@ -382,6 +382,21 @@ function buildBreakdown(scenario) {
     });
     return r + '</tr>';
   }
+
+  // Opening balance row
+  let runningOB = 13538724;
+  let obRow = '<tr class="closing" style="border-bottom:1px solid var(--border)"><td style="color:var(--muted);font-weight:400;font-size:11px">Opening Balance</td>';
+  MOVE_MONTHS.forEach(m => {
+    const div = m==='2027-01' ? ' yr-divider' : '';
+    obRow += `<td class="${cls(runningOB)}${div}">${fmtK(runningOB)}</td>`;
+    let move = 0;
+    ['Rev','Evt','Prz','OCoS','OPEX','CAPEX','OTHER'].forEach(k => {
+      move += MOVES[m][(k==='OPEX'||k==='CAPEX'||k==='OTHER' ? k : k+sfx)] || 0;
+    });
+    runningOB += move;
+  });
+  obRow += '</tr>';
+  html += obRow;
 
   // Revenue
   html += '<tr class="section-sep"><td colspan="99">Revenue</td></tr>';

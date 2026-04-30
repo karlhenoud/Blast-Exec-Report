@@ -196,11 +196,12 @@ const SCENARIOS = ['br','s1','s2','s3'];
 const S_LABELS  = { br:'Budget Rework', s1:'Scenario 1', s2:'Scenario 2', s3:'Scenario 3' };
 const S_COLORS  = { br:'#A78BFA', s1:'#34D399', s2:'#FBBF24', s3:'#F87171' };
 
-const ACTUAL_MONTHS = Object.keys(ACTUALS);
-const PROJ_MONTHS   = Object.keys(CLOSING).filter(m => m !== 'Apr-26');
-const ALL_MONTHS    = [...ACTUAL_MONTHS, ...PROJ_MONTHS];
+const ACTUAL_MONTHS  = Object.keys(ACTUALS);
+const PROJ_MONTHS    = Object.keys(CLOSING).filter(m => m !== 'Apr-26');
+const ALL_MONTHS     = [...ACTUAL_MONTHS, ...PROJ_MONTHS];               // full set — for closing table
+const CHART_MONTHS   = ALL_MONTHS.filter(m => !m.includes('-27'));       // 2026 only — for chart
 const MOVE_MONTHS   = Object.keys(MOVES).filter(m => m !== 'Apr-26'); // Apr-26 is anchor, not a projection month
-const ANCHOR_IDX    = ALL_MONTHS.indexOf('Apr-26');
+const ANCHOR_IDX    = CHART_MONTHS.indexOf('Apr-26');
 const ANCHOR_VAL    = ACTUALS['Apr-26'];
 
 const fmt  = v => (v<0?'-€':'€') + Math.abs(v/1e6).toFixed(1)+'M';
@@ -217,25 +218,26 @@ function setPage(p, btn) {
 }
 
 // ─── CHART ───────────────────────────────────────────────────────────────────
-const nullArr = () => ALL_MONTHS.map(()=>null);
+const nullArr = () => CHART_MONTHS.map(()=>null);
 const dActual = nullArr();
-ACTUAL_MONTHS.forEach(m => { dActual[ALL_MONTHS.indexOf(m)] = ACTUALS[m]; });
+ACTUAL_MONTHS.forEach(m => { const i = CHART_MONTHS.indexOf(m); if(i>=0) dActual[i] = ACTUALS[m]; });
 
 const scenarioDatasets = SCENARIOS.map(s => {
   const arr = nullArr();
   arr[ANCHOR_IDX] = ANCHOR_VAL; // anchor point = actual Apr-26 closing
-  PROJ_MONTHS.filter(m => m !== 'Apr-26').forEach(m => {
-    arr[ALL_MONTHS.indexOf(m)] = CLOSING[m][s];
+  PROJ_MONTHS.filter(m => m !== 'Apr-26' && !m.includes('-27')).forEach(m => {
+    const i = CHART_MONTHS.indexOf(m);
+    if(i >= 0) arr[i] = CLOSING[m][s];
   });
   return { label: S_LABELS[s], data: arr, borderColor: S_COLORS[s], borderWidth:2, pointRadius:3, pointBackgroundColor:S_COLORS[s], pointHoverRadius:5, tension:0.2, spanGaps:false };
 });
 
 new Chart(document.getElementById('cashChart').getContext('2d'), {
   type:'line',
-  data:{ labels:ALL_MONTHS, datasets:[
-    { label:'Zero', data:ALL_MONTHS.map(()=>0), borderColor:'rgba(255,255,255,.07)', borderWidth:1, pointRadius:0, spanGaps:true, order:10 },
+  data:{ labels:CHART_MONTHS, datasets:[
+    { label:'Zero', data:CHART_MONTHS.map(()=>0), borderColor:'rgba(255,255,255,.07)', borderWidth:1, pointRadius:0, spanGaps:true, order:10 },
     { label:'Actual', data:dActual, borderColor:'#C8C8C8', borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#C8C8C8', pointHoverRadius:6, tension:0.2, spanGaps:false },
-    { label:'Budget', data:ALL_MONTHS.map(m => BUDGET[m] ?? null), borderColor:'rgba(255,255,255,0.35)', borderWidth:1.5, borderDash:[5,4], pointRadius:3, pointBackgroundColor:'rgba(255,255,255,0.35)', pointHoverRadius:5, tension:0.2, spanGaps:false },
+    { label:'Budget', data:CHART_MONTHS.map(m => BUDGET[m] ?? null), borderColor:'rgba(255,255,255,0.35)', borderWidth:1.5, borderDash:[5,4], pointRadius:3, pointBackgroundColor:'rgba(255,255,255,0.35)', pointHoverRadius:5, tension:0.2, spanGaps:false },
     ...scenarioDatasets,
   ]},
   options:{ responsive:true, maintainAspectRatio:false,

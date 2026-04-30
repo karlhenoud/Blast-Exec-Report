@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>BLAST — Cashflow May Board</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+  <style>
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    :root {
+      --bg:#0D0F12; --surface:#141720; --border:#1E2230;
+      --muted:#4A5068; --dim:#8891AA; --text:#E8EAF0;
+      --br:#A78BFA; --s1:#34D399; --s2:#FBBF24; --s3:#F87171;
+      --actual:#C8C8C8;
+      --pos:#6EE7B7; --neg:#8891AA; --divider:rgba(255,255,255,.05);
+      --row-alt:rgba(255,255,255,.018);
+    }
+    body { font-family:'DM Sans',sans-serif; background:var(--bg); color:var(--text); min-height:100vh; padding:40px 24px; }
+    .wrap { max-width:100%; margin:0 auto; }
+
+    .back { display:inline-flex; align-items:center; gap:6px; font-size:12px; color:var(--muted); text-decoration:none; letter-spacing:.04em; text-transform:uppercase; margin-bottom:32px; }
+    .back:hover { color:var(--dim); }
+    .back svg { width:12px; height:12px; }
+
+    .header { margin-bottom:24px; }
+    .eyebrow { font-family:'DM Mono',monospace; font-size:11px; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin-bottom:6px; }
+    h1 { font-size:24px; font-weight:300; letter-spacing:-.02em; }
+    h1 strong { font-weight:600; }
+    .subhead { font-size:13px; color:var(--dim); margin-top:5px; }
+
+    .page-tabs { display:flex; gap:0; margin-bottom:28px; border-bottom:1px solid var(--border); }
+    .page-tab { padding:10px 20px; font-size:13px; font-weight:500; cursor:pointer; color:var(--muted); border:none; background:none; font-family:'DM Sans',sans-serif; border-bottom:2px solid transparent; margin-bottom:-1px; transition:all .15s; }
+    .page-tab:hover { color:var(--dim); }
+    .page-tab.active { color:var(--text); border-bottom-color:var(--text); }
+
+    .page { display:none; }
+    .page.active { display:block; }
+
+    /* ── CHART PAGE ── */
+    .anchor-strip { display:flex; gap:24px; flex-wrap:wrap; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:14px 20px; margin-bottom:24px; }
+    .anchor-item { font-size:12px; color:var(--muted); }
+    .anchor-item strong { color:var(--text); font-weight:500; }
+    .chart-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; padding:28px; margin-bottom:24px; }
+    .legend { display:flex; flex-wrap:wrap; gap:20px; margin-bottom:24px; align-items:center; }
+    .leg { display:flex; align-items:center; gap:7px; font-size:12px; color:var(--dim); }
+    .leg-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .leg-divider { width:1px; height:14px; background:var(--border); }
+    .leg-label { font-size:10px; text-transform:uppercase; letter-spacing:.06em; color:var(--muted); }
+    .chart-wrap { position:relative; height:380px; }
+
+    .closing-card { background:var(--surface); border:1px solid var(--border); border-radius:12px; overflow:hidden; margin-bottom:24px; }
+    .closing-card table { width:100%; border-collapse:collapse; white-space:nowrap; overflow-x:auto; display:block; }
+    .closing-card th { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); text-align:right; padding:10px 12px; font-weight:400; border-bottom:1px solid var(--border); background:var(--surface); }
+    .closing-card th:first-child { text-align:left; min-width:140px; }
+    .closing-card td { font-family:'DM Mono',monospace; font-size:11px; text-align:right; padding:8px 12px; border-bottom:1px solid var(--divider); color:var(--neg); }
+    .closing-card td:first-child { text-align:left; }
+    .closing-card td.pos { color:var(--pos); }
+    .closing-card tr.actual-row td { color:var(--text); }
+    .closing-card tr.actual-row td:first-child { color:var(--muted); }
+    th.yr27, td.yr27 { color:#6EE7B7 !important; border-left:1px solid rgba(110,231,183,.15) !important; }
+
+    /* ── BREAKDOWN PAGE ── */
+    .scenario-tabs { display:flex; gap:2px; margin-bottom:20px; background:var(--surface); border:1px solid var(--border); border-radius:8px; padding:4px; width:fit-content; }
+    .stab { padding:7px 16px; border-radius:5px; font-size:12px; font-weight:500; cursor:pointer; color:var(--dim); transition:all .15s; white-space:nowrap; border:none; background:none; font-family:'DM Sans',sans-serif; }
+    .stab:hover { color:var(--text); }
+    .stab.active { background:var(--border); color:var(--text); }
+    .stab.s-br.active  { background:#2D1F5E; color:var(--br); }
+    .stab.s-s1.active  { background:#14342A; color:var(--s1); }
+    .stab.s-s2.active  { background:#3B2E0A; color:var(--s2); }
+    .stab.s-s3.active  { background:#3B1515; color:var(--s3); }
+
+    .table-outer { overflow-x:auto; border:1px solid var(--border); border-radius:12px; background:var(--surface); }
+    table.breakdown { border-collapse:collapse; min-width:100%; white-space:nowrap; }
+    table.breakdown thead tr th { font-family:'DM Mono',monospace; font-size:10px; letter-spacing:.06em; text-transform:uppercase; color:var(--muted); font-weight:400; padding:11px 14px; text-align:right; border-bottom:1px solid var(--border); background:var(--surface); position:sticky; top:0; z-index:2; }
+    table.breakdown thead tr th:first-child { text-align:left; min-width:170px; position:sticky; left:0; z-index:3; background:var(--surface); }
+    table.breakdown tbody tr td { font-family:'DM Mono',monospace; font-size:11.5px; text-align:right; padding:8px 14px; color:var(--neg); border-bottom:1px solid var(--divider); }
+    table.breakdown tbody tr td:first-child { text-align:left; color:var(--dim); font-size:11px; position:sticky; left:0; background:var(--surface); z-index:1; }
+    table.breakdown tbody tr:nth-child(odd) td { background:var(--row-alt); }
+    table.breakdown tbody tr:nth-child(odd) td:first-child { background:#161921; }
+    tr.section-sep td { padding:14px 14px 4px; font-family:'DM Sans',sans-serif; font-size:10px; text-transform:uppercase; letter-spacing:.08em; color:var(--muted); background:var(--bg) !important; border-bottom:1px solid var(--border); }
+    tr.subtotal td { font-weight:600; color:var(--text) !important; border-top:1px solid var(--border); border-bottom:1px solid var(--border); background:#1A1E28 !important; }
+    tr.subtotal td:first-child { color:var(--text) !important; background:#1A1E28 !important; }
+    tr.closing-row td { font-weight:600; color:var(--text) !important; border-top:2px solid var(--border); background:#0F1318 !important; font-size:12px; }
+    tr.closing-row td:first-child { color:var(--text) !important; background:#0F1318 !important; }
+
+    td.pos { color:var(--pos) !important; }
+    td.neg { color:var(--neg) !important; }
+    td.zero { color:var(--muted) !important; }
+    td.yr27, th.yr27 { border-left:1px solid rgba(110,231,183,.2) !important; }
+    table.breakdown thead tr th.yr27 { color:#6EE7B7; }
+
+    .note { font-size:11px; color:var(--muted); margin-top:12px; font-family:'DM Mono',monospace; text-align:right; }
+    footer { margin-top:40px; padding-top:18px; border-top:1px solid var(--border); font-size:11px; color:var(--muted); font-family:'DM Mono',monospace; display:flex; justify-content:space-between; }
+  </style>
+</head>
+<body>
+<div class="wrap">
+
+  <a class="back" href="index.html">
+    <svg viewBox="0 0 12 12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M8 10L4 6l4-4"/></svg>
+    Reports
+  </a>
+
+  <div class="header">
+    <div class="eyebrow">BLAST · May Board Pack</div>
+    <h1><strong>Cashflow forecast</strong> — reworked assumptions</h1>
+    <p class="subhead">Actuals Dec-25 → Apr-26 · Projected May-26 → Jun-27 · anchored 28 Apr 2026 at €13,538,724</p>
+  </div>
+
+  <div class="page-tabs">
+    <button class="page-tab active" onclick="setPage('chart', this)">Chart &amp; Closing Balances</button>
+    <button class="page-tab"        onclick="setPage('breakdown', this)">P&amp;L Breakdown</button>
+  </div>
+
+  <!-- ══ PAGE 1: CHART ══ -->
+  <div class="page active" id="page-chart">
+    <div class="anchor-strip">
+      <div class="anchor-item">Anchor &nbsp;<strong>28 Apr 2026 · €13,538,724</strong></div>
+      <div class="anchor-item">Scenarios &nbsp;<strong>Budget Rework · Scenario 1 · Scenario 2 · Scenario 3</strong></div>
+      <div class="anchor-item">As at &nbsp;<strong>30 Apr 2026</strong></div>
+    </div>
+
+    <div class="chart-card">
+      <div class="legend">
+        <span class="leg-label">Actuals</span>
+        <div class="leg"><div class="leg-dot" style="background:var(--actual)"></div>Closing balance</div>
+        <div class="leg-divider"></div>
+        <span class="leg-label">Forecast</span>
+        <div class="leg"><div class="leg-dot" style="background:var(--br)"></div>Budget Rework</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--s1)"></div>Scenario 1</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--s2)"></div>Scenario 2</div>
+        <div class="leg"><div class="leg-dot" style="background:var(--s3)"></div>Scenario 3</div>
+      </div>
+      <div class="chart-wrap"><canvas id="cashChart"></canvas></div>
+    </div>
+
+    <div class="closing-card">
+      <table id="closingTable"></table>
+    </div>
+  </div>
+
+  <!-- ══ PAGE 2: BREAKDOWN ══ -->
+  <div class="page" id="page-breakdown">
+    <div class="scenario-tabs">
+      <button class="stab s-br active" onclick="setScenario('br')">Budget Rework</button>
+      <button class="stab s-s1"        onclick="setScenario('s1')">Scenario 1</button>
+      <button class="stab s-s2"        onclick="setScenario('s2')">Scenario 2</button>
+      <button class="stab s-s3"        onclick="setScenario('s3')">Scenario 3</button>
+    </div>
+    <div class="table-outer">
+      <table class="breakdown" id="breakdownTable"></table>
+    </div>
+    <p class="note">Values in €k · monthly cash movements per P&amp;L line · closing balance at bottom row · 2027 columns highlighted</p>
+  </div>
+
+  <footer>
+    <span>BLAST · Cashflow May Board · 30.04.2026</span>
+    <span>Source: Airtable Cash Day — Budget Rework / Scenario 1–3 fields</span>
+  </footer>
+</div>
+
+<script>
+// ─── ACTUALS ────────────────────────────────────────────────────────────────
+const ACTUALS = {
+  'Dec-25': 9953250,
+  'Jan-26': 10482758,
+  'Feb-26': 8997086,
+  'Mar-26': 5400933,
+  'Apr-26': 13538724,
+};
+
+// ─── PROJECTED CLOSING BALANCES ─────────────────────────────────────────────
+const CLOSING = {"Apr-26":{"br":17005716,"s1":16650996,"s2":16650996,"s3":16650996},"May-26":{"br":-165249,"s1":274339,"s2":764337,"s3":764337},"Jun-26":{"br":-16287908,"s1":-14845244,"s2":-13924137,"s3":-13924137},"Jul-26":{"br":-19386293,"s1":-17331511,"s2":-16110838,"s3":-16110838},"Aug-26":{"br":-28128170,"s1":-25897010,"s2":-24483092,"s3":-24483092},"Sep-26":{"br":-30907463,"s1":-28691478,"s2":-27127904,"s3":-27127904},"Oct-26":{"br":-24021357,"s1":-22053451,"s2":-20351834,"s3":-20351834},"Nov-26":{"br":-22703312,"s1":-21173512,"s2":-19358566,"s3":-19358566},"Dec-26":{"br":-11945656,"s1":-11939481,"s2":-10005627,"s3":-10005627},"Jan-27":{"br":-5387987,"s1":-6759673,"s2":-4785190,"s3":-4785190},"Feb-27":{"br":-2022808,"s1":-4011254,"s2":-2015673,"s3":-2015673},"Mar-27":{"br":-860350,"s1":-3321000,"s2":-1320992,"s3":-1320992},"Apr-27":{"br":2591798,"s1":-333232,"s2":1666776,"s3":1666776},"May-27":{"br":5579406,"s1":2252961,"s2":4252969,"s3":4252969},"Jun-27":{"br":3749428,"s1":414743,"s2":2414752,"s3":2414752}};
+
+// ─── MONTHLY MOVES ──────────────────────────────────────────────────────────
+const MOVES = {"Apr-26":{"br":{"rev":3374257,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":92735},"s1":{"rev":3019537,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":92735},"s2":{"rev":3019537,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":92735},"s3":{"rev":3019537,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":92735}},"May-26":{"br":{"rev":12517677,"evt":-17474923,"prize":-3535818,"ocos":-310285,"opex":-1139399,"capex":-1670000,"other":-5558217},"s1":{"rev":11382769,"evt":-15729689,"prize":-3535818,"ocos":-211627,"opex":-1054075,"capex":-1670000,"other":-5558217},"s2":{"rev":11382769,"evt":-15239691,"prize":-3535818,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":-5558217},"s3":{"rev":11382769,"evt":-15239691,"prize":-3535818,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":-5558217}},"Jun-26":{"br":{"rev":7468857,"evt":-14915281,"prize":-3184409,"ocos":-423772,"opex":-1139399,"capex":-4190112,"other":261457},"s1":{"rev":6716381,"evt":-13379795,"prize":-3184409,"ocos":-289029,"opex":-1054075,"capex":-4190112,"other":261457},"s2":{"rev":6716381,"evt":-12948688,"prize":-3184409,"ocos":-289028,"opex":-1054075,"capex":-4190112,"other":261457},"s3":{"rev":6716381,"evt":-12948688,"prize":-3184409,"ocos":-289028,"opex":-1054075,"capex":-4190112,"other":261457}},"Jul-26":{"br":{"rev":7527675,"evt":-11247360,"prize":-986688,"ocos":-423772,"opex":-1139399,"capex":-1958579,"other":5129737},"s1":{"rev":6852760,"evt":-10180393,"prize":-986688,"ocos":-289029,"opex":-1054075,"capex":-1958579,"other":5129737},"s2":{"rev":6852760,"evt":-9880828,"prize":-986688,"ocos":-289028,"opex":-1054075,"capex":-1958579,"other":5129737},"s3":{"rev":6852760,"evt":-9880828,"prize":-986688,"ocos":-289028,"opex":-1054075,"capex":-1958579,"other":5129737}},"Aug-26":{"br":{"rev":7680863,"evt":-7147838,"prize":-681201,"ocos":-310285,"opex":-1139399,"capex":-1670000,"other":-5474017},"s1":{"rev":6984974,"evt":-6459554,"prize":-681201,"ocos":-211627,"opex":-1054075,"capex":-1670000,"other":-5474017},"s2":{"rev":6984974,"evt":-6266309,"prize":-681201,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":-5474017},"s3":{"rev":6984974,"evt":-6266309,"prize":-681201,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":-5474017}},"Sep-26":{"br":{"rev":8081384,"evt":-5902824,"prize":-971969,"ocos":-310285,"opex":-1139399,"capex":-3901533,"other":1365332},"s1":{"rev":7349201,"evt":-5369796,"prize":-971969,"ocos":-211627,"opex":-1054075,"capex":-3901533,"other":1365332},"s2":{"rev":7349201,"evt":-5220142,"prize":-971969,"ocos":-211626,"opex":-1054075,"capex":-3901533,"other":1365332},"s3":{"rev":7349201,"evt":-5220142,"prize":-971969,"ocos":-211626,"opex":-1054075,"capex":-3901533,"other":1365332}},"Oct-26":{"br":{"rev":10061802,"evt":-5443976,"prize":-807866,"ocos":-310285,"opex":-1139399,"capex":-1670000,"other":6195830},"s1":{"rev":9138073,"evt":-4952308,"prize":-807866,"ocos":-211627,"opex":-1054075,"capex":-1670000,"other":6195830},"s2":{"rev":9138073,"evt":-4814265,"prize":-807866,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":6195830},"s3":{"rev":9138073,"evt":-4814265,"prize":-807866,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":6195830}},"Nov-26":{"br":{"rev":11450438,"evt":-4459787,"prize":-956549,"ocos":-310285,"opex":-1139399,"capex":-1670000,"other":-1596373},"s1":{"rev":10424710,"evt":-4056146,"prize":-956549,"ocos":-211627,"opex":-1054075,"capex":-1670000,"other":-1596373},"s2":{"rev":10424710,"evt":-3942818,"prize":-956549,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":-1596373},"s3":{"rev":10424710,"evt":-3942818,"prize":-956549,"ocos":-211626,"opex":-1054075,"capex":-1670000,"other":-1596373}},"Dec-26":{"br":{"rev":22132651,"evt":-4681583,"prize":-2471462,"ocos":-310285,"opex":-1139399,"capex":-3901533,"other":1129266},"s1":{"rev":20001534,"evt":-4258071,"prize":-2471462,"ocos":-211627,"opex":-1054075,"capex":-3901533,"other":1129266},"s2":{"rev":20001534,"evt":-4139165,"prize":-2471462,"ocos":-211626,"opex":-1054075,"capex":-3901533,"other":1129266},"s3":{"rev":20001534,"evt":-4139165,"prize":-2471462,"ocos":-211626,"opex":-1054075,"capex":-3901533,"other":1129266}},"Jan-27":{"br":{"rev":16996853,"evt":-1616994,"prize":-1319118,"ocos":0,"opex":0,"capex":0,"other":-7503071},"s1":{"rev":15474278,"evt":-1472281,"prize":-1319118,"ocos":0,"opex":0,"capex":0,"other":-7503071},"s2":{"rev":15474278,"evt":-1431651,"prize":-1319118,"ocos":0,"opex":0,"capex":0,"other":-7503071},"s3":{"rev":15474278,"evt":-1431651,"prize":-1319118,"ocos":0,"opex":0,"capex":0,"other":-7503071}},"Feb-27":{"br":{"rev":7723883,"evt":-839940,"prize":-766420,"ocos":0,"opex":0,"capex":0,"other":-2752345},"s1":{"rev":7031979,"evt":-764795,"prize":-766420,"ocos":0,"opex":0,"capex":0,"other":-2752345},"s2":{"rev":7031979,"evt":-743697,"prize":-766420,"ocos":0,"opex":0,"capex":0,"other":-2752345},"s3":{"rev":7031979,"evt":-743697,"prize":-766420,"ocos":0,"opex":0,"capex":0,"other":-2752345}},"Mar-27":{"br":{"rev":5447350,"evt":-176049,"prize":-620012,"ocos":0,"opex":0,"capex":0,"other":-3488831},"s1":{"rev":4959377,"evt":-160280,"prize":-620012,"ocos":0,"opex":0,"capex":0,"other":-3488831},"s2":{"rev":4959377,"evt":-155853,"prize":-620012,"ocos":0,"opex":0,"capex":0,"other":-3488831},"s3":{"rev":4959377,"evt":-155853,"prize":-620012,"ocos":0,"opex":0,"capex":0,"other":-3488831}},"Apr-27":{"br":{"rev":5183990,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1731841},"s1":{"rev":4719609,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1731841},"s2":{"rev":4719609,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1731841},"s3":{"rev":4719609,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1731841}},"May-27":{"br":{"rev":4481082,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1493474},"s1":{"rev":4079668,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1493474},"s2":{"rev":4079668,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1493474},"s3":{"rev":4079668,"evt":0,"prize":0,"ocos":0,"opex":0,"capex":0,"other":-1493474}},"Jun-27":{"br":{"rev":91984,"evt":0,"prize":-428488,"ocos":0,"opex":0,"capex":0,"other":-1493474},"s1":{"rev":83744,"evt":0,"prize":-428488,"ocos":0,"opex":0,"capex":0,"other":-1493474},"s2":{"rev":83744,"evt":0,"prize":-428488,"ocos":0,"opex":0,"capex":0,"other":-1493474},"s3":{"rev":83744,"evt":0,"prize":-428488,"ocos":0,"opex":0,"capex":0,"other":-1493474}}};
+
+const SCENARIOS = ['br','s1','s2','s3'];
+const S_LABELS  = { br:'Budget Rework', s1:'Scenario 1', s2:'Scenario 2', s3:'Scenario 3' };
+const S_COLORS  = { br:'#A78BFA', s1:'#34D399', s2:'#FBBF24', s3:'#F87171' };
+
+const ACTUAL_MONTHS = Object.keys(ACTUALS);
+const PROJ_MONTHS   = Object.keys(CLOSING).filter(m => m !== 'Apr-26');
+const ALL_MONTHS    = [...ACTUAL_MONTHS, ...PROJ_MONTHS];
+const MOVE_MONTHS   = Object.keys(MOVES).filter(m => m !== 'Apr-26'); // Apr-26 is anchor, not a projection month
+const ANCHOR_IDX    = ALL_MONTHS.indexOf('Apr-26');
+const ANCHOR_VAL    = ACTUALS['Apr-26'];
+
+const fmt  = v => (v<0?'-€':'€') + Math.abs(v/1e6).toFixed(1)+'M';
+const fmtK = v => { if(Math.abs(v)<500) return '—'; return (v<0?'-':'')+Math.round(Math.abs(v)/1000).toLocaleString(); };
+const cls  = v => Math.abs(v)<500?'zero':v>0?'pos':'neg';
+const yr27 = m => m.includes('-27') ? ' yr27' : '';
+
+// ─── PAGE SWITCHING ──────────────────────────────────────────────────────────
+function setPage(p, btn) {
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  document.querySelectorAll('.page-tab').forEach(el => el.classList.remove('active'));
+  document.getElementById('page-'+p).classList.add('active');
+  btn.classList.add('active');
+}
+
+// ─── CHART ───────────────────────────────────────────────────────────────────
+const nullArr = () => ALL_MONTHS.map(()=>null);
+const dActual = nullArr();
+ACTUAL_MONTHS.forEach(m => { dActual[ALL_MONTHS.indexOf(m)] = ACTUALS[m]; });
+
+const scenarioDatasets = SCENARIOS.map(s => {
+  const arr = nullArr();
+  arr[ANCHOR_IDX] = ANCHOR_VAL; // anchor point = actual Apr-26 closing
+  PROJ_MONTHS.filter(m => m !== 'Apr-26').forEach(m => {
+    arr[ALL_MONTHS.indexOf(m)] = CLOSING[m][s];
+  });
+  return { label: S_LABELS[s], data: arr, borderColor: S_COLORS[s], borderWidth:2, pointRadius:3, pointBackgroundColor:S_COLORS[s], pointHoverRadius:5, tension:0.2, spanGaps:false };
+});
+
+new Chart(document.getElementById('cashChart').getContext('2d'), {
+  type:'line',
+  data:{ labels:ALL_MONTHS, datasets:[
+    { label:'Zero', data:ALL_MONTHS.map(()=>0), borderColor:'rgba(255,255,255,.07)', borderWidth:1, pointRadius:0, spanGaps:true, order:10 },
+    { label:'Actual', data:dActual, borderColor:'#C8C8C8', borderWidth:2.5, pointRadius:4, pointBackgroundColor:'#C8C8C8', pointHoverRadius:6, tension:0.2, spanGaps:false },
+    ...scenarioDatasets,
+  ]},
+  options:{ responsive:true, maintainAspectRatio:false,
+    interaction:{ mode:'index', intersect:false },
+    plugins:{ legend:{ display:false },
+      tooltip:{ backgroundColor:'#141720', borderColor:'#1E2230', borderWidth:1, titleColor:'#E8EAF0', bodyColor:'#8891AA', padding:14,
+        callbacks:{ label: c => c.dataset.label==='Zero'||c.parsed.y===null?null:`  ${c.dataset.label}:  ${fmt(c.parsed.y)}` }
+      }
+    },
+    scales:{
+      x:{ ticks:{ color:'#4A5068', font:{size:10,family:'DM Mono'} }, grid:{ color:'rgba(255,255,255,.04)' }, border:{color:'#1E2230'} },
+      y:{ ticks:{ color:'#4A5068', font:{size:10,family:'DM Mono'}, callback:v=>fmt(v) }, grid:{ color:'rgba(255,255,255,.04)' }, border:{color:'#1E2230'} }
+    }
+  }
+});
+
+// ─── CLOSING TABLE ───────────────────────────────────────────────────────────
+(function() {
+  let h = '<thead><tr><th>Scenario</th>';
+  ALL_MONTHS.forEach(m => { h += `<th class="${yr27(m).trim()}">${m}</th>`; });
+  h += '</tr></thead><tbody>';
+  // Actuals row
+  h += '<tr class="actual-row"><td>Actual</td>';
+  ALL_MONTHS.forEach(m => {
+    const v = ACTUALS[m];
+    h += v!==undefined ? `<td class="${cls(v)}${yr27(m)}">${fmtK(v)}</td>` : `<td class="zero${yr27(m)}">—</td>`;
+  });
+  h += '</tr>';
+  SCENARIOS.forEach(s => {
+    h += `<tr><td style="color:${S_COLORS[s]};font-weight:500">${S_LABELS[s]}</td>`;
+    ALL_MONTHS.forEach(m => {
+      if(ACTUALS[m]!==undefined){ h+=`<td class="zero${yr27(m)}">—</td>`; return; }
+      const v = CLOSING[m]?.[s];
+      h += v!=null ? `<td class="${cls(v)}${yr27(m)}">${fmtK(v)}</td>` : `<td class="zero${yr27(m)}">—</td>`;
+    });
+    h += '</tr>';
+  });
+  h += '</tbody>';
+  document.getElementById('closingTable').innerHTML = h;
+})();
+
+// ─── BREAKDOWN TABLE ─────────────────────────────────────────────────────────
+let currentScenario = 'br';
+
+function buildBreakdown(s) {
+  const table = document.getElementById('breakdownTable');
+  let h = '<thead><tr><th>P&amp;L Line</th>';
+  MOVE_MONTHS.forEach(m => { h += `<th class="${yr27(m).trim()}">${m}</th>`; });
+  h += '</tr></thead><tbody>';
+
+  // Opening balance row — show the closing balance of the prior month
+  let ob = '<tr class="closing-row" style="border-bottom:1px solid var(--border)"><td style="color:var(--muted);font-weight:400;font-size:11px">Opening Balance</td>';
+  let runningOB = 13538724; // anchor = Apr-26 closing
+  MOVE_MONTHS.forEach(m => {
+    ob += `<td class="${cls(runningOB)}${yr27(m)}">${fmtK(runningOB)}</td>`;
+    // advance running for next month's opening
+    const move = ['rev','evt','prize','ocos','opex','capex','other'].reduce((a,k)=>a+(MOVES[m]?.[s]?.[k]||0),0);
+    runningOB += move;
+  });
+  ob += '</tr>';
+  h += ob;
+
+  function dataRow(label, key) {
+    let r = `<tr><td>${label}</td>`;
+    MOVE_MONTHS.forEach(m => {
+      const v = MOVES[m]?.[s]?.[key] || 0;
+      r += `<td class="${cls(v)}${yr27(m)}">${fmtK(v)}</td>`;
+    });
+    return r + '</tr>';
+  }
+
+  function subtotalRow(label, keys) {
+    let r = `<tr class="subtotal"><td>${label}</td>`;
+    MOVE_MONTHS.forEach(m => {
+      const v = keys.reduce((acc,k) => acc + (MOVES[m]?.[s]?.[k]||0), 0);
+      r += `<td class="${cls(v)}${yr27(m)}">${fmtK(v)}</td>`;
+    });
+    return r + '</tr>';
+  }
+
+  const sep = l => `<tr class="section-sep"><td colspan="99">${l}</td></tr>`;
+
+  h += sep('Revenue');
+  h += dataRow('Revenue', 'rev');
+
+  h += sep('Event Costs');
+  h += dataRow('Event Cost', 'evt');
+  h += dataRow('Prize Money', 'prize');
+  h += dataRow('Other CoS', 'ocos');
+  h += subtotalRow('= Total Event Costs', ['evt','prize','ocos']);
+
+  h += sep('OPEX');
+  h += dataRow('OPEX', 'opex');
+  h += subtotalRow('= EBITDA', ['rev','evt','prize','ocos','opex']);
+
+  h += sep('CAPEX & Financing');
+  h += dataRow('CAPEX', 'capex');
+  h += dataRow('Other / Financing', 'other');
+  h += subtotalRow('= Net Cash Movement', ['rev','evt','prize','ocos','opex','capex','other']);
+
+  // Closing balance row — running from anchor
+  let running = 13538724;
+  let cr = '<tr class="closing-row"><td>Closing Balance</td>';
+  MOVE_MONTHS.forEach(m => {
+    const move = ['rev','evt','prize','ocos','opex','capex','other'].reduce((a,k)=>a+(MOVES[m]?.[s]?.[k]||0),0);
+    running += move;
+    cr += `<td class="${cls(running)}${yr27(m)}">${fmtK(running)}</td>`;
+  });
+  cr += '</tr>';
+  h += cr + '</tbody>';
+  table.innerHTML = h;
+}
+
+function setScenario(s) {
+  currentScenario = s;
+  document.querySelectorAll('.stab').forEach(t => t.classList.remove('active'));
+  document.querySelector(`.s-${s}`).classList.add('active');
+  buildBreakdown(s);
+}
+
+buildBreakdown('br');
+</script>
+</body>
+</html>

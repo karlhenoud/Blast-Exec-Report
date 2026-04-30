@@ -111,6 +111,7 @@
   <div class="page-tabs">
     <button class="page-tab active" onclick="setPage('chart', this)">Chart &amp; Closing Balances</button>
     <button class="page-tab"        onclick="setPage('breakdown', this)">P&amp;L Breakdown</button>
+    <button class="page-tab"        onclick="setPage('recon', this)">P&amp;L Reconciliation</button>
   </div>
 
   <!-- ══ PAGE 1: CHART ══ -->
@@ -153,6 +154,21 @@
       <table class="breakdown" id="breakdownTable"></table>
     </div>
     <p class="note">Values in €k · monthly cash movements per P&amp;L line · closing balance at bottom row · 2027 columns highlighted</p>
+  </div>
+
+
+  <!-- ══ PAGE 3: RECONCILIATION ════════════════════════════════════════════ -->
+  <div class="page" id="page-recon">
+    <div style="margin-bottom:20px">
+      <p style="font-size:13px;color:var(--dim);line-height:1.6">
+        <strong style="color:var(--text)">Actuals</strong> from Revenue payments (Total Paid) and PIVOT Invoices (total price incl. taxes EUR) ·
+        <strong style="color:var(--text)">Projections</strong> from Cash Day projection fields (post 28 Apr 2026) · Values in €
+      </p>
+    </div>
+    <div class="table-outer">
+      <table class="breakdown" id="reconTable"></table>
+    </div>
+    <p class="note">Actuals: Revenue payments Total Paid · PIVOT Invoices Total price (incl. taxes) EUR · Projections: Cash Day post 28 Apr 2026</p>
   </div>
 
   <footer>
@@ -349,6 +365,103 @@ function setScenario(s) {
 }
 
 buildBreakdown('br');
+
+// ─── RECONCILIATION TABLE ────────────────────────────────────────────────────
+(function buildRecon() {
+  const A = {
+    rev:          11888897,
+    evt_excl_cap: 34893820,
+    capex:          870706,
+  };
+
+  const PROJ = {
+    br: { rev:131520800, evt:-73906555, prize:-16730000, ocos:-2709253, opex:-28656873, capex:-20631754, other:-16282107 },
+    s1: { rev:119098868, evt:-66783107, prize:-16730000, ocos:-1847820, opex:-26656881, capex:-20631754, other:-16282107 },
+    s2: { rev:119098868, evt:-64783107, prize:-16730000, ocos:-1847812, opex:-26656881, capex:-20631754, other:-16282107 },
+    s3: { rev:119098868, evt:-64783107, prize:-16730000, ocos:-1847812, opex:-26656881, capex:-20631754, other:-16282107 },
+  };
+
+  const SCENS = ['br','s1','s2','s3'];
+  const COLS  = ['Actuals', 'Budget Rework', 'Scenario 1', 'Scenario 2', 'Scenario 3'];
+  const COLORS= ['#C8C8C8', '#A78BFA', '#34D399', '#FBBF24', '#F87171'];
+
+  const fmtE = v => {
+    if (v === null) return '—';
+    const neg = v < 0;
+    return (neg ? '-€' : '€') + Math.abs(Math.round(v)).toLocaleString();
+  };
+  const clsE = v => v === null ? 'zero' : Math.abs(v) < 1 ? 'zero' : v > 0 ? 'pos' : 'neg';
+
+  const table = document.getElementById('reconTable');
+  let html = '<thead><tr><th style="min-width:240px">Line</th>';
+  COLS.forEach((c,i) => { html += `<th style="color:${COLORS[i]};text-align:right">${c}</th>`; });
+  html += '</tr></thead><tbody>';
+
+  const sep = l => `<tr class="section-sep"><td colspan="99">${l}</td></tr>`;
+
+  function row(label, actVal, projFn, isSubtotal=false) {
+    const cls = isSubtotal ? 'subtotal' : '';
+    let r = `<tr class="${cls}"><td>${label}</td>`;
+    // Actuals column
+    r += actVal !== null
+      ? `<td class="${clsE(actVal)}">${fmtE(actVal)}</td>`
+      : `<td class="zero">—</td>`;
+    // Scenario columns: actuals + projection
+    SCENS.forEach(s => {
+      const pv = projFn ? projFn(s) : 0;
+      const combined = (actVal || 0) + pv;
+      r += `<td class="${clsE(combined)}">${fmtE(combined)}</td>`;
+    });
+    return r + '</tr>';
+  }
+
+  function projRow(label, projFn, isSubtotal=false) {
+    // Projection-only row (no actuals equivalent)
+    const cls = isSubtotal ? 'subtotal' : '';
+    let r = `<tr class="${cls}"><td>${label}</td><td class="zero">—</td>`;
+    SCENS.forEach(s => {
+      const v = projFn(s);
+      r += `<td class="${clsE(v)}">${fmtE(v)}</td>`;
+    });
+    return r + '</tr>';
+  }
+
+  // REVENUE
+  html += sep('Revenue');
+  html += row('Actuals (Revenue payments)', A.rev, null);
+  html += projRow('Projections (Cash Day)', s => PROJ[s].rev);
+  html += row('= Total Revenue', A.rev, s => PROJ[s].rev, true);
+
+  // COSTS excl CAPEX
+  html += sep('Costs (excl. CAPEX)');
+  html += row('Actuals — PIVOT Invoices (excl. CAPEX)', -A.evt_excl_cap, null);
+  html += projRow('Projections — Event Cost',  s => PROJ[s].evt);
+  html += projRow('Projections — Prize Money', s => PROJ[s].prize);
+  html += projRow('Projections — Other CoS',   s => PROJ[s].ocos);
+  html += projRow('Projections — OPEX',         s => PROJ[s].opex);
+  html += row('= Total Costs (excl. CAPEX)', -A.evt_excl_cap,
+    s => PROJ[s].evt + PROJ[s].prize + PROJ[s].ocos + PROJ[s].opex, true);
+
+  // CAPEX
+  html += sep('CAPEX');
+  html += row('Actuals — PIVOT Invoices (Capital Assets)', -A.capex, null);
+  html += projRow('Projections — CAPEX (Cash Day)', s => PROJ[s].capex);
+  html += row('= Total CAPEX', -A.capex, s => PROJ[s].capex, true);
+
+  // OTHER
+  html += sep('Other / Financing');
+  html += projRow('Cash Day Other / Financing', s => PROJ[s].other);
+
+  // NET
+  const net_act = A.rev - A.evt_excl_cap - A.capex;
+  html += row('= NET (Revenue − All Costs)', net_act,
+    s => PROJ[s].rev + PROJ[s].evt + PROJ[s].prize + PROJ[s].ocos + PROJ[s].opex + PROJ[s].capex + PROJ[s].other,
+    true);
+
+  html += '</tbody>';
+  table.innerHTML = html;
+})();
+
 </script>
 </body>
 </html>

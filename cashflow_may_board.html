@@ -153,7 +153,7 @@
     <div class="table-outer">
       <table class="breakdown" id="breakdownTable"></table>
     </div>
-    <p class="note">Values in €k · monthly cash movements per P&amp;L line · closing balance at bottom row · 2027 columns highlighted</p>
+    <p class="note">Values in €k · monthly cash movements per P&amp;L line · closing balance at bottom row · Other/Financing field excluded · 2027 columns highlighted</p>
   </div>
 
 
@@ -168,7 +168,7 @@
     <div class="table-outer">
       <table class="breakdown" id="reconTable"></table>
     </div>
-    <p class="note">Actuals: Revenue payments Total Paid · PIVOT Invoices Total price (incl. taxes) EUR · Projections: Cash Day post 28 Apr 2026</p>
+    <p class="note">Actuals: Revenue payments Total Paid · PIVOT Invoices status=PAID only (Total price incl. taxes EUR) · Projections: Cash Day post 28 Apr 2026</p>
   </div>
 
   <footer>
@@ -190,8 +190,8 @@ const ACTUALS = {
 };
 
 // ─── PROJECTED CLOSING BALANCES ─────────────────────────────────────────────
-const CLOSING = {"May-26": {"br": 7178189, "s1": 6729655, "s2": 6952699, "s3": 6952699}, "Jun-26": {"br": 8267133, "s1": 7234785, "s2": 7689418, "s3": 7689418}, "Jul-26": {"br": 16700370, "s1": 15138630, "s2": 15809770, "s3": 15809770}, "Aug-26": {"br": 5512775, "s1": 4211862, "s2": 5068037, "s3": 5068037}, "Sep-26": {"br": 4380961, "s1": 2883500, "s2": 3924226, "s3": 3924226}, "Oct-26": {"br": 7901833, "s1": 6451426, "s2": 7681137, "s3": 7681137}, "Nov-26": {"br": 5707315, "s1": 4130546, "s2": 5529192, "s3": 5529192}, "Dec-26": {"br": 15203182, "s1": 12307697, "s2": 13861759, "s3": 13861759}, "Jan-27": {"br": 4637472, "s1": 1836438, "s2": 3511124, "s3": 3511124}, "Feb-27": {"br": 782675, "s1": -2000845, "s2": -239684, "s3": -239684}, "Mar-27": {"br": -5342474, "s1": -7966653, "s2": -6136452, "s3": -6136452}, "Apr-27": {"br": -9360354, "s1": -11843122, "s2": -9955540, "s3": -9955540}, "May-27": {"br": -13282658, "s1": -15601758, "s2": -13668223, "s3": -13668223}, "Jun-27": {"br": -16690557, "s1": -18886452, "s2": -16918325, "s3": -16918325}};
-const MOVES = {"May-26": {"br": {"rev": 13704129, "evt": -8229939, "prize": -1389005, "ocos": -310285, "opex": -2907219, "capex": -1670000, "other": -5558217}, "s1": {"rev": 12159621, "evt": -7435520, "prize": -1389005, "ocos": -211627, "opex": -2704321, "capex": -1670000, "other": -5558217}, "s2": {"rev": 12159621, "evt": -7212477, "prize": -1389005, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": -5558217}, "s3": {"rev": 12159621, "evt": -7212477, "prize": -1389005, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": -5558217}}, "Jun-26": {"br": {"rev": 18563219, "evt": -8490914, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -4190112, "other": 261457}, "s1": {"rev": 16816911, "evt": -7666061, "prize": -1723715, "ocos": -289029, "opex": -2704321, "capex": -4190112, "other": 261457}, "s2": {"rev": 16816911, "evt": -7434473, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -4190112, "other": 261457}, "s3": {"rev": 16816911, "evt": -7434473, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -4190112, "other": 261457}}, "Jul-26": {"br": {"rev": 18280645, "evt": -7963861, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -1958579, "other": 5129737}, "s1": {"rev": 16642480, "evt": -7192729, "prize": -1723715, "ocos": -289029, "opex": -2704321, "capex": -1958579, "other": 5129737}, "s2": {"rev": 16642480, "evt": -6976223, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -1958579, "other": 5129737}, "s3": {"rev": 16642480, "evt": -6976223, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -1958579, "other": 5129737}}, "Aug-26": {"br": {"rev": 7724201, "evt": -6864758, "prize": -1685517, "ocos": -310285, "opex": -2907219, "capex": -1670000, "other": -5474017}, "s1": {"rev": 7024430, "evt": -6205716, "prize": -1685517, "ocos": -211627, "opex": -2704321, "capex": -1670000, "other": -5474017}, "s2": {"rev": 7024430, "evt": -6020682, "prize": -1685517, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": -5474017}, "s3": {"rev": 7024430, "evt": -6020682, "prize": -1685517, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": -5474017}}, "Sep-26": {"br": {"rev": 12806042, "evt": -6786614, "prize": -1397537, "ocos": -310285, "opex": -2907219, "capex": -3901533, "other": 1365332}, "s1": {"rev": 11650624, "evt": -6129299, "prize": -1397537, "ocos": -211627, "opex": -2704321, "capex": -3901533, "other": 1365332}, "s2": {"rev": 11650624, "evt": -5944750, "prize": -1397537, "ocos": -211626, "opex": -2704321, "capex": -3901533, "other": 1365332}, "s3": {"rev": 11650624, "evt": -5944750, "prize": -1397537, "ocos": -211626, "opex": -2704321, "capex": -3901533, "other": 1365332}}, "Oct-26": {"br": {"rev": 10105140, "evt": -6919662, "prize": -972932, "ocos": -310285, "opex": -2907219, "capex": -1670000, "other": 6195830}, "s1": {"rev": 9177528, "evt": -6246553, "prize": -972932, "ocos": -211627, "opex": -2704321, "capex": -1670000, "other": 6195830}, "s2": {"rev": 9177528, "evt": -6057569, "prize": -972932, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": 6195830}, "s3": {"rev": 9177528, "evt": -6057569, "prize": -972932, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": 6195830}}, "Nov-26": {"br": {"rev": 11493775, "evt": -6229211, "prize": -975206, "ocos": -310285, "opex": -2907219, "capex": -1670000, "other": -1596373}, "s1": {"rev": 10464165, "evt": -5627517, "prize": -975206, "ocos": -211627, "opex": -2704321, "capex": -1670000, "other": -1596373}, "s2": {"rev": 10464165, "evt": -5458584, "prize": -975206, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": -1596373}, "s3": {"rev": 10464165, "evt": -5458584, "prize": -975206, "ocos": -211626, "opex": -2704321, "capex": -1670000, "other": -1596373}}, "Dec-26": {"br": {"rev": 22609364, "evt": -5709744, "prize": -1413982, "ocos": -310285, "opex": -2907219, "capex": -3901533, "other": 1129266}, "s1": {"rev": 20435543, "evt": -5156195, "prize": -1413982, "ocos": -211627, "opex": -2704321, "capex": -3901533, "other": 1129266}, "s2": {"rev": 20435543, "evt": -5000778, "prize": -1413982, "ocos": -211626, "opex": -2704321, "capex": -3901533, "other": 1129266}, "s3": {"rev": 20435543, "evt": -5000778, "prize": -1413982, "ocos": -211626, "opex": -2704321, "capex": -3901533, "other": 1129266}}, "Jan-27": {"br": {"rev": 7948052, "evt": -4491690, "prize": -1119880, "ocos": 0, "opex": -5399121, "capex": 0, "other": -7503071}, "s1": {"rev": 7236067, "evt": -4062064, "prize": -1119880, "ocos": 0, "opex": -5022311, "capex": 0, "other": -7503071}, "s2": {"rev": 7236067, "evt": -3941441, "prize": -1119880, "ocos": 0, "opex": -5022311, "capex": 0, "other": -7503071}, "s3": {"rev": 7236067, "evt": -3941441, "prize": -1119880, "ocos": 0, "opex": -5022311, "capex": 0, "other": -7503071}}, "Feb-27": {"br": {"rev": 3242801, "evt": -3244377, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0, "other": -2752345}, "s1": {"rev": 2952311, "evt": -2936373, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0, "other": -2752345}, "s2": {"rev": 2952311, "evt": -2849897, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0, "other": -2752345}, "s3": {"rev": 2952311, "evt": -2849897, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0, "other": -2752345}}, "Mar-27": {"br": {"rev": 966268, "evt": -2592080, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0, "other": -3488831}, "s1": {"rev": 879709, "evt": -2346181, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0, "other": -3488831}, "s2": {"rev": 879709, "evt": -2277141, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0, "other": -3488831}, "s3": {"rev": 879709, "evt": -2277141, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0, "other": -3488831}}, "Apr-27": {"br": {"rev": 702908, "evt": -2129622, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0, "other": -1731841}, "s1": {"rev": 639942, "evt": -1925245, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0, "other": -1731841}, "s2": {"rev": 639942, "evt": -1867864, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0, "other": -1731841}, "s3": {"rev": 639942, "evt": -1867864, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0, "other": -1731841}}, "May-27": {"br": {"rev": 0, "evt": -1711213, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}, "s1": {"rev": 0, "evt": -1547544, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}, "s2": {"rev": 0, "evt": -1501592, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}, "s3": {"rev": 0, "evt": -1501592, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}}, "Jun-27": {"br": {"rev": 0, "evt": -1274237, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}, "s1": {"rev": 0, "evt": -1151032, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}, "s2": {"rev": 0, "evt": -1116440, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}, "s3": {"rev": 0, "evt": -1116440, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0, "other": -1493474}}};
+const CLOSING = {"May-26": {"br": 16112651, "s1": 15361673, "s2": 15584717, "s3": 15584717}, "Jun-26": {"br": 16940137, "s1": 15605346, "s2": 16059980, "s3": 16059980}, "Jul-26": {"br": 20243637, "s1": 18379454, "s2": 19050594, "s3": 19050594}, "Aug-26": {"br": 16780889, "s1": 14975904, "s2": 15832079, "s3": 15832079}, "Sep-26": {"br": 15010004, "s1": 12921018, "s2": 13961744, "s3": 13961744}, "Oct-26": {"br": 12025279, "s1": 10033490, "s2": 11263201, "s3": 11263201}, "Nov-26": {"br": 14404224, "s1": 11996992, "s2": 13395637, "s3": 13395637}, "Dec-26": {"br": 14960985, "s1": 11957035, "s2": 13511098, "s3": 13511098}, "Jan-27": {"br": 11898346, "s1": 8988847, "s2": 10663533, "s3": 10663533}, "Feb-27": {"br": 9585076, "s1": 6801556, "s2": 8562718, "s3": 8562718}, "Mar-27": {"br": 6948758, "s1": 4324579, "s2": 6154781, "s3": 6154781}, "Apr-27": {"br": 4662720, "s1": 2179951, "s2": 4067534, "s3": 4067534}, "May-27": {"br": 2233890, "s1": -85210, "s2": 1848325, "s3": 1848325}, "Jun-27": {"br": 319465, "s1": -1876429, "s2": 91697, "s3": 91697}};
+const MOVES = {"May-26": {"br": {"rev": 17080374, "evt": -8229939, "prize": -1389005, "ocos": -310285, "opex": -2907219, "capex": -1670000}, "s1": {"rev": 15233422, "evt": -7435520, "prize": -1389005, "ocos": -211627, "opex": -2704321, "capex": -1670000}, "s2": {"rev": 15233422, "evt": -7212477, "prize": -1389005, "ocos": -211626, "opex": -2704321, "capex": -1670000}, "s3": {"rev": 15233422, "evt": -7212477, "prize": -1389005, "ocos": -211626, "opex": -2704321, "capex": -1670000}}, "Jun-26": {"br": {"rev": 18563219, "evt": -8490914, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -4190112}, "s1": {"rev": 16816911, "evt": -7666061, "prize": -1723715, "ocos": -289029, "opex": -2704321, "capex": -4190112}, "s2": {"rev": 16816911, "evt": -7434473, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -4190112}, "s3": {"rev": 16816911, "evt": -7434473, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -4190112}}, "Jul-26": {"br": {"rev": 18280645, "evt": -7963861, "prize": -1723715, "ocos": -423772, "opex": -2907219, "capex": -1958579}, "s1": {"rev": 16642480, "evt": -7192729, "prize": -1723715, "ocos": -289029, "opex": -2704321, "capex": -1958579}, "s2": {"rev": 16642480, "evt": -6976223, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -1958579}, "s3": {"rev": 16642480, "evt": -6976223, "prize": -1723715, "ocos": -289028, "opex": -2704321, "capex": -1958579}}, "Aug-26": {"br": {"rev": 9975030, "evt": -6864758, "prize": -1685517, "ocos": -310285, "opex": -2907219, "capex": -1670000}, "s1": {"rev": 9073630, "evt": -6205716, "prize": -1685517, "ocos": -211627, "opex": -2704321, "capex": -1670000}, "s2": {"rev": 9073630, "evt": -6020682, "prize": -1685517, "ocos": -211626, "opex": -2704321, "capex": -1670000}, "s3": {"rev": 9073630, "evt": -6020682, "prize": -1685517, "ocos": -211626, "opex": -2704321, "capex": -1670000}}, "Sep-26": {"br": {"rev": 13532303, "evt": -6786614, "prize": -1397537, "ocos": -310285, "opex": -2907219, "capex": -3901533}, "s1": {"rev": 12289432, "evt": -6129299, "prize": -1397537, "ocos": -211627, "opex": -2704321, "capex": -3901533}, "s2": {"rev": 12289432, "evt": -5944750, "prize": -1397537, "ocos": -211626, "opex": -2704321, "capex": -3901533}, "s3": {"rev": 12289432, "evt": -5944750, "prize": -1397537, "ocos": -211626, "opex": -2704321, "capex": -3901533}}, "Oct-26": {"br": {"rev": 9795372, "evt": -6919662, "prize": -972932, "ocos": -310285, "opex": -2907219, "capex": -1670000}, "s1": {"rev": 8917905, "evt": -6246553, "prize": -972932, "ocos": -211627, "opex": -2704321, "capex": -1670000}, "s2": {"rev": 8917905, "evt": -6057569, "prize": -972932, "ocos": -211626, "opex": -2704321, "capex": -1670000}, "s3": {"rev": 8917905, "evt": -6057569, "prize": -972932, "ocos": -211626, "opex": -2704321, "capex": -1670000}}, "Nov-26": {"br": {"rev": 14470866, "evt": -6229211, "prize": -975206, "ocos": -310285, "opex": -2907219, "capex": -1670000}, "s1": {"rev": 13152173, "evt": -5627517, "prize": -975206, "ocos": -211627, "opex": -2704321, "capex": -1670000}, "s2": {"rev": 13152173, "evt": -5458584, "prize": -975206, "ocos": -211626, "opex": -2704321, "capex": -1670000}, "s3": {"rev": 13152173, "evt": -5458584, "prize": -975206, "ocos": -211626, "opex": -2704321, "capex": -1670000}}, "Dec-26": {"br": {"rev": 14799524, "evt": -5709744, "prize": -1413982, "ocos": -310285, "opex": -2907219, "capex": -3901533}, "s1": {"rev": 13347701, "evt": -5156195, "prize": -1413982, "ocos": -211627, "opex": -2704321, "capex": -3901533}, "s2": {"rev": 13347701, "evt": -5000778, "prize": -1413982, "ocos": -211626, "opex": -2704321, "capex": -3901533}, "s3": {"rev": 13347701, "evt": -5000778, "prize": -1413982, "ocos": -211626, "opex": -2704321, "capex": -3901533}}, "Jan-27": {"br": {"rev": 7948052, "evt": -4491690, "prize": -1119880, "ocos": 0, "opex": -5399121, "capex": 0}, "s1": {"rev": 7236067, "evt": -4062064, "prize": -1119880, "ocos": 0, "opex": -5022311, "capex": 0}, "s2": {"rev": 7236067, "evt": -3941441, "prize": -1119880, "ocos": 0, "opex": -5022311, "capex": 0}, "s3": {"rev": 7236067, "evt": -3941441, "prize": -1119880, "ocos": 0, "opex": -5022311, "capex": 0}}, "Feb-27": {"br": {"rev": 2031983, "evt": -3244377, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0}, "s1": {"rev": 1849959, "evt": -2936373, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0}, "s2": {"rev": 1849959, "evt": -2849897, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0}, "s3": {"rev": 1849959, "evt": -2849897, "prize": -1100876, "ocos": 0, "opex": 0, "capex": 0}}, "Mar-27": {"br": {"rev": 966268, "evt": -2592080, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0}, "s1": {"rev": 879709, "evt": -2346181, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0}, "s2": {"rev": 879709, "evt": -2277141, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0}, "s3": {"rev": 879709, "evt": -2277141, "prize": -1010506, "ocos": 0, "opex": 0, "capex": 0}}, "Apr-27": {"br": {"rev": 702908, "evt": -2129622, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0}, "s1": {"rev": 639942, "evt": -1925245, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0}, "s2": {"rev": 639942, "evt": -1867864, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0}, "s3": {"rev": 639942, "evt": -1867864, "prize": -859324, "ocos": 0, "opex": 0, "capex": 0}}, "May-27": {"br": {"rev": 0, "evt": -1711213, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0}, "s1": {"rev": 0, "evt": -1547544, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0}, "s2": {"rev": 0, "evt": -1501592, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0}, "s3": {"rev": 0, "evt": -1501592, "prize": -717617, "ocos": 0, "opex": 0, "capex": 0}}, "Jun-27": {"br": {"rev": 0, "evt": -1274237, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0}, "s1": {"rev": 0, "evt": -1151032, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0}, "s2": {"rev": 0, "evt": -1116440, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0}, "s3": {"rev": 0, "evt": -1116440, "prize": -640188, "ocos": 0, "opex": 0, "capex": 0}}};
 const SCENARIOS = ['br','s1','s2','s3'];
 const S_LABELS  = { br:'Budget Rework', s1:'Scenario 1', s2:'Scenario 2', s3:'Scenario 3' };
 const S_COLORS  = { br:'#A78BFA', s1:'#34D399', s2:'#FBBF24', s3:'#F87171' };
@@ -343,7 +343,6 @@ function buildBreakdown(s) {
 
   h += sep('CAPEX & Financing');
   h += dataRow('CAPEX', 'capex');
-  h += dataRow('Other / Financing', 'other');
   h += subtotalRow('= Net Cash Movement', ['rev','evt','prize','ocos','opex','capex','other']);
 
   // Closing balance row — running from anchor
@@ -371,20 +370,20 @@ buildBreakdown('br');
 // ─── RECONCILIATION TABLE ────────────────────────────────────────────────────
 (function buildRecon() {
   const A = {
-    rev:          11888897,
-    evt_excl_cap: 34893820,
-    capex:          870706,
+    rev:          11888897,   // Revenue payments — Total Paid
+    evt_excl_cap: 11684907,  // PIVOT Invoices PAID only, excl Capital Assets
+    capex:         466192,   // PIVOT Invoices PAID only, Capital Assets only
   };
 
-    const PROJ = {
-    br: {"rev": 131520800, "evt": -73906555, "prize": -16730000, "ocos": -2709253, "opex": -28656873, "capex": -20631754, "other": -16282107},
-    s1: {"rev": 119098868, "evt": -66783107, "prize": -16730000, "ocos": -1847820, "opex": -26656881, "capex": -20631754, "other": -16282107},
-    s2: {"rev": 119098868, "evt": -64783107, "prize": -16730000, "ocos": -1847812, "opex": -26656881, "capex": -20631754, "other": -16282107},
-    s3: {"rev": 119098868, "evt": -64783107, "prize": -16730000, "ocos": -1847812, "opex": -26656881, "capex": -20631754, "other": -16282107},
+      const PROJ = {
+    br: {"rev": 131520800, "evt": -73906555, "prize": -16730000, "ocos": -2709253, "opex": -28656873, "capex": -20631754},
+    s1: {"rev": 119098868, "evt": -66783107, "prize": -16730000, "ocos": -1847820, "opex": -26656881, "capex": -20631754},
+    s2: {"rev": 119098868, "evt": -64783107, "prize": -16730000, "ocos": -1847812, "opex": -26656881, "capex": -20631754},
+    s3: {"rev": 119098868, "evt": -64783107, "prize": -16730000, "ocos": -1847812, "opex": -26656881, "capex": -20631754},
   };
 
   const SCENS = ['br','s1','s2','s3'];
-  const COLS  = ['Actuals', 'Budget Rework', 'Scenario 1', 'Scenario 2', 'Scenario 3'];
+  const COLS  = ['Actuals (to date)', 'Budget Rework (A+P)', 'Scenario 1 (A+P)', 'Scenario 2 (A+P)', 'Scenario 3 (A+P)'];
   const COLORS= ['#C8C8C8', '#A78BFA', '#34D399', '#FBBF24', '#F87171'];
 
   const fmtE = v => {
@@ -432,7 +431,7 @@ buildBreakdown('br');
   html += sep('Revenue');
   html += row('Actuals (Revenue payments)', A.rev, null);
   html += projRow('Projections (Cash Day)', s => PROJ[s].rev);
-  html += row('= Total Revenue', A.rev, s => PROJ[s].rev, true);
+  html += row('= Total Revenue ← Actuals + Projected', A.rev, s => PROJ[s].rev, true);
 
   // COSTS excl CAPEX
   html += sep('Costs (excl. CAPEX)');
@@ -441,23 +440,19 @@ buildBreakdown('br');
   html += projRow('Projections — Prize Money', s => PROJ[s].prize);
   html += projRow('Projections — Other CoS',   s => PROJ[s].ocos);
   html += projRow('Projections — OPEX',         s => PROJ[s].opex);
-  html += row('= Total Costs (excl. CAPEX)', -A.evt_excl_cap,
+  html += row('= Total Costs (excl. CAPEX) ← Actuals + Projected', -A.evt_excl_cap,
     s => PROJ[s].evt + PROJ[s].prize + PROJ[s].ocos + PROJ[s].opex, true);
 
   // CAPEX
   html += sep('CAPEX');
   html += row('Actuals — PIVOT Invoices (Capital Assets)', -A.capex, null);
   html += projRow('Projections — CAPEX (Cash Day)', s => PROJ[s].capex);
-  html += row('= Total CAPEX', -A.capex, s => PROJ[s].capex, true);
-
-  // OTHER
-  html += sep('Other / Financing');
-  html += projRow('Cash Day Other / Financing', s => PROJ[s].other);
+  html += row('= Total CAPEX ← Actuals + Projected', -A.capex, s => PROJ[s].capex, true);
 
   // NET
   const net_act = A.rev - A.evt_excl_cap - A.capex;
-  html += row('= NET (Revenue − All Costs)', net_act,
-    s => PROJ[s].rev + PROJ[s].evt + PROJ[s].prize + PROJ[s].ocos + PROJ[s].opex + PROJ[s].capex + PROJ[s].other,
+  html += row('= NET ← Actuals + Projected', net_act,
+    s => PROJ[s].rev + PROJ[s].evt + PROJ[s].prize + PROJ[s].ocos + PROJ[s].opex + PROJ[s].capex,
     true);
 
   html += '</tbody>';

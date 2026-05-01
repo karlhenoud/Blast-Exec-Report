@@ -1113,9 +1113,18 @@ function buildBridge(){
     body+="<tr class='bgh br-toggle' data-xid='"+typeXid+"'><td>";
     body+="<span id='ic_"+typeXid+"' style='font-size:9px;margin-right:4px'>\u25b8</span>";
     body+=typ;
-    body+=" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+typeItems.length+" item"+(typeItems.length===1?"":"s")+")</span></td>";
+    var nonLinkedCount=typeItems.filter(function(i){return !i.lnk;}).length;
+    body+=" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+nonLinkedCount+" item"+(nonLinkedCount===1?"":"s")+")</span></td>";
     S4.forEach(function(s){
       var v=typeItems.reduce(function(a,b){return a+(b[s]||0);},0);
+      // Add linked cross-type costs (e.g. EC items dep-linked to Publisher Fee deals)
+      typeItems.forEach(function(it){
+        if(it.lnk) return;
+        BI_MAT.forEach(function(c){
+          if(!c.lnk) return;
+          if(c.dep===it.lid) v+=(c[s]||0);
+        });
+      });
       body+="<td>"+fv(v)+"</td>";
     });
     body+="</tr>";
@@ -1139,6 +1148,13 @@ function buildBridge(){
         body+=eco+"</td>";
         S4.forEach(function(s){
           var v=ecoItems.reduce(function(a,b){return a+(b[s]||0);},0);
+          // Add cross-type linked costs (e.g. EC) for this eco
+          ecoItems.forEach(function(it){
+            BI_MAT.forEach(function(c){
+              if(!c.lnk) return;
+              if(c.dep===it.lid) v+=(c[s]||0);
+            });
+          });
           body+="<td>"+fv(v)+"</td>";
         });
         body+="</tr>";
@@ -1174,6 +1190,13 @@ function buildBridge(){
           body+=rsn+" <span style='font-size:9px;color:var(--t3)'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
           S4.forEach(function(s){
             var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
+            // Add linked costs from BI_MAT (cross-type, e.g. EC under Publisher Fee)
+            rsnItems.forEach(function(it){
+              BI_MAT.forEach(function(c){
+                if(!c.lnk) return;
+                if(c.dep===it.lid) v+=(c[s]||0);
+              });
+            });
             body+="<td>"+fv(v)+"</td>";
           });
           body+="</tr>";
@@ -1183,9 +1206,15 @@ function buildBridge(){
             var sp=SPRI[itemStatus(a)]-SPRI[itemStatus(b)];
             return sp!==0?sp:Math.abs(b[SC]||0)-Math.abs(a[SC]||0);
           }).forEach(function(rev){
+            // Pre-compute linked costs for net display
+            var preLinkedCos=BI_MAT.filter(function(c){return c.lnk&&c.dep&&c.dep===rev.lid;});
             body+="<tr class='bxrow "+rsnXid+"'>";
             body+="<td style='padding-left:38px;font-size:10.5px;color:var(--t2)'>"+rev.n+"</td>";
-            S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(rev[s]||0)+"</td>";});
+            S4.forEach(function(s){
+              var netV=(rev[s]||0)+preLinkedCos.reduce(function(a,c){return a+(c[s]||0);},0);
+              var cell=preLinkedCos.length?"<span title='Net incl. costs'>"+fv(netV)+"</span>":fv(rev[s]||0);
+              body+="<td style='font-size:10.5px'>"+cell+"</td>";
+            });
             body+="</tr>";
 
             // Find matching CoS — prefer exact dep link, fall back to fuzzy name match
@@ -1264,6 +1293,16 @@ function buildBridge(){
         body+=rsn+" <span style='font-size:9px;color:var(--t3);font-weight:400'>("+rsnItems.length+" deal"+(rsnItems.length===1?"":"s")+")</span></td>";
         S4.forEach(function(s){
           var v=rsnItems.reduce(function(a,b){return a+(b[s]||0);},0);
+          // Add linked CoS children (net EBITDA impact)
+          rsnItems.forEach(function(it){
+            if(it.lnk) return;
+            BI_MAT.forEach(function(c){
+              if(!c.lnk) return;
+              if(c.dep===it.lid||(c.t===typ&&!c.dep&&matchScore(c.n,it.n)>=0.45)){
+                v+=(c[s]||0);
+              }
+            });
+          });
           body+="<td>"+fv(v)+"</td>";
         });
         body+="</tr>";
@@ -1276,7 +1315,16 @@ function buildBridge(){
           var dealLabel=(it.n?it.n+" — ":"")+(it.e||"");
           body+="<tr class='bxrow "+rsnXid+"'>";
           body+="<td style='padding-left:32px;font-size:10.5px;color:var(--t2)'>"+dealLabel+"</td>";
-          S4.forEach(function(s){body+="<td style='font-size:10.5px'>"+fv(it[s]||0)+"</td>";});
+          var linkedCosForNet=BI_MAT.filter(function(c){
+            if(!c.lnk) return false;
+            return c.dep===it.lid||(c.t===typ&&!c.dep&&matchScore(c.n,it.n)>=0.45);
+          });
+          S4.forEach(function(s){
+            var netV=(it[s]||0)+linkedCosForNet.reduce(function(a,c){return a+(c[s]||0);},0);
+            var hasLinked=linkedCosForNet.length>0;
+            var cell=hasLinked?"<span title='Net incl. costs'>"+fv(netV)+"</span>":fv(it[s]||0);
+            body+="<td style='font-size:10.5px'>"+cell+"</td>";
+          });
           body+="</tr>";
           // Render dep-linked CoS children with threshold logic
           var linkedCos=BI_MAT.filter(function(c){

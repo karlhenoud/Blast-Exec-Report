@@ -315,7 +315,7 @@ new Chart(document.getElementById('cashChart').getContext('2d'), {
   // Budget row
   h += '<tr><td style="color:rgba(255,255,255,0.4);font-weight:500">Budget</td>';
   ALL_MONTHS.forEach(m => {
-    const v = BUDGET[m];
+    const v = BUDGET_BOARD[m];
     h += v != null ? `<td class="${cls(v)}${yr27(m)}" style="opacity:0.6">${fmtK(v)}</td>` : `<td class="zero${yr27(m)}">—</td>`;
   });
   h += '</tr>';
